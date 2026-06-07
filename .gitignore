@@ -1,0 +1,32 @@
+# Unity generated
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+MemoryCaptures/
+Recordings/
+
+# Build output
+Builds/
+Build/
+
+# Unity auto-generated IDE files
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.booproj
+ExportedObj/
+
+# IDE
+.vs/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files
+.~lock.*
