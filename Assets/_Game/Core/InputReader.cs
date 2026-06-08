@@ -16,6 +16,7 @@ public class InputReader : ScriptableObject
     public event Action DropItemEvent;
     public event Action<bool> CrouchEvent;    // true = pressed, false = released
     public event Action<bool> SprintEvent;    // true = pressed, false = released
+    public event Action       JumpEvent;
 
     private InputAction _move;
     private InputAction _look;
@@ -24,6 +25,7 @@ public class InputReader : ScriptableObject
     private InputAction _dropItem;
     private InputAction _crouch;
     private InputAction _sprint;
+    private InputAction _jump;
 
     private void OnEnable()
     {
@@ -38,6 +40,7 @@ public class InputReader : ScriptableObject
         _dropItem   = playerMap.FindAction("DropItem",   throwIfNotFound: true);
         _crouch     = playerMap.FindAction("Crouch",     throwIfNotFound: true);
         _sprint     = playerMap.FindAction("Sprint",     throwIfNotFound: true);
+        _jump       = playerMap.FindAction("Jump",       throwIfNotFound: true);
 
         _move.performed       += OnMove;
         _move.canceled        += OnMoveCanceled;
@@ -51,6 +54,7 @@ public class InputReader : ScriptableObject
         _crouch.canceled      += OnCrouchReleased;
         _sprint.performed     += OnSprintPressed;
         _sprint.canceled      += OnSprintReleased;
+        _jump.performed       += OnJump;
 
         playerMap.Enable();
     }
@@ -71,6 +75,7 @@ public class InputReader : ScriptableObject
         _crouch.canceled      -= OnCrouchReleased;
         _sprint.performed     -= OnSprintPressed;
         _sprint.canceled      -= OnSprintReleased;
+        _jump.performed       -= OnJump;
 
         _actions?.FindActionMap("Player")?.Disable();
     }
@@ -87,4 +92,5 @@ public class InputReader : ScriptableObject
     private void OnCrouchReleased(InputAction.CallbackContext ctx) => CrouchEvent?.Invoke(false);
     private void OnSprintPressed(InputAction.CallbackContext ctx)  => SprintEvent?.Invoke(true);
     private void OnSprintReleased(InputAction.CallbackContext ctx) => SprintEvent?.Invoke(false);
+    private void OnJump(InputAction.CallbackContext ctx)           => JumpEvent?.Invoke();
 }
