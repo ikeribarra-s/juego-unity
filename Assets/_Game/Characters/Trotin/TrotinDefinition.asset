@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a1efcc50fd0a7419d4075d946157d8, type: 3}
+  m_Name: TrotinDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterDefinition
+  _displayName: Trotin
+  _movement: 1
+  _stats: {fileID: 11400000, guid: 15ea805c3b1c9524fbd9d2cf85c39f7a, type: 2}

@@ -29,6 +29,8 @@ Data lives in ScriptableObjects, not MonoBehaviours.
 | Asset | Class | Purpose |
 |---|---|---|
 | `InputReader.asset` | `InputReader` | Wraps InputActionAsset, fires C# events |
+| `BaseDefinition.asset` | `CharacterDefinition` | Base character type (MovementClass = Base) |
+| `TrotinDefinition.asset` | `CharacterDefinition` | Trotín character type (MovementClass = Trotin) |
 | `CharacterStats_Base.asset` | `CharacterStats` | Per-character movement/inventory/detection values |
 | `TrotinStats.asset` | `CharacterStats` | Trotín-specific stat overrides |
 | `EvidenceItem.asset` | `EvidenceItem` | Evidence definition (name, type, value) |
@@ -37,13 +39,17 @@ Data lives in ScriptableObjects, not MonoBehaviours.
 ### Component Layout (every character)
 ```
 GameObject
- ├── CharacterBase          (or subclass, e.g. TrotinCharacter)
+ ├── CharacterBase
  ├── CharacterController
- ├── CharacterMovement      (or subclass, e.g. TrotinMovement)
+ ├── CharacterMovement      (or TrotinMovement — auto-swapped by CharacterBase.OnValidate)
  ├── InventorySystem
  ├── InteractionSystem
+ ├── CharacterAudio
  └── CameraRoot (child Transform, Y=1.6)
      └── Camera (child)
+         ├── AudioListener
+         ├── AudioReverbFilter
+         ├── EnvironmentReverb
          └── CameraEffects
 ```
 
@@ -57,15 +63,15 @@ GameObject
 - **`DebugHUD.cs`** — IMGUI overlay: interaction target, inventory contents, mission state.
 
 ### Characters Base — `Assets/_Game/Characters/_Base/`
+- **`CharacterDefinition.cs`** — ScriptableObject. Enum `MovementClass { Base, Trotin }`. Fields: `DisplayName`, `Movement`, `Stats`. Setting `Movement` in the Inspector triggers `OnValidate` → `SyncMovementComponent` which swaps the movement component automatically via `Undo.DestroyObjectImmediate` + `Undo.AddComponent`.
 - **`CharacterStats.cs`** — Fields: `MoveSpeed=5`, `SprintMultiplier=1.8`, `Gravity=-20`, `JumpForce=6`, `CrouchSpeedMultiplier=0.5`, `LookSensitivity=0.15`, `InventorySlots=2`, `DetectionRadius=5`.
-- **`CharacterBase.cs`** — RequireComponent: CharacterController, CharacterMovement, InventorySystem, InteractionSystem. Exposes: `Stats`, `Input`, `Controller`, `Movement`, `Inventory`, `Interaction`. protected virtual Awake().
-- **`CharacterMovement.cs`** — All fields `protected`, all methods `protected virtual`. Serialized: `_cameraRoot`, `_crouchHeight=0.9`, `_crouchCameraY=0.5`, `_crouchTransitionSpeed=12`. Update() → ApplyLook() → ApplyCrouch() → ApplyMovement(). Protected helper `ApplyGravityAndJump()` shared with subclasses. `CanStand()` SphereCast prevents uncrouch under ceilings.
+- **`CharacterBase.cs`** — RequireComponent: CharacterController, InventorySystem, InteractionSystem (NOT CharacterMovement — that is auto-managed). Serialized: `_definition (CharacterDefinition)`, `_input (InputReader)`, `_cameraRoot (Transform)`. Exposes: `Definition`, `Stats`, `Input`, `CameraRoot`, `Controller`, `Movement`, `Inventory`, `Interaction`. Editor-only `OnValidate` calls `SyncMovementComponent` via `EditorApplication.delayCall`.
+- **`CharacterMovement.cs`** — All fields `protected`, all methods `protected virtual`. `_cameraRoot` removed — reads `_character.CameraRoot` instead. Public properties: `IsSprinting`, `IsCrouching`. Update() → ApplyLook() → ApplyCrouch() → ApplyMovement(). Protected helper `ApplyGravityAndJump()` shared with subclasses. `CanStand()` SphereCast prevents uncrouch under ceilings.
 - **`InventorySystem.cs`** — MaxSlots from `_character.Stats.InventorySlots`. Methods: `TryAdd(EvidencePickup)`, `Drop()`, `DropAll()`, `DropLastItem()`. Subscribes to `DropItemEvent`. Events: `ItemAdded`, `ItemRemoved`.
 - **`InteractionSystem.cs`** — Raycast from camera forward (cyan debug ray). Finds Camera via `GetComponentInChildren` in Start. Subscribes to `InteractStartedEvent`. Stores `CurrentPrompt` for DebugHUD.
 - **`CameraEffects.cs`** — On the **Camera child** (not CameraRoot). Auto-discovers `CharacterBase` via `GetComponentInParent` in Awake. Head bob (sin wave on localPosition XY, scales with speed ratio). Z-axis tilt based on lateral velocity. Does not conflict with CharacterMovement because it lives one level lower in the hierarchy.
 
 ### Trotín — `Assets/_Game/Characters/Trotin/`
-- **`TrotinCharacter.cs`** — Inherits CharacterBase. RequireComponent(TrotinMovement). Exposes `TrotinMovement` property.
 - **`TrotinMovement.cs`** — Inherits CharacterMovement. States: Moving / Sprinting / Flying.
   - Always moves forward (no A/D, steered by mouse only — rotating transform also rotates the camera child).
   - **Q key** (`UseAbilityEvent`) → TryActivateSprint if cooldown clear.
@@ -90,6 +96,23 @@ GameObject
 ### UI — `Assets/_Game/UI/`
 - **`InventoryHUD.cs`** — IMGUI inventory at bottom-center. Slot boxes: filled (dark) vs empty (dimmer), item name + value, count label.
 
+### Rendering — `Assets/_Game/Rendering/`
+- **`HorrorPostFX.cs`** — Creates a global URP Volume at runtime with FilmGrain, Vignette, ColorAdjustments, Bloom, ChromaticAberration. Public `PulseGrain(intensity, duration)` coroutine for jump-scare spikes.
+- **`EvidenceGlow.cs`** — RequireComponent(Renderer). Finds nearest `CharacterBase` via `FindAnyObjectByType`. SmoothStep distance falloff, Lerp fade, sin-wave pulse. Writes `_EmissionColor` and `_EmissionIntensity` per-instance via `MaterialPropertyBlock`. Skips if pickup state is Destroyed. Place on the **mesh child** of an evidence GameObject, not the root.
+
+### Shaders — `Assets/Materials/Shaders/`
+- **`BlinnPhong_Textured.shader`** — URP HLSL. Inputs: `_k_d_tex` (diffuse), `_k_s_tex` (specular/roughness), `_N_tex` (normal), `_n` (shininess), `[HDR] _EmissionColor`, `_EmissionIntensity`. Roughness conversion: `pow(IsRoughness + (-2*IsRoughness+1)*k_s, 2)`. Three passes: ForwardLit (`Blend One Zero`), ShadowCaster, DepthOnly. LIGHT_LOOP_BEGIN/END for Forward+ additional lights. SRP Batcher compatible (identical CBUFFER across all passes).
+- **`BlinnPhong.shader`** — Simpler variant at `Assets/_Game/Rendering/` with Albedo, Normal, Specular, Shininess, Emission.
+
+### Audio — `Assets/_Game/Audio/`
+- **`SoundDefinition.cs`** — ScriptableObject: `AudioClip[]`, `Volume`, `PitchRange (Vector2)`, `SpatialBlend`, `MixerGroup`. Methods: `GetClip()` (random), `GetPitch()` (random range). `IsValid` guards against empty clip arrays.
+- **`SoundManager.cs`** — Singleton, DontDestroyOnLoad. Pool of 16 `AudioSource`s (round-robin). `Play(def, worldPos)` for 3D, `Play2D(def)` for UI/global.
+- **`CharacterAudio.cs`** — RequireComponent(CharacterBase). Footsteps use a **dedicated `AudioSource`** (`_footstepSource`, created via `AddComponent` in Awake) to prevent pool overlap. `MinStepInterval = 0.18s` cooldown prevents double-triggers. Velocity-aware: decelerating resets the distance counter (no late steps); stopped pre-loads to threshold (first step on next frame is instant). Landing, item pickup/drop go through `SoundManager` pool. Three SoundDefinition slots: `_walkSteps`, `_sprintSteps`, `_crouchSteps`.
+- **`EnvironmentReverb.cs`** — RequireComponent(AudioReverbFilter). Place on the **Camera** (same GO as AudioListener). Casts 4 world-axis rays (`Vector3.forward/back/left/right`) on the `Walls` layer every `_updateInterval` (0.1 s). Average hit distance → `t ∈ [0,1]`. Two-segment blend: `t ∈ [0,0.5]` = small room → hall; `t ∈ [0.5,1]` = hall → open. Smoothly drives `decayTime`, `reverbLevel`, `reflectionsLevel`, `diffusion`, `density` each frame. `reverbLevel` must be **positive** to be audible (range −10000 to +2000 mB; Unity default is −10000 = dry).
+
+### Editor — `Assets/Editor/`
+- **`WallsLayerSetup.cs`** — Menu item **Fluffterror > Setup > Add Walls Layer**. Writes "Walls" into the first free slot (index 8–31) in `ProjectSettings/TagManager.asset`.
+
 ---
 
 ## Key Design Decisions
@@ -100,6 +123,9 @@ GameObject
 - **Carried evidence is SetActive(false)** (kinematic, hidden), so ExtractionZone counts carried items by inspecting player inventories directly, not by trigger detection.
 - **CameraEffects on Camera child** (not CameraRoot) so bob/tilt offsets don't fight with pitch or crouch-Y managed by CharacterMovement on CameraRoot.
 - **InputReader null guards**: Unity can call OnDisable before OnEnable during asset import; guard `if (_move == null) return` prevents NullReferenceException.
+- **CharacterDefinition drives MovementClass**: assigning a `CharacterDefinition` SO in the Inspector auto-swaps the movement component (Base ↔ Trotin) via editor `OnValidate`. `_cameraRoot` lives on `CharacterBase` (not CharacterMovement) so it survives component swaps.
+- **Dedicated `AudioSource` for footsteps**: `CharacterAudio` creates its own `AudioSource` in Awake instead of using the shared `SoundManager` pool. This prevents simultaneous overlapping steps from multiple pool slots firing at once.
+- **`AudioReverbFilter` on the AudioListener (Camera)**: affects all sounds heard by the player globally. `reverbLevel` must be set to a **positive value** (e.g. +1000) to be audible — the Unity default of −10000 is completely dry.
 
 ---
 
@@ -123,7 +149,7 @@ GameObject
 | Phase | Status | Scope |
 |---|---|---|
 | 0 — Foundation | ✅ Done | Folders, Input, Base Character Controller |
-| 1 — Core Loop | 🔄 In progress | Evidence, Inventory, Interaction, Trotín, Jump/Crouch, Camera FX |
+| 1 — Core Loop | 🔄 In progress | Evidence, Inventory, Interaction, Trotín, Jump/Crouch, Camera FX, Shaders, Audio base, Dynamic reverb |
 | 1.5 — Creature | ⬜ Next | NavMesh patrol + chase |
 | 1.6 — Mission Polish | ⬜ | Timer display, score screen |
 | 2 — Ability Framework | ⬜ | AbilitySystem, Bobi, Lumi |
@@ -152,6 +178,9 @@ GameObject
 ## Known Bugs Fixed (do not reintroduce)
 
 - `InputReader.OnDisable` NullReferenceException: guard `if (_move == null) return` at top, and `_actions?.FindActionMap(...)` null-conditional.
-- Camera moving the capsule: CameraRoot must be a **child** of the character root, not at the root level. `_cameraRoot` field on CharacterMovement must point to the CameraRoot child Transform.
+- Camera moving the capsule: CameraRoot must be a **child** of the character root, not at the root level. `_cameraRoot` field on CharacterBase must point to the CameraRoot child Transform.
 - Trotín A/D rotation also rotated the camera (camera is a child): removed A/D entirely. Mouse-only steering.
 - Crouch camera conflict: CharacterMovement sets CameraRoot.localPosition.y; CameraEffects sets Camera.localPosition. Different transforms, no conflict.
+- Footsteps overlapping: `SoundManager` pool is round-robin — each step grabbed a fresh `AudioSource`, so rapid triggers stacked. Fixed by giving `CharacterAudio` its own dedicated `AudioSource` + a 0.18 s cooldown.
+- `EnvironmentReverb` inaudible: `AudioReverbFilter.reverbLevel` defaults to −10000 (dry). Preset values must use **positive** mB for wet reverb (e.g. +1000 for a small room, +1500 for a hall). Setting it to −600 is still near-silent.
+- `FindAnyObjectOfType` does not exist in Unity 2022.2+: correct API is `FindAnyObjectByType<T>()` (note "ByType", not "OfType").

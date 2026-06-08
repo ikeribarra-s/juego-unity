@@ -3,11 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterBase))]
 public class CharacterMovement : MonoBehaviour
 {
-    [SerializeField] protected Transform _cameraRoot;
-
     [Header("Crouch")]
-    [SerializeField] private float _crouchHeight        = 0.9f;
-    [SerializeField] private float _crouchCameraY       = 0.5f;
+    [SerializeField] private float _crouchHeight          = 0.9f;
+    [SerializeField] private float _crouchCameraY         = 0.5f;
     [SerializeField] private float _crouchTransitionSpeed = 12f;
 
     protected CharacterBase       _character;
@@ -21,6 +19,9 @@ public class CharacterMovement : MonoBehaviour
     protected float   _cameraPitch;
     protected float   _verticalVelocity;
 
+    public bool IsSprinting => _isSprinting;
+    public bool IsCrouching => _isCrouching;
+
     private float _standHeight;
     private float _standCenterY;
     private float _standCameraY;
@@ -30,14 +31,15 @@ public class CharacterMovement : MonoBehaviour
         _character  = GetComponent<CharacterBase>();
         _controller = GetComponent<CharacterController>();
 
-        // Read stand values from whatever the user set up in the Inspector
         _standHeight  = _controller.height;
         _standCenterY = _controller.center.y;
-        _standCameraY = _cameraRoot.localPosition.y;
+        _standCameraY = _character.CameraRoot != null ? _character.CameraRoot.localPosition.y : 1.6f;
     }
 
     protected virtual void OnEnable()
     {
+        if (_character == null) _character = GetComponent<CharacterBase>();
+
         _character.Input.MoveEvent   += OnMove;
         _character.Input.LookEvent   += OnLook;
         _character.Input.SprintEvent += OnSprint;
@@ -50,6 +52,8 @@ public class CharacterMovement : MonoBehaviour
 
     protected virtual void OnDisable()
     {
+        if (_character == null) return;
+
         _character.Input.MoveEvent   -= OnMove;
         _character.Input.LookEvent   -= OnLook;
         _character.Input.SprintEvent -= OnSprint;
@@ -62,6 +66,7 @@ public class CharacterMovement : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (_character.Stats == null) return;
         ApplyLook();
         ApplyCrouch();
         ApplyMovement();
@@ -71,30 +76,31 @@ public class CharacterMovement : MonoBehaviour
 
     protected virtual void ApplyLook()
     {
-        if (_lookInput == Vector2.zero) return;
+        if (_lookInput == Vector2.zero || _character.CameraRoot == null) return;
 
         float sens = _character.Stats.LookSensitivity;
-
         transform.Rotate(Vector3.up * (_lookInput.x * sens));
 
         _cameraPitch = Mathf.Clamp(_cameraPitch - _lookInput.y * sens, -80f, 80f);
-        _cameraRoot.localRotation = Quaternion.Euler(_cameraPitch, 0f, 0f);
+        _character.CameraRoot.localRotation = Quaternion.Euler(_cameraPitch, 0f, 0f);
     }
 
     // ── Crouch ───────────────────────────────────────────────────────
 
     protected virtual void ApplyCrouch()
     {
-        float targetHeight  = _isCrouching ? _crouchHeight  : _standHeight;
+        if (_character.CameraRoot == null) return;
+
+        float targetHeight  = _isCrouching ? _crouchHeight : _standHeight;
         float targetCenterY = _isCrouching ? _crouchHeight * 0.5f : _standCenterY;
         float targetCameraY = _isCrouching ? _crouchCameraY : _standCameraY;
 
         _controller.height = targetHeight;
         _controller.center = new Vector3(0f, targetCenterY, 0f);
 
-        var pos = _cameraRoot.localPosition;
+        var pos = _character.CameraRoot.localPosition;
         pos.y = Mathf.Lerp(pos.y, targetCameraY, Time.deltaTime * _crouchTransitionSpeed);
-        _cameraRoot.localPosition = pos;
+        _character.CameraRoot.localPosition = pos;
     }
 
     // ── Movement ─────────────────────────────────────────────────────
@@ -116,7 +122,6 @@ public class CharacterMovement : MonoBehaviour
         _controller.Move(move * Time.deltaTime);
     }
 
-    // Shared helper — call this at the top of any override of ApplyMovement
     protected void ApplyGravityAndJump()
     {
         if (_controller.isGrounded && _verticalVelocity < 0f)

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c4b850f8b4aaa04ab8befe3c34341e6, type: 3}
   m_Name: CharacterStats_Base
   m_EditorClassIdentifier: Assembly-CSharp::CharacterStats
-  MoveSpeed: 5
+  MoveSpeed: 3
   SprintMultiplier: 1.8
   Gravity: -20
+  JumpForce: 6
+  CrouchSpeedMultiplier: 0.5
   LookSensitivity: 0.15
   InventorySlots: 2
   DetectionRadius: 5
