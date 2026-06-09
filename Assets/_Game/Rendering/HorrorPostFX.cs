@@ -31,17 +31,40 @@ public class HorrorPostFX : MonoBehaviour
     [Header("Chromatic Aberration")]
     [SerializeField, Range(0f, 1f)] private float _chromaticIntensity = 0.18f;
 
+    [Header("Pixelation")]
+    [Tooltip("1 = off. Higher = larger pixel blocks (PS1-style look).")]
+    [SerializeField, Range(1, 32)] private int _pixelSize = 1;
+
     private Volume _volume;
 
     private void Awake()
     {
         var go = new GameObject("[HorrorPostFX]");
         go.transform.SetParent(transform);
-        _volume           = go.AddComponent<Volume>();
-        _volume.isGlobal  = true;
-        _volume.priority  = 10;
-        _volume.profile   = BuildProfile();
+        _volume          = go.AddComponent<Volume>();
+        _volume.isGlobal = true;
+        _volume.priority = 10;
+        _volume.profile  = BuildProfile();
+
+        ApplyPixelation();
     }
+
+    // Expose for runtime changes (e.g. entering a dream sequence)
+    public int PixelSize
+    {
+        get => _pixelSize;
+        set { _pixelSize = Mathf.Clamp(value, 1, 32); ApplyPixelation(); }
+    }
+
+    private void ApplyPixelation()
+    {
+        if (PixelateFeature.Instance != null)
+            PixelateFeature.Instance.BlockSize = _pixelSize;
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate() => ApplyPixelation();
+#endif
 
     private VolumeProfile BuildProfile()
     {

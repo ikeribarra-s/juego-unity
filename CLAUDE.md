@@ -97,7 +97,10 @@ GameObject
 - **`InventoryHUD.cs`** — IMGUI inventory at bottom-center. Slot boxes: filled (dark) vs empty (dimmer), item name + value, count label.
 
 ### Rendering — `Assets/_Game/Rendering/`
-- **`HorrorPostFX.cs`** — Creates a global URP Volume at runtime with FilmGrain, Vignette, ColorAdjustments, Bloom, ChromaticAberration. Public `PulseGrain(intensity, duration)` coroutine for jump-scare spikes.
+- **`HorrorPostFX.cs`** — Creates a global URP Volume at runtime with FilmGrain, Vignette, ColorAdjustments, Bloom, ChromaticAberration. Public `PulseGrain(intensity, duration)` coroutine for jump-scare spikes. `[Range(1,32)] _pixelSize` drives `PixelateFeature.Instance.BlockSize`; `OnValidate` applies changes live in the Inspector. Public `PixelSize` property for runtime changes.
+- **`PixelateFeature.cs`** — `ScriptableRendererFeature`. Add to **`Assets/Settings/PC_Renderer`** once; no Inspector wiring needed after that. Uses URP 17 **RenderGraph** API (`RecordRenderGraph` / `AddRasterRenderPass`). Two-pass ping-pong blit: Pass A pixelates source → temp, Pass B copies temp → source. Static `Instance` property lets `HorrorPostFX` drive `BlockSize` directly. Skips when `BlockSize ≤ 1` or `isActiveTargetBackBuffer`.
+- **`Pixelate.shader`** — `Hidden/Pixelate`. Fullscreen blit shader using `Blit.hlsl`. Quantizes UV to block-center: `(floor(uv × blockGrid) + 0.5) / blockGrid`. Samples with `sampler_PointClamp` for sharp edges. `_BlockSize` xy = `(screenW / blockSize, screenH / blockSize)`.
+- **`LightFlicker.cs`** — Collects all `Light` children in Awake. Drives intensity via Fractal Brownian Motion (FBM) over 1-D Perlin noise each Update. Tunables: `_flickerIntensity`, `_flickerSpeed`, `_octaves`, `_lacunarity`, `_gain`. Each light gets a random `noiseOffset` so they desynchronise naturally.
 - **`EvidenceGlow.cs`** — RequireComponent(Renderer). Finds nearest `CharacterBase` via `FindAnyObjectByType`. SmoothStep distance falloff, Lerp fade, sin-wave pulse. Writes `_EmissionColor` and `_EmissionIntensity` per-instance via `MaterialPropertyBlock`. Skips if pickup state is Destroyed. Place on the **mesh child** of an evidence GameObject, not the root.
 
 ### Shaders — `Assets/Materials/Shaders/`
@@ -107,7 +110,8 @@ GameObject
 ### Audio — `Assets/_Game/Audio/`
 - **`SoundDefinition.cs`** — ScriptableObject: `AudioClip[]`, `Volume`, `PitchRange (Vector2)`, `SpatialBlend`, `MixerGroup`. Methods: `GetClip()` (random), `GetPitch()` (random range). `IsValid` guards against empty clip arrays.
 - **`SoundManager.cs`** — Singleton, DontDestroyOnLoad. Pool of 16 `AudioSource`s (round-robin). `Play(def, worldPos)` for 3D, `Play2D(def)` for UI/global.
-- **`CharacterAudio.cs`** — RequireComponent(CharacterBase). Footsteps use a **dedicated `AudioSource`** (`_footstepSource`, created via `AddComponent` in Awake) to prevent pool overlap. `MinStepInterval = 0.18s` cooldown prevents double-triggers. Velocity-aware: decelerating resets the distance counter (no late steps); stopped pre-loads to threshold (first step on next frame is instant). Landing, item pickup/drop go through `SoundManager` pool. Three SoundDefinition slots: `_walkSteps`, `_sprintSteps`, `_crouchSteps`.
+- **`CharacterAudio.cs`** — RequireComponent(CharacterBase). Footsteps use a **dedicated `AudioSource`** (`_footstepSource`, created via `AddComponent` in Awake) to prevent pool overlap. `MinStepInterval = 0.18s` cooldown prevents double-triggers. Velocity-aware: decelerating resets the distance counter (no late steps); stopped pre-loads to threshold (first step on next frame is instant). Landing sound has **`_landSoundOffset`** (default 0.12 s): while falling, a downward raycast estimates `hit.distance / |vy|`; when ≤ offset the sound pre-fires so the impact aligns on contact. `_landSoundFired` flag prevents double-play. Item pickup/drop go through `SoundManager` pool. Three SoundDefinition slots: `_walkSteps`, `_sprintSteps`, `_crouchSteps`.
+- **`AmbientAudio.cs`** — Looping 2D ambient track with fade-in on Start. Creates its own `AudioSource` (spatialBlend=0). Public `FadeIn(duration)` / `FadeOut(duration)` for scripted transitions. Place on any persistent GameObject and assign a `SoundDefinition`.
 - **`EnvironmentReverb.cs`** — RequireComponent(AudioReverbFilter). Place on the **Camera** (same GO as AudioListener). Casts 4 world-axis rays (`Vector3.forward/back/left/right`) on the `Walls` layer every `_updateInterval` (0.1 s). Average hit distance → `t ∈ [0,1]`. Two-segment blend: `t ∈ [0,0.5]` = small room → hall; `t ∈ [0.5,1]` = hall → open. Smoothly drives `decayTime`, `reverbLevel`, `reflectionsLevel`, `diffusion`, `density` each frame. `reverbLevel` must be **positive** to be audible (range −10000 to +2000 mB; Unity default is −10000 = dry).
 
 ### Editor — `Assets/Editor/`
@@ -126,6 +130,7 @@ GameObject
 - **CharacterDefinition drives MovementClass**: assigning a `CharacterDefinition` SO in the Inspector auto-swaps the movement component (Base ↔ Trotin) via editor `OnValidate`. `_cameraRoot` lives on `CharacterBase` (not CharacterMovement) so it survives component swaps.
 - **Dedicated `AudioSource` for footsteps**: `CharacterAudio` creates its own `AudioSource` in Awake instead of using the shared `SoundManager` pool. This prevents simultaneous overlapping steps from multiple pool slots firing at once.
 - **`AudioReverbFilter` on the AudioListener (Camera)**: affects all sounds heard by the player globally. `reverbLevel` must be set to a **positive value** (e.g. +1000) to be audible — the Unity default of −10000 is completely dry.
+- **`PixelateFeature` uses a static `Instance`**: `ScriptableRendererFeature.Create()` runs at app start and sets `Instance = this`. `HorrorPostFX` reads it in `Awake` and `OnValidate` — no serialized reference needed. This pattern works for any renderer feature that needs to be driven at runtime without a drag-and-drop reference.
 
 ---
 
@@ -184,3 +189,4 @@ GameObject
 - Footsteps overlapping: `SoundManager` pool is round-robin — each step grabbed a fresh `AudioSource`, so rapid triggers stacked. Fixed by giving `CharacterAudio` its own dedicated `AudioSource` + a 0.18 s cooldown.
 - `EnvironmentReverb` inaudible: `AudioReverbFilter.reverbLevel` defaults to −10000 (dry). Preset values must use **positive** mB for wet reverb (e.g. +1000 for a small room, +1500 for a hall). Setting it to −600 is still near-silent.
 - `FindAnyObjectOfType` does not exist in Unity 2022.2+: correct API is `FindAnyObjectByType<T>()` (note "ByType", not "OfType").
+- URP 17 (Unity 6) removed `ScriptableRenderPass.Execute(ScriptableRenderContext, ref RenderingData)` and `OnCameraSetup(CommandBuffer, ref RenderingData)`: must use `RecordRenderGraph(RenderGraph, ContextContainer)` with `AddRasterRenderPass` / `AddUnsafePass`. `RenderingData` no longer exists — use `frameData.Get<UniversalResourceData>()` and `frameData.Get<UniversalCameraData>()`.

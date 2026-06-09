@@ -14,6 +14,7 @@ public class CharacterAudio : MonoBehaviour
 
     [Header("Actions")]
     [SerializeField] private SoundDefinition _jumpLand;
+    [SerializeField] private float           _landSoundOffset = 0.12f; // seconds before impact to start playing
     [SerializeField] private SoundDefinition _itemPickup;
     [SerializeField] private SoundDefinition _itemDrop;
 
@@ -24,6 +25,7 @@ public class CharacterAudio : MonoBehaviour
     private float               _prevSpeed;
     private float               _stepCooldown;
     private bool                _wasGrounded;
+    private bool                _landSoundFired;   // true once pre-triggered mid-air
 
     private const float MinMoveSpeed    = 0.1f;
     private const float MinStepInterval = 0.18f;   // hard floor between any two steps
@@ -62,8 +64,36 @@ public class CharacterAudio : MonoBehaviour
 
     private void HandleLanding()
     {
+        // Just left the ground — arm the pre-trigger
+        if (_wasGrounded && !_controller.isGrounded)
+        {
+            _landSoundFired = false;
+            return;
+        }
+
+        // Touched down — fire if the pre-trigger didn't already handle it
         if (!_wasGrounded && _controller.isGrounded)
-            SoundManager.Instance?.Play(_jumpLand, transform.position);
+        {
+            if (!_landSoundFired)
+                SoundManager.Instance?.Play(_jumpLand, transform.position);
+            _landSoundFired = false;
+            return;
+        }
+
+        // In the air and falling — pre-trigger when estimated impact time ≤ offset
+        if (!_controller.isGrounded && !_landSoundFired && _landSoundOffset > 0f)
+        {
+            float vy = _controller.velocity.y;
+            if (vy < 0f && Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 30f))
+            {
+                float timeToImpact = hit.distance / Mathf.Abs(vy);
+                if (timeToImpact <= _landSoundOffset)
+                {
+                    SoundManager.Instance?.Play(_jumpLand, transform.position);
+                    _landSoundFired = true;
+                }
+            }
+        }
     }
 
     // ── Footsteps ─────────────────────────────────────────────────────────────
