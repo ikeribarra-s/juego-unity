@@ -36,6 +36,11 @@ public class HorrorPostFX : MonoBehaviour
     [SerializeField, Range(1, 32)] private int _pixelSize = 1;
 
     private Volume _volume;
+    private FilmGrain _grain;
+    private Vignette _vignette;
+    private ColorAdjustments _colorAdjustments;
+    private Bloom _bloom;
+    private ChromaticAberration _chromaticAberration;
 
     private void Awake()
     {
@@ -56,6 +61,45 @@ public class HorrorPostFX : MonoBehaviour
         set { _pixelSize = Mathf.Clamp(value, 1, 32); ApplyPixelation(); }
     }
 
+    public void ApplyLook(
+        float grainIntensity,
+        float vignetteIntensity,
+        float saturation,
+        float postExposure,
+        Color colorFilter,
+        float bloomIntensity,
+        float chromaticIntensity,
+        int pixelSize)
+    {
+        _grainIntensity = Mathf.Clamp01(grainIntensity);
+        _vignetteIntensity = Mathf.Clamp01(vignetteIntensity);
+        _saturation = Mathf.Clamp(saturation, -100f, 0f);
+        _postExposure = Mathf.Clamp(postExposure, -2f, 0f);
+        _colorFilter = colorFilter;
+        _bloomIntensity = Mathf.Clamp01(bloomIntensity);
+        _chromaticIntensity = Mathf.Clamp01(chromaticIntensity);
+        PixelSize = pixelSize;
+
+        if (_grain != null)
+            _grain.intensity.Override(_grainIntensity);
+
+        if (_vignette != null)
+            _vignette.intensity.Override(_vignetteIntensity);
+
+        if (_colorAdjustments != null)
+        {
+            _colorAdjustments.saturation.Override(_saturation);
+            _colorAdjustments.postExposure.Override(_postExposure);
+            _colorAdjustments.colorFilter.Override(_colorFilter);
+        }
+
+        if (_bloom != null)
+            _bloom.intensity.Override(_bloomIntensity);
+
+        if (_chromaticAberration != null)
+            _chromaticAberration.intensity.Override(_chromaticIntensity);
+    }
+
     private void ApplyPixelation()
     {
         if (PixelateFeature.Instance != null)
@@ -70,30 +114,30 @@ public class HorrorPostFX : MonoBehaviour
     {
         var profile = ScriptableObject.CreateInstance<VolumeProfile>();
 
-        var grain = profile.Add<FilmGrain>();
-        grain.type.Override(FilmGrainLookup.Thin1);
-        grain.intensity.Override(_grainIntensity);
-        grain.response.Override(_grainResponse);
+        _grain = profile.Add<FilmGrain>();
+        _grain.type.Override(FilmGrainLookup.Thin1);
+        _grain.intensity.Override(_grainIntensity);
+        _grain.response.Override(_grainResponse);
 
-        var vignette = profile.Add<Vignette>();
-        vignette.color.Override(Color.black);
-        vignette.center.Override(new Vector2(0.5f, 0.5f));
-        vignette.intensity.Override(_vignetteIntensity);
-        vignette.smoothness.Override(_vignetteSmoothness);
-        vignette.rounded.Override(true);
+        _vignette = profile.Add<Vignette>();
+        _vignette.color.Override(Color.black);
+        _vignette.center.Override(new Vector2(0.5f, 0.5f));
+        _vignette.intensity.Override(_vignetteIntensity);
+        _vignette.smoothness.Override(_vignetteSmoothness);
+        _vignette.rounded.Override(true);
 
-        var color = profile.Add<ColorAdjustments>();
-        color.saturation.Override(_saturation);
-        color.postExposure.Override(_postExposure);
-        color.colorFilter.Override(_colorFilter);
+        _colorAdjustments = profile.Add<ColorAdjustments>();
+        _colorAdjustments.saturation.Override(_saturation);
+        _colorAdjustments.postExposure.Override(_postExposure);
+        _colorAdjustments.colorFilter.Override(_colorFilter);
 
-        var bloom = profile.Add<Bloom>();
-        bloom.threshold.Override(_bloomThreshold);
-        bloom.intensity.Override(_bloomIntensity);
-        bloom.scatter.Override(0.7f);
+        _bloom = profile.Add<Bloom>();
+        _bloom.threshold.Override(_bloomThreshold);
+        _bloom.intensity.Override(_bloomIntensity);
+        _bloom.scatter.Override(0.7f);
 
-        var ca = profile.Add<ChromaticAberration>();
-        ca.intensity.Override(_chromaticIntensity);
+        _chromaticAberration = profile.Add<ChromaticAberration>();
+        _chromaticAberration.intensity.Override(_chromaticIntensity);
 
         return profile;
     }

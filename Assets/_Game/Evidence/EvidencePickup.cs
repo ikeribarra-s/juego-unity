@@ -7,10 +7,13 @@ public class EvidencePickup : MonoBehaviour, IInteractable
     public enum EvidenceState { InWorld, Carried, AtExtractionZone, Destroyed }
 
     [SerializeField] private EvidenceItem _definition;
+    [Tooltip("Breakable items shatter when they hit anything faster than this (m/s)")]
+    [SerializeField] private float _breakImpactSpeed = 7f;
 
     public EvidenceItem Definition  => _definition;
     public EvidenceState State      { get; private set; } = EvidenceState.InWorld;
     public CharacterBase Carrier    { get; private set; }
+    public Rigidbody     Body       => _rb;
 
     private Rigidbody _rb;
 
@@ -21,36 +24,29 @@ public class EvidencePickup : MonoBehaviour, IInteractable
 
     // --- IInteractable ---
 
-    public string GetPrompt() => $"Pick up {_definition.DisplayName}";
+    public string GetPrompt() => $"Hold E to grab {_definition.DisplayName}";
 
     public void Interact(CharacterBase interactor)
     {
-        if (State != EvidenceState.InWorld) return;
+        if (State != EvidenceState.InWorld && State != EvidenceState.AtExtractionZone) return;
+        if (interactor.Grabber == null) return;
 
-        bool added = interactor.Inventory.TryAdd(this);
-        if (!added)
-            Debug.Log($"[Inventory] {interactor.name} inventory is full.");
+        interactor.Grabber.TryGrab(this);
     }
 
     // --- State transitions ---
 
-    public void OnPickedUp(CharacterBase carrier)
+    public void OnGrabbed(CharacterBase carrier)
     {
         State   = EvidenceState.Carried;
         Carrier = carrier;
-        _rb.isKinematic = true;
-        gameObject.SetActive(false);
     }
 
-    public void OnDropped(Vector3 position)
+    public void OnReleased()
     {
+        if (State != EvidenceState.Carried) return;
         State   = EvidenceState.InWorld;
         Carrier = null;
-        transform.position  = position;
-        _rb.isKinematic     = false;
-        _rb.linearVelocity  = Vector3.zero;
-        _rb.angularVelocity = Vector3.zero;
-        gameObject.SetActive(true);
     }
 
     public void OnEnteredExtractionZone()
@@ -73,5 +69,15 @@ public class EvidencePickup : MonoBehaviour, IInteractable
         _rb.isKinematic = true;
         gameObject.SetActive(false);
         MissionManager.Instance.NotifyEvidenceDestroyed(this);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (State == EvidenceState.Destroyed) return;
+        if (!_definition.IsBreakable) return;
+        if (collision.relativeVelocity.magnitude < _breakImpactSpeed) return;
+
+        Debug.Log($"[Evidence] {_definition.DisplayName} shattered on impact ({collision.relativeVelocity.magnitude:F1} m/s).");
+        Break();
     }
 }

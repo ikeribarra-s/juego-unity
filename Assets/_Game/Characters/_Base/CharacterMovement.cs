@@ -7,6 +7,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float _crouchHeight          = 0.9f;
     [SerializeField] private float _crouchCameraY         = 0.5f;
     [SerializeField] private float _crouchTransitionSpeed = 12f;
+    [SerializeField] private bool  _debugCrouch           = false;
 
     protected CharacterBase       _character;
     protected CharacterController _controller;
@@ -22,8 +23,24 @@ public class CharacterMovement : MonoBehaviour
     public bool IsSprinting => _isSprinting;
     public bool IsCrouching => _isCrouching;
 
+    // ── State exposed for AnimationHandler (the animator only reflects movement) ──
+    public bool  IsGrounded       => _controller != null && _controller.isGrounded;
+    public float VerticalVelocity => _verticalVelocity;
+    public Vector3 PlanarVelocity
+    {
+        get
+        {
+            if (_controller == null) return Vector3.zero;
+            Vector3 v = _controller.velocity;
+            v.y = 0f;
+            return v;
+        }
+    }
+
+    /// <summary>Fired the frame a jump impulse is applied. Consumed by AnimationHandler.</summary>
+    public event System.Action Jumped;
+
     private float _standHeight;
-    private float _standCenterY;
     private float _standCameraY;
 
     protected virtual void Awake()
@@ -32,7 +49,6 @@ public class CharacterMovement : MonoBehaviour
         _controller = GetComponent<CharacterController>();
 
         _standHeight  = _controller.height;
-        _standCenterY = _controller.center.y;
         _standCameraY = _character.CameraRoot != null ? _character.CameraRoot.localPosition.y : 1.6f;
     }
 
@@ -92,11 +108,13 @@ public class CharacterMovement : MonoBehaviour
         if (_character.CameraRoot == null) return;
 
         float targetHeight  = _isCrouching ? _crouchHeight : _standHeight;
-        float targetCenterY = _isCrouching ? _crouchHeight * 0.5f : _standCenterY;
         float targetCameraY = _isCrouching ? _crouchCameraY : _standCameraY;
 
-        _controller.height = targetHeight;
-        _controller.center = new Vector3(0f, targetCenterY, 0f);
+        // Lerp the collider in lockstep with the camera so hitbox and view stay in sync.
+        // Center tracks height/2 every frame so the feet stay planted at y=0 during the blend.
+        float h = Mathf.Lerp(_controller.height, targetHeight, Time.deltaTime * _crouchTransitionSpeed);
+        _controller.height = h;
+        _controller.center = new Vector3(0f, h * 0.5f, 0f);
 
         var pos = _character.CameraRoot.localPosition;
         pos.y = Mathf.Lerp(pos.y, targetCameraY, Time.deltaTime * _crouchTransitionSpeed);
@@ -131,6 +149,7 @@ public class CharacterMovement : MonoBehaviour
         {
             _verticalVelocity = _character.Stats.JumpForce;
             _jumpRequested    = false;
+            Jumped?.Invoke();
         }
 
         _verticalVelocity += _character.Stats.Gravity * Time.deltaTime;
@@ -150,20 +169,42 @@ public class CharacterMovement : MonoBehaviour
 
     protected virtual void OnCrouch(bool pressed)
     {
+        if (_debugCrouch)
+            Debug.Log($"[Crouch] event received: pressed={pressed}, wasCrouching={_isCrouching}", this);
+
         if (pressed)
         {
             _isCrouching = true;
         }
         else
         {
-            if (CanStand()) _isCrouching = false;
+            bool canStand = CanStand();
+            if (_debugCrouch && !canStand)
+                Debug.Log("[Crouch] release blocked — ceiling above, staying crouched", this);
+            if (canStand) _isCrouching = false;
         }
+
+        if (_debugCrouch)
+            Debug.Log($"[Crouch] state now: isCrouching={_isCrouching}", this);
     }
 
     private bool CanStand()
     {
-        float castDistance = _standHeight - _crouchHeight;
-        Vector3 origin     = transform.position + Vector3.up * (_crouchHeight - _controller.radius);
-        return !Physics.SphereCast(origin, _controller.radius * 0.9f, Vector3.up, out _, castDistance);
+        // Cast from the top of the current (crouched) capsule up through the gap that
+        // standing would reclaim. Starting at the capsule top avoids the self-overlap
+        // that would otherwise make SphereCast ignore a low ceiling.
+        float radius = _controller.radius;
+        Vector3 top  = transform.position + Vector3.up * (_controller.height - radius);
+        float gap    = _standHeight - _controller.height;
+        bool blocked = Physics.SphereCast(top, radius * 0.9f, Vector3.up, out RaycastHit hit, gap + 0.05f);
+
+        if (_debugCrouch)
+        {
+            Debug.DrawRay(top, Vector3.up * (gap + 0.05f), blocked ? Color.red : Color.green, 1f);
+            if (blocked)
+                Debug.Log($"[Crouch] CanStand=false, blocked by '{hit.collider.name}' at {hit.distance:F2}m", this);
+        }
+
+        return !blocked;
     }
 }

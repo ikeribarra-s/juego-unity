@@ -30,3 +30,8 @@ Thumbs.db
 
 # Lock files
 .~lock.*
+
+# Refine loop captures + generator backups
+RefineCaptures/
+Assets/_Game/Environment/*.bak.*
+Assets/_Game/Environment/*.bak.*.meta

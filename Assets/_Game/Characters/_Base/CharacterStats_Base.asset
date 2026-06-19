@@ -15,7 +15,7 @@ MonoBehaviour:
   MoveSpeed: 3
   SprintMultiplier: 1.8
   Gravity: -20
-  JumpForce: 6
+  JumpForce: 8
   CrouchSpeedMultiplier: 0.5
   LookSensitivity: 0.15
   InventorySlots: 2

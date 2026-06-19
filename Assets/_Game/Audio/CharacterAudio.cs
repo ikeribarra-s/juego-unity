@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterBase))]
@@ -11,6 +12,12 @@ public class CharacterAudio : MonoBehaviour
     [SerializeField] private float _walkStepDistance   = 2.0f;
     [SerializeField] private float _sprintStepDistance = 2.8f;
     [SerializeField] private float _crouchStepDistance = 1.5f;
+
+    [Tooltip("When sprinting, never fall back to the walk sound — play the sprint clip or nothing.")]
+    [SerializeField] private bool _muteWalkWhileSprinting = true;
+
+    [Tooltip("Seconds to fade out a sprint clip when sprint ends, instead of letting it ring to the end.")]
+    [SerializeField] private float _sprintFadeOutTime = 0.25f;
 
     [Header("Actions")]
     [SerializeField] private SoundDefinition _jumpLand;
@@ -26,6 +33,8 @@ public class CharacterAudio : MonoBehaviour
     private float               _stepCooldown;
     private bool                _wasGrounded;
     private bool                _landSoundFired;   // true once pre-triggered mid-air
+    private bool                _lastStepWasSprint;
+    private Coroutine           _fadeOut;
 
     private const float MinMoveSpeed    = 0.1f;
     private const float MinStepInterval = 0.18f;   // hard floor between any two steps
@@ -42,14 +51,14 @@ public class CharacterAudio : MonoBehaviour
 
     private void OnEnable()
     {
-        _character.Inventory.ItemAdded   += OnItemAdded;
-        _character.Inventory.ItemRemoved += OnItemRemoved;
+        _character.Grabber.ItemGrabbed  += OnItemGrabbed;
+        _character.Grabber.ItemReleased += OnItemReleased;
     }
 
     private void OnDisable()
     {
-        _character.Inventory.ItemAdded   -= OnItemAdded;
-        _character.Inventory.ItemRemoved -= OnItemRemoved;
+        _character.Grabber.ItemGrabbed  -= OnItemGrabbed;
+        _character.Grabber.ItemReleased -= OnItemReleased;
     }
 
     private void Update()
@@ -57,6 +66,7 @@ public class CharacterAudio : MonoBehaviour
         _stepCooldown = Mathf.Max(0f, _stepCooldown - Time.deltaTime);
         HandleLanding();
         HandleFootsteps();
+        HandleSprintFadeOut();
         _wasGrounded = _controller.isGrounded;
     }
 
@@ -104,6 +114,10 @@ public class CharacterAudio : MonoBehaviour
         {
             _distanceTraveled = 0f;
             _prevSpeed        = 0f;
+
+            // Airborne — silence any step clip (walk or sprint) still ringing
+            if (_footstepSource.isPlaying && _fadeOut == null)
+                _fadeOut = StartCoroutine(FadeOutFootsteps());
             return;
         }
 
@@ -169,11 +183,24 @@ public class CharacterAudio : MonoBehaviour
 
         if (m != null)
         {
-            if      (m.IsSprinting && _sprintSteps != null) def = _sprintSteps;
-            else if (m.IsCrouching && _crouchSteps != null) def = _crouchSteps;
+            if (m.IsSprinting)
+                def = _sprintSteps;                          // sprinting never uses the walk sound
+            else if (m.IsCrouching && _crouchSteps != null)
+                def = _crouchSteps;
         }
 
+        // When sprinting with no sprint clip assigned, stay silent rather than falling back to walk
+        if (def == null && !(m != null && m.IsSprinting && _muteWalkWhileSprinting))
+            def = _walkSteps;
+
         if (def == null || !def.IsValid) return;
+
+        // A fresh step always plays at full volume — cancel any fade in progress
+        if (_fadeOut != null)
+        {
+            StopCoroutine(_fadeOut);
+            _fadeOut = null;
+        }
 
         _footstepSource.clip                  = def.GetClip();
         _footstepSource.volume                = def.Volume;
@@ -182,11 +209,46 @@ public class CharacterAudio : MonoBehaviour
         _footstepSource.outputAudioMixerGroup = def.MixerGroup;
         _footstepSource.Play();
 
-        _stepCooldown = MinStepInterval;
+        _lastStepWasSprint = def == _sprintSteps;
+        _stepCooldown      = MinStepInterval;
     }
 
-    // ── Inventory ─────────────────────────────────────────────────────────────
+    // ── Sprint fade-out ───────────────────────────────────────────────────────
 
-    private void OnItemAdded(EvidencePickup _)   => SoundManager.Instance?.Play(_itemPickup, transform.position);
-    private void OnItemRemoved(EvidencePickup _) => SoundManager.Instance?.Play(_itemDrop,   transform.position);
+    private void HandleSprintFadeOut()
+    {
+        if (!_lastStepWasSprint || _fadeOut != null || !_footstepSource.isPlaying) return;
+
+        var  m         = _character.Movement;
+        bool sprinting = m != null && m.IsSprinting;
+
+        Vector3 hVel    = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
+        bool    stopped = hVel.magnitude < MinMoveSpeed;
+
+        // Shift released (or we stopped) while a sprint clip is still ringing — fade it out
+        if (!sprinting || stopped)
+            _fadeOut = StartCoroutine(FadeOutFootsteps());
+    }
+
+    private IEnumerator FadeOutFootsteps()
+    {
+        float startVolume = _footstepSource.volume;
+        float t           = 0f;
+
+        while (t < _sprintFadeOutTime && _footstepSource.isPlaying)
+        {
+            t += Time.deltaTime;
+            _footstepSource.volume = Mathf.Lerp(startVolume, 0f, t / _sprintFadeOutTime);
+            yield return null;
+        }
+
+        _footstepSource.Stop();
+        _lastStepWasSprint = false;
+        _fadeOut           = null;
+    }
+
+    // ── Grab beam ─────────────────────────────────────────────────────────────
+
+    private void OnItemGrabbed(EvidencePickup _)  => SoundManager.Instance?.Play(_itemPickup, transform.position);
+    private void OnItemReleased(EvidencePickup _) => SoundManager.Instance?.Play(_itemDrop,   transform.position);
 }

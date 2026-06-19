@@ -21,6 +21,7 @@ public class CharacterBase : MonoBehaviour
     public CharacterMovement   Movement    { get; private set; }
     public InventorySystem     Inventory   { get; private set; }
     public InteractionSystem   Interaction { get; private set; }
+    public PhysicsGrabber      Grabber     { get; private set; }
 
     protected virtual void Awake()
     {
@@ -28,6 +29,12 @@ public class CharacterBase : MonoBehaviour
         Movement    = GetComponent<CharacterMovement>();
         Inventory   = GetComponent<InventorySystem>();
         Interaction = GetComponent<InteractionSystem>();
+        Grabber     = GetComponent<PhysicsGrabber>();
+
+        // Auto-add so existing character prefabs work without editor setup;
+        // add it manually in the Inspector if you want to tune its values.
+        if (Grabber == null)
+            Grabber = gameObject.AddComponent<PhysicsGrabber>();
 
         if (Movement == null)
             Debug.LogError($"[CharacterBase] No CharacterMovement on '{name}'. Set a Definition and let the editor sync the component.", this);

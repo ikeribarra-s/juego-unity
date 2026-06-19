@@ -19,6 +19,17 @@ public class DebugHUD : MonoBehaviour
         string prompt = _interaction != null ? _interaction.CurrentPrompt : "—";
         GUILayout.Label($"  Looking at: {prompt ?? "nothing"}");
 
+        // Grabber
+        GUILayout.Space(4);
+        GUILayout.Label("[GRABBER]");
+        if (_character != null && _character.Grabber != null)
+        {
+            var held = _character.Grabber.Held;
+            GUILayout.Label(held != null
+                ? $"  Holding: {held.Definition.DisplayName} (val: {held.Definition.FinalValue})"
+                : "  Holding: nothing");
+        }
+
         // Inventory
         GUILayout.Space(4);
         GUILayout.Label("[INVENTORY]");

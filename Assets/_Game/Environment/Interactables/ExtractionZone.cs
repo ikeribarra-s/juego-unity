@@ -36,17 +36,18 @@ public class ExtractionZone : MonoBehaviour
     {
         var character = other.GetComponent<CharacterBase>();
         if (character != null)
-        {
             _playersInZone.Add(character);
-            return;
-        }
+    }
 
+    private void OnTriggerStay(Collider other)
+    {
+        // Stay (not Enter) so beam-carried items register when the player
+        // releases them while they are already inside the zone.
         var pickup = other.GetComponent<EvidencePickup>();
-        if (pickup != null && pickup.State == EvidencePickup.EvidenceState.InWorld)
-        {
-            pickup.OnEnteredExtractionZone();
-            _droppedEvidenceInZone.Add(pickup);
-        }
+        if (pickup == null || pickup.State != EvidencePickup.EvidenceState.InWorld) return;
+
+        pickup.OnEnteredExtractionZone();
+        _droppedEvidenceInZone.Add(pickup);
     }
 
     private void OnTriggerExit(Collider other)
@@ -75,12 +76,11 @@ public class ExtractionZone : MonoBehaviour
         foreach (var e in allEvidence)
             if (e.State == EvidencePickup.EvidenceState.Destroyed) return false;
 
-        // Count evidence physically in zone + evidence carried by players standing in zone
-        int evidenceAtZone = _droppedEvidenceInZone.Count;
-        foreach (var player in _playersInZone)
-            evidenceAtZone += player.Inventory.Items.Count;
+        // Items grabbed back out of the zone (or destroyed) no longer count.
+        // Beam-carried items must be RELEASED inside the zone to count, R.E.P.O.-style.
+        _droppedEvidenceInZone.RemoveWhere(p => p.State != EvidencePickup.EvidenceState.AtExtractionZone);
 
-        bool allEvidencePresent = evidenceAtZone >= allEvidence.Count;
+        bool allEvidencePresent = _droppedEvidenceInZone.Count >= allEvidence.Count;
 
         // Majority = strictly more than half of alive players
         int aliveCount       = MissionManager.Instance.AlivePlayerCount;
