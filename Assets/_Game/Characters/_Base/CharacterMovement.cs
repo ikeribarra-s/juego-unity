@@ -163,6 +163,8 @@ public class CharacterMovement : MonoBehaviour
 
     protected virtual void OnJump()
     {
+        // Space doubles as the skill-check hit while repairing a generator — swallow the jump then.
+        if (SkillCheckController.Active) return;
         if (_controller.isGrounded)
             _jumpRequested = true;
     }

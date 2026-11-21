@@ -22,6 +22,8 @@ public class CharacterBase : MonoBehaviour
     public InventorySystem     Inventory   { get; private set; }
     public InteractionSystem   Interaction { get; private set; }
     public PhysicsGrabber      Grabber     { get; private set; }
+    public CharacterVitals     Vitals      { get; private set; }
+    public TorchCarrier        TorchCarrier { get; private set; }
 
     protected virtual void Awake()
     {
@@ -29,12 +31,18 @@ public class CharacterBase : MonoBehaviour
         Movement    = GetComponent<CharacterMovement>();
         Inventory   = GetComponent<InventorySystem>();
         Interaction = GetComponent<InteractionSystem>();
-        Grabber     = GetComponent<PhysicsGrabber>();
+        Grabber      = GetComponent<PhysicsGrabber>();
+        Vitals       = GetComponent<CharacterVitals>();
+        TorchCarrier = GetComponent<TorchCarrier>();
 
         // Auto-add so existing character prefabs work without editor setup;
         // add it manually in the Inspector if you want to tune its values.
         if (Grabber == null)
             Grabber = gameObject.AddComponent<PhysicsGrabber>();
+        if (Vitals == null)
+            Vitals = gameObject.AddComponent<CharacterVitals>();
+        if (TorchCarrier == null)
+            TorchCarrier = gameObject.AddComponent<TorchCarrier>();
 
         if (Movement == null)
             Debug.LogError($"[CharacterBase] No CharacterMovement on '{name}'. Set a Definition and let the editor sync the component.", this);

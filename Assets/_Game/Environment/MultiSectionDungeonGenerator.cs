@@ -93,7 +93,10 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     [SerializeField] private string WallLayerName = "Walls";
 
     [Header("Decoration Density")]
-    [SerializeField, Range(0f, 1f)] private float TorchDensity = 0.22f;
+    [SerializeField, Range(0f, 1f)] private float TorchDensity = 0.1f;
+    [Tooltip("Optional wall-torch prefab (brings its own flame + light). If set, it replaces the primitive " +
+             "torch and no extra SpawnLight is added. Give it a Torch component + collider on the root to be pickup-able.")]
+    [SerializeField] private GameObject TorchPrefab;
     [SerializeField, Range(0f, 1f)] private float GothicDetailDensity = 0.16f;
     [SerializeField, Range(0f, 1f)] private float GraveDensity = 0.18f;
     [SerializeField, Range(0f, 1f)] private float HellPillarDensity = 0.5f;
@@ -180,6 +183,24 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     [Tooltip("Run a lightmap bake at the end of Generate. Very slow on a big map; flickering torches stay realtime regardless.")]
     [SerializeField] private bool BakeLightingOnGenerate = false;
 
+    [Header("Generators (machinery)")]
+    [Tooltip("How many repairable generators to place — each gets its own dedicated room carved into empty space.")]
+    [SerializeField] private int GeneratorCount = 3;
+    [Tooltip("Optional prefab (must have a PowerGenerator + a Collider on its root). If empty, a primitive generator is built from boxes.")]
+    [SerializeField] private GameObject GeneratorPrefab;
+    [Tooltip("Tiles around each generator kept clear of décor so it isn't buried in furniture.")]
+    [SerializeField] private int GeneratorClearance = 1;
+    [Tooltip("Footprint (tiles) of each generator's dedicated room.")]
+    [SerializeField] private Vector2Int GeneratorRoomSize = new Vector2Int(8, 8);
+    [Tooltip("Empty buffer (tiles) required around a generator room so it never touches another area — keeps it a separate chamber.")]
+    [SerializeField] private int GeneratorRoomGap = 2;
+    [Tooltip("Minimum centre-to-centre tile distance between two generator rooms, so they spread across the map.")]
+    [SerializeField] private int GeneratorRoomSpacing = 60;
+    [Tooltip("Material for the primitive generator body. If empty a default metal is used. Assign Machinery.mat here.")]
+    [SerializeField] private Material GeneratorMaterial;
+    [Tooltip("Degrees added to every generator's facing. The machine faces its room's entrance; use this to correct a model whose 'front' isn't +Z.")]
+    [SerializeField] private float GeneratorYawOffset = 0f;
+
     [Header("Debug")]
     [SerializeField] private bool DebugDrawSectionBounds = true;
 
@@ -195,7 +216,10 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private readonly List<SectionInfo> _sections = new();
 
-    private Transform _root, _floorsRoot, _wallsRoot, _ceilingsRoot, _detailsRoot, _decorRoot, _lightsRoot;
+    private struct GeneratorRoom { public RectInt Rect; public float Yaw; }   // chamber + facing toward its entrance
+    private readonly List<GeneratorRoom> _generatorRooms = new();
+
+    private Transform _root, _floorsRoot, _wallsRoot, _ceilingsRoot, _detailsRoot, _decorRoot, _lightsRoot, _generatorsRoot;
     private int _spawnedLights;
     private int _spawnedHeroShadows;
 
@@ -245,8 +269,12 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         }
 
         ConnectSections();
+        CarveGeneratorRooms();   // dedicated machine chambers + their connecting corridors
         PruneFloorIslands();
         AssignSectionOwnership();
+
+        // Machinery: place a generator in each carved room (reserves its tiles before décor).
+        SpawnGenerators();
 
         // Geometry from the grid.
         BuildFloors();
@@ -284,7 +312,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             DestroyImmediateSafe(existing.gameObject);
 
         _root = _floorsRoot = _wallsRoot = _ceilingsRoot = null;
-        _detailsRoot = _decorRoot = _lightsRoot = null;
+        _detailsRoot = _decorRoot = _lightsRoot = _generatorsRoot = null;
         _mGothicFloor = _mGothicWall = _mGothicCeiling = null;
         _mGraveGround = _mGraveStone = null;
         _mHellFloor = _mHellPillar = _mLava = null;
@@ -292,6 +320,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         _mCavernFloor = _mCavernRock = _mCrystal = null;
         _mWood = _mMetal = _mFlame = null;
         _sections.Clear();
+        _generatorRooms.Clear();
         _builtMeshes.Clear();
     }
 
@@ -914,7 +943,8 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     private void TryCeiling(bool enabled, string name, SectionType type)
     {
         if (!enabled) return;
-        BuildHorizontalMesh(_ceilingsRoot, name, type, WallHeightFor(type), false, CeilingMatFor(type), false);
+        BuildHorizontalMesh(_ceilingsRoot, name, type, WallHeightFor(type), false, CeilingMatFor(type), false,
+                            UnityEngine.Rendering.ShadowCastingMode.TwoSided);
     }
 
     private bool CeilingEnabledFor(SectionType type) => type switch
@@ -976,7 +1006,8 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         MarkStatic(go);
     }
 
-    private void BuildHorizontalMesh(Transform parent, string name, SectionType type, float height, bool faceUp, Material mat, bool collider)
+    private void BuildHorizontalMesh(Transform parent, string name, SectionType type, float height, bool faceUp, Material mat, bool collider,
+                                     UnityEngine.Rendering.ShadowCastingMode shadowMode = UnityEngine.Rendering.ShadowCastingMode.On)
     {
         var verts = new List<Vector3>();
         var tris = new List<int>();
@@ -1005,7 +1036,12 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
-        go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+        var mr = go.AddComponent<MeshRenderer>();
+        mr.sharedMaterial = mat;
+        // Ceilings are single-sided quads wound to face DOWN; URP's shadow pass back-face-culls, so a
+        // downward roof casts no shadow against an overhead light and the moon shines straight through
+        // ("looks like the roof isn't there"). TwoSided makes the roof occlude overhead light properly.
+        mr.shadowCastingMode = shadowMode;
         if (collider) go.AddComponent<MeshCollider>().sharedMesh = mesh;
         MarkStatic(go);
     }
@@ -1244,6 +1280,17 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void BuildTorch(WallEdge e)
     {
+        // Prefab path: drop the authored torch (its own flame + light), no SpawnLight. Not marked
+        // static — these can be picked up and carried at runtime.
+        if (TorchPrefab != null)
+        {
+            GameObject t = InstantiatePrefab(TorchPrefab);
+            t.transform.SetParent(_detailsRoot, false);
+            t.transform.localPosition = e.Surface + Vector3.up * 2.4f;
+            t.transform.localRotation = WallFacing(e);
+            return;
+        }
+
         var root = new GameObject("Torch");
         root.transform.SetParent(_detailsRoot, false);
         root.transform.localPosition = e.Surface + Vector3.up * 2.4f;
@@ -1783,6 +1830,231 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     }
 
     private Vector3 TileLocal(int x, int y) => new(x + 0.5f, 0f, y + 0.5f);
+
+    // ---------------------------------------------------------------------
+    // Generator rooms — each repairable machine gets its OWN small chamber,
+    // carved into empty space away from the themed sections and stitched back
+    // in with a single corridor. Because the tiles fall outside every section
+    // they own no SectionType, so they read as clean Transition-walled rooms.
+    // Runs after ConnectSections (so a section exists to connect to) and before
+    // PruneFloorIslands (so the connecting corridor saves the room from the cull).
+    // ---------------------------------------------------------------------
+
+    private void CarveGeneratorRooms()
+    {
+        _generatorRooms.Clear();
+        if (GeneratorCount <= 0 || _sections.Count == 0) return;
+
+        for (int n = 0; n < GeneratorCount; n++)
+        {
+            if (!TryFindEmptyRoom(out RectInt room))
+            {
+                Debug.LogWarning($"[MultiSectionDungeon] Carved only {n}/{GeneratorCount} generator rooms — no empty space left.");
+                break;
+            }
+            float yaw = CarveRoomAndConnect(room);
+            _generatorRooms.Add(new GeneratorRoom { Rect = room, Yaw = yaw });
+        }
+    }
+
+    // Find a rectangle whose footprint (plus a gap ring) is entirely non-floor, so the room sits
+    // apart from everything else. Relaxes the gap, then the size, if the map is tightly packed.
+    private bool TryFindEmptyRoom(out RectInt room)
+    {
+        int[,] sum = BuildFloorPrefixSum();   // rebuilt each call → reflects rooms carved so far
+        int w = Mathf.Max(5, GeneratorRoomSize.x);
+        int h = Mathf.Max(5, GeneratorRoomSize.y);
+        int gap = Mathf.Max(0, GeneratorRoomGap);
+
+        (int w, int h, int gap)[] steps =
+        {
+            (w, h, gap), (w, h, 0), (Mathf.Max(5, w - 2), Mathf.Max(5, h - 2), 0),
+        };
+
+        foreach (var step in steps)
+        {
+            List<RectInt> spots = CollectEmptySpots(sum, step.w, step.h, step.gap);
+            spots.RemoveAll(TooCloseToExistingRoom);
+            if (spots.Count > 0)
+            {
+                room = spots[_rng.Next(0, spots.Count)];
+                return true;
+            }
+        }
+
+        room = default;
+        return false;
+    }
+
+    private bool TooCloseToExistingRoom(RectInt candidate)
+    {
+        Vector2Int c = RectCenter(candidate);
+        foreach (GeneratorRoom r in _generatorRooms)
+        {
+            Vector2Int o = RectCenter(r.Rect);
+            if (Mathf.Abs(c.x - o.x) + Mathf.Abs(c.y - o.y) < GeneratorRoomSpacing) return true;
+        }
+        return false;
+    }
+
+    private List<RectInt> CollectEmptySpots(int[,] sum, int w, int h, int gap)
+    {
+        var spots = new List<RectInt>();
+        int xMax = _width - SectionMargin - w;
+        int yMax = _height - SectionMargin - h;
+        for (int x = SectionMargin; x <= xMax; x++)
+            for (int y = SectionMargin; y <= yMax; y++)
+            {
+                var outer = new RectInt(x - gap, y - gap, w + 2 * gap, h + 2 * gap);
+                if (RectFloorCount(sum, outer) == 0)
+                    spots.Add(new RectInt(x, y, w, h));
+            }
+        return spots;
+    }
+
+    // Inclusive prefix sum of the floor grid for O(1) "how many floor tiles in this rect?" queries.
+    private int[,] BuildFloorPrefixSum()
+    {
+        var sum = new int[_width + 1, _height + 1];
+        for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
+                sum[x + 1, y + 1] = sum[x, y + 1] + sum[x + 1, y] - sum[x, y] + (_floor[x, y] ? 1 : 0);
+        return sum;
+    }
+
+    private int RectFloorCount(int[,] sum, RectInt r)
+    {
+        int x0 = Mathf.Clamp(r.xMin, 0, _width),  y0 = Mathf.Clamp(r.yMin, 0, _height);
+        int x1 = Mathf.Clamp(r.xMax, 0, _width),  y1 = Mathf.Clamp(r.yMax, 0, _height);
+        return sum[x1, y1] - sum[x0, y1] - sum[x1, y0] + sum[x0, y0];
+    }
+
+    // Carves the room + its corridor and returns the yaw that makes the machine's +Z face the
+    // entrance (toward the section it connects to), snapped to the nearest cardinal direction.
+    private float CarveRoomAndConnect(RectInt room)
+    {
+        for (int x = room.xMin; x < room.xMax; x++)
+            for (int y = room.yMin; y < room.yMax; y++)
+                SetFloor(x, y);
+
+        Vector2Int from = RectCenter(room);
+        Vector2Int to   = NearestSectionCenter(from);
+        CarveCorridorAStar(from, to, EncapsulateBounds(from, to, CorridorWidth + 2), reserve: true);
+
+        int dx = to.x - from.x, dz = to.y - from.y;
+        if (Mathf.Abs(dx) >= Mathf.Abs(dz)) return dx >= 0 ? 90f : 270f;   // +X / -X
+        return dz >= 0 ? 0f : 180f;                                         // +Z / -Z
+    }
+
+    private Vector2Int NearestSectionCenter(Vector2Int from)
+    {
+        Vector2Int best = from;
+        int bestD = int.MaxValue;
+        foreach (SectionInfo s in _sections)
+        {
+            Vector2Int c = s.Center;
+            int d = (c.x - from.x) * (c.x - from.x) + (c.y - from.y) * (c.y - from.y);
+            if (d < bestD) { bestD = d; best = c; }
+        }
+        return best;
+    }
+
+    private RectInt EncapsulateBounds(Vector2Int a, Vector2Int b, int pad)
+    {
+        int x0 = Mathf.Clamp(Mathf.Min(a.x, b.x) - pad, 0, _width - 1);
+        int y0 = Mathf.Clamp(Mathf.Min(a.y, b.y) - pad, 0, _height - 1);
+        int x1 = Mathf.Clamp(Mathf.Max(a.x, b.x) + pad, 1, _width);
+        int y1 = Mathf.Clamp(Mathf.Max(a.y, b.y) + pad, 1, _height);
+        return new RectInt(x0, y0, x1 - x0, y1 - y0);
+    }
+
+    // ---------------------------------------------------------------------
+    // Generators (machinery) — one repairable machine per carved room.
+    // ---------------------------------------------------------------------
+
+    private void SpawnGenerators()
+    {
+        if (_generatorRooms.Count == 0) return;
+
+        _generatorsRoot = NewChild("Generators");
+        foreach (GeneratorRoom gr in _generatorRooms)
+        {
+            Vector2Int tile = RectCenter(gr.Rect);
+            ReserveArea(tile, GeneratorClearance);
+            PlaceGenerator(tile, gr.Yaw);
+        }
+    }
+
+    private void ReserveArea(Vector2Int center, int clearance)
+    {
+        for (int dy = -clearance; dy <= clearance; dy++)
+            for (int dx = -clearance; dx <= clearance; dx++)
+                if (InBounds(center.x + dx, center.y + dy)) _reserved[center.x + dx, center.y + dy] = true;
+    }
+
+    private void PlaceGenerator(Vector2Int tile, float yaw)
+    {
+        GameObject go = GeneratorPrefab != null ? InstantiatePrefab(GeneratorPrefab) : BuildPrimitiveGenerator();
+        go.transform.SetParent(_generatorsRoot, false);
+        go.transform.localPosition = TileLocal(tile.x, tile.y);
+        go.transform.localRotation = Quaternion.Euler(0f, yaw + GeneratorYawOffset, 0f);
+
+        if (!go.TryGetComponent<PowerGenerator>(out _))
+            go.AddComponent<PowerGenerator>();   // safety net if a prefab forgot the component
+    }
+
+    // Editor/runtime-safe prefab instantiation, keeping the prefab link in-editor. Used for the
+    // generator machines and the wall-torch prefab.
+    private GameObject InstantiatePrefab(GameObject prefab)
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            // Keeps the prefab link when GeneratorPrefab is a real project asset. Returns null if the
+            // field points at something that isn't a prefab asset (e.g. a Hierarchy/scene object was
+            // dragged in) — fall back to a plain Instantiate so generation never NREs.
+            if (PrefabUtility.InstantiatePrefab(prefab) is GameObject linked) return linked;
+        }
+#endif
+        return Instantiate(prefab);
+    }
+
+    // Primitive fallback machine: a chunky box body with an emissive "Indicator" status panel that
+    // PowerGenerator recolours by state. Solid BoxCollider on the root so the interaction raycast
+    // hits a single collider carrying the PowerGenerator component.
+    private GameObject BuildPrimitiveGenerator()
+    {
+        var root = new GameObject("PowerGenerator");
+        Material body = GeneratorMaterial != null ? GeneratorMaterial : MetalMat();
+
+        CreatePart(PrimitiveType.Cube,     root.transform, "Base",     new Vector3(0f, 0.15f, 0f),    Vector3.zero, new Vector3(1.3f, 0.3f, 1.0f),  body);
+        CreatePart(PrimitiveType.Cube,     root.transform, "Body",     new Vector3(0f, 0.8f, 0f),     Vector3.zero, new Vector3(1.0f, 1.0f, 0.8f),  body);
+        CreatePart(PrimitiveType.Cylinder, root.transform, "Exhaust",  new Vector3(0.34f, 1.5f, -0.22f), Vector3.zero, new Vector3(0.18f, 0.5f, 0.18f), body);
+        CreatePart(PrimitiveType.Cube,     root.transform, "Indicator", new Vector3(0f, 1.12f, 0.42f), Vector3.zero, new Vector3(0.24f, 0.24f, 0.08f), MetalMat());
+
+        // Real status light so the indicator actually casts colour into the room. PowerGenerator
+        // auto-finds it (GetComponentInChildren<Light>) and recolours/toggles it per state.
+        var lightGo = new GameObject("StatusLight");
+        lightGo.transform.SetParent(root.transform, false);
+        lightGo.transform.localPosition = new Vector3(0f, 1.12f, 0.5f);
+        Light statusLight = lightGo.AddComponent<Light>();
+        statusLight.type      = LightType.Point;
+        statusLight.range     = 4f;
+        statusLight.intensity = 2f;
+        statusLight.color     = new Color(0.9f, 0.12f, 0.08f);
+        statusLight.shadows   = LightShadows.None;
+
+        var col = root.AddComponent<BoxCollider>();
+        col.center = new Vector3(0f, 0.7f, 0f);
+        col.size   = new Vector3(1.35f, 1.4f, 1.05f);
+
+        // Look-at border (built lazily on first highlight, so editor generation stays cheap).
+        root.AddComponent<InteractableOutline>();
+
+        // Last: Indicator + StatusLight children already exist for PowerGenerator.Awake to find.
+        root.AddComponent<PowerGenerator>();
+        return root;
+    }
 
     private void EnsureMaterials()
     {

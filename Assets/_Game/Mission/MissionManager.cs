@@ -74,7 +74,10 @@ public class MissionManager : MonoBehaviour
         _allEvidence.Add(item);
     }
 
-    public void TriggerWin() => EndMission(won: true);
+    public void TriggerWin()  => EndMission(won: true);
+
+    /// <summary>End the run as a loss (e.g. a player was killed by the creature).</summary>
+    public void TriggerLoss() => EndMission(won: false);
 
     private void EndMission(bool won)
     {

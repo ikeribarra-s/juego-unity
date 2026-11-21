@@ -26,9 +26,10 @@ public class DungeonLightingController : MonoBehaviour
     [Header("Ambient")]
     [SerializeField] private bool _overrideAmbient = true;
     [SerializeField] private AmbientStyle _ambientStyle = AmbientStyle.FlatColor;
-    [Tooltip("Master multiplier for the ambient colors below. Raise this if you can't see anything.")]
-    [SerializeField, Range(0f, 4f)] private float _ambientIntensity = 1.4f;
-    [SerializeField] private Color _ambientColor = new(0.30f, 0.33f, 0.42f);
+    [Tooltip("Master multiplier for the ambient colors below. Keep LOW for an enclosed castle (torches " +
+             "do the lighting); raise it only if interiors are too dark to navigate.")]
+    [SerializeField, Range(0f, 4f)] private float _ambientIntensity = 0.55f;
+    [SerializeField] private Color _ambientColor = new(0.20f, 0.22f, 0.28f);
 
     [Header("…gradient ambient (when style = Gradient)")]
     [SerializeField] private Color _ambientSky = new(0.34f, 0.40f, 0.55f);
@@ -47,12 +48,15 @@ public class DungeonLightingController : MonoBehaviour
     [SerializeField] private float _fogLinearEnd = 140f;
 
     [Header("Moonlight (directional)")]
+    [Tooltip("A dim sky light. Indoors it's occluded by the roof (ceilings cast two-sided shadows); " +
+             "keep it dim so it mainly tints the open-sky Graveyard rather than flooding interiors.")]
     [SerializeField] private bool _moonlight = true;
     [Tooltip("Optional: assign your own directional light. Left empty, a managed one is created as a child.")]
     [SerializeField] private Light _moonLight;
-    [SerializeField] private Color _moonColor = new(0.5f, 0.6f, 0.9f);
-    [SerializeField, Range(0f, 3f)] private float _moonIntensity = 0.8f;
+    [SerializeField] private Color _moonColor = new(0.45f, 0.55f, 0.85f);
+    [SerializeField, Range(0f, 3f)] private float _moonIntensity = 0.25f;
     [SerializeField] private Vector3 _moonEuler = new(55f, 35f, 0f);
+    [Tooltip("Must stay ON for the roof to keep the moon out of interiors.")]
     [SerializeField] private bool _moonShadows = true;
 
     private const string MoonName = "Moon (managed)";
@@ -75,6 +79,33 @@ public class DungeonLightingController : MonoBehaviour
         // ExecuteAlways: in edit mode keep settings live and recreate the moon if it was deleted.
         if (Application.isPlaying) return;
         if (_moonlight && _moonLight == null) EnsureMoon();
+        Apply();
+    }
+
+    // One-click enclosed-castle-at-night look: dark torch-driven interior, faint cool moon for the
+    // open Graveyard, close interior fog. Use this on an existing scene instance (changing the C#
+    // field defaults does NOT touch values already serialized in the scene). Re-bake/regenerate isn't
+    // needed — these are RenderSettings/light tweaks applied live.
+    [ContextMenu("Preset: Castle Interior (dark, torch-lit)")]
+    public void PresetCastleInterior()
+    {
+        _overrideAmbient  = true;
+        _ambientStyle     = AmbientStyle.FlatColor;
+        _ambientColor     = new Color(0.20f, 0.22f, 0.28f);
+        _ambientIntensity = 0.55f;
+
+        _overrideFog = true;
+        _fogEnabled  = true;
+        _fogMode     = FogMode.ExponentialSquared;
+        _fogColor    = new Color(0.03f, 0.03f, 0.045f);
+        _fogDensity  = 0.02f;
+
+        _moonlight   = true;
+        _moonColor   = new Color(0.45f, 0.55f, 0.85f);
+        _moonIntensity = 0.25f;
+        _moonShadows = true;
+
+        EnsureMoon();
         Apply();
     }
 

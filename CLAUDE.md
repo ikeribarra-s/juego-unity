@@ -46,6 +46,8 @@ GameObject
  ├── InteractionSystem
  ├── PhysicsGrabber         (auto-added at runtime by CharacterBase.Awake if missing)
  │    └── GrabBeam (child GO with LineRenderer, created at runtime)
+ ├── CharacterVitals        (auto-added by CharacterBase.Awake; IKillable death state)
+ ├── TorchCarrier           (auto-added by CharacterBase.Awake; carries one Torch, held front-left)
  ├── CharacterAudio
  └── CameraRoot (child Transform, Y=1.6)
      └── Camera (child)
@@ -103,8 +105,14 @@ GameObject
   - **Furniture colliders**: `AddBoundsCollider` adds one `BoxCollider` sized to combined local mesh bounds (cheap; only for solid furniture/clutter, not fixtures), gated by `_generatePropColliders`. Prop instantiation uses `PrefabUtility.InstantiatePrefab` in-editor (keeps prefab/model link) and `Instantiate` at runtime. All placement is deterministic from `Seed`. `_debugDrawRooms` draws color-coded room-type gizmos.
   - Tunables: `Seed` (0=random), `MapWidth/Height=80`, `MinRoomSize=8`, `MaxRoomSize=20`, `MaxDepth=5`, `CorridorWidth=3`, `WallHeight=3`, `WallThickness=0.5`, density sliders (`_featureDensity`/`_clutterDensity`/`_cobwebDensity`/`_lightDensity`/`_maxLightsPerRoom`/`_rareHorrorChancePerRoom`), optional `FloorMaterial`/`WallMaterial`.
 
+### Enemies — `Assets/_Game/Enemies/`
+- **`PatrolEnemy.cs`** — RequireComponent(NavMeshAgent). Roaming creature, two states: **Patrol** (wander to random reachable points via `NavMesh.SamplePosition`, pause `_idleAtPoint` at each) and **Chase** (on seeing a living player). Senses: within `_sightRange`, inside `_fieldOfView` cone, clear `Physics.Raycast` past `_sightBlockers` (auto-set to the `Walls` layer). Chases for `_loseSightTime` after losing LOS; `Kill`s the target via `CharacterBase.Vitals` (`IKillable`) within `_killRange`. Movement is 100% the `NavMeshAgent` — needs a baked NavMesh.
+- **`EnemySpawner.cs`** — Bakes a NavMesh at runtime over the procedural dungeon (`NavMeshSurface`, `PhysicsColliders`, auto-created if unassigned), then spawns `_enemyCount` creatures at random NavMesh points ≥ `_minDistanceFromPlayer` away. Uses `_enemyPrefab` or builds a primitive stand-in (dark capsule + glowing eyes + agent + collider). Runs on a short `Start` delay; `SpawnWave()` is public for runtime regen. Requires `com.unity.ai.navigation` (installed).
+
 ### UI — `Assets/_Game/UI/`
 - **`InventoryHUD.cs`** — IMGUI inventory at bottom-center. Slot boxes: filled (dark) vs empty (dimmer), item name + value, count label.
+- **`SkillCheckController.cs`** — DBD-style repair skill-check overlay + repair progress bar (see Environment CLAUDE §7). Singleton; assign the player's `InputReader`.
+- **`InteractionPromptUI.cs`** — gothic-font on-screen interaction prompt; reads `InteractionSystem.CurrentPrompt`.
 
 ### Rendering — `Assets/_Game/Rendering/`
 - **`HorrorPostFX.cs`** — Creates a global URP Volume at runtime with FilmGrain, Vignette, ColorAdjustments, Bloom, ChromaticAberration. Public `PulseGrain(intensity, duration)` coroutine for jump-scare spikes. `[Range(1,32)] _pixelSize` drives `PixelateFeature.Instance.BlockSize`; `OnValidate` applies changes live in the Inspector. Public `PixelSize` property for runtime changes.
@@ -112,6 +120,7 @@ GameObject
 - **`Pixelate.shader`** — `Hidden/Pixelate`. Fullscreen blit shader using `Blit.hlsl`. Quantizes UV to block-center: `(floor(uv × blockGrid) + 0.5) / blockGrid`. Samples with `sampler_PointClamp` for sharp edges. `_BlockSize` xy = `(screenW / blockSize, screenH / blockSize)`.
 - **`LightFlicker.cs`** — Collects all `Light` children in Awake. Drives intensity via Fractal Brownian Motion (FBM) over 1-D Perlin noise each Update. Tunables: `_flickerIntensity`, `_flickerSpeed`, `_octaves`, `_lacunarity`, `_gain`. Each light gets a random `noiseOffset` so they desynchronise naturally.
 - **`EvidenceGlow.cs`** — RequireComponent(Renderer). Finds nearest `CharacterBase` via `FindAnyObjectByType`. SmoothStep distance falloff, Lerp fade, sin-wave pulse. Writes `_EmissionColor` and `_EmissionIntensity` per-instance via `MaterialPropertyBlock`. Skips if pickup state is Destroyed. Place on the **mesh child** of an evidence GameObject, not the root.
+- **`Flipbook.shader`** (`Fluffterror/Flipbook`) + **`FlipbookAnimator.cs`** + **`Billboard.cs`** — animated sprite-sheet ("gif on a card") for torch fire etc. Unlit, HDR-tinted (blooms), `Cull Off`, blend chosen in the material (**additive** for black-bg fire, **alpha** for transparent-bg). Shader samples a `_Columns`×`_Rows` grid by `_Frame`; `FlipbookAnimator` steps `_Frame` at `_fps` via `MaterialPropertyBlock` (shared material, per-instance frame + random start so torches desync). `Billboard` faces the camera (`YAxisOnly` keeps a flame upright). **Torch prefab** = root + flame Quad (Flipbook material + `FlipbookAnimator` + `Billboard`) + point `Light` child (+ existing `LightFlicker`). Unity can't play a `.gif` — convert to a sprite-sheet PNG first (e.g. `ffmpeg -i fire.gif -vf "scale=128:128,tile=4x4" sheet.png`).
 
 ### Shaders — `Assets/Materials/Shaders/`
 - **`BlinnPhong_Textured.shader`** — URP HLSL. Inputs: `_k_d_tex` (diffuse), `_k_s_tex` (specular/roughness), `_N_tex` (normal), `_n` (shininess), `[HDR] _EmissionColor`, `_EmissionIntensity`. Roughness conversion: `pow(IsRoughness + (-2*IsRoughness+1)*k_s, 2)`. Three passes: ForwardLit (`Blend One Zero`), ShadowCaster, DepthOnly. LIGHT_LOOP_BEGIN/END for Forward+ additional lights. SRP Batcher compatible (identical CBUFFER across all passes).
@@ -167,7 +176,7 @@ GameObject
 |---|---|---|
 | 0 — Foundation | ✅ Done | Folders, Input, Base Character Controller |
 | 1 — Core Loop | 🔄 In progress | Evidence, Inventory, Interaction, Trotín, Jump/Crouch, Camera FX, Shaders, Audio base, Dynamic reverb |
-| 1.5 — Creature | ⬜ Next | NavMesh patrol + chase |
+| 1.5 — Creature | 🔄 In progress | NavMesh patrol + chase (`Assets/_Game/Enemies/`) |
 | 1.6 — Mission Polish | ⬜ | Timer display, score screen |
 | 2 — Ability Framework | ⬜ | AbilitySystem, Bobi, Lumi |
 | 3 — Remaining Characters | ⬜ | Pompón, Fotchi, Sabiucho, Coso, Mochín |
