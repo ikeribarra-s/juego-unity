@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.unity.ai.assistant": "2.9.0-pre.2",
+    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#aa5fc638d623f56178d50329d9ad8c541a57fe66",
     "com.unity.ai.navigation": "2.0.11",
     "com.unity.animation.rigging": "1.4.1",
     "com.unity.collab-proxy": "2.11.4",
