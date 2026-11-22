@@ -146656,6 +146656,7 @@ GameObject:
   - component: {fileID: 559394118}
   - component: {fileID: 559394117}
   - component: {fileID: 559394116}
+  - component: {fileID: 559394119}
   m_Layer: 0
   m_Name: Extraction
   m_TagString: Untagged
@@ -146712,6 +146713,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559394119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559394115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd38f1604d0d1b2489e870f32099b281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExtractionBeacon
+  _light: {fileID: 0}
+  _lightHeight: 2.5
+  _lightRange: 9
+  _lockedColor: {r: 0.75, g: 0.08, b: 0.05, a: 1}
+  _lockedIntensity: 0.6
+  _unlockedColor: {r: 0.55, g: 1, b: 0.6, a: 1}
+  _unlockedIntensity: 3
+  _flashIntensity: 9
+  _flashDecay: 1.2
+  _pulseSpeed: 0.6
+  _pulseDepth: 0.35
+  _blendSpeed: 2
+  _unlockSound: {fileID: 0}
+  _grainPulse: 1
+  _grainPulseDuration: 1.5
 --- !u!1 &560048499
 GameObject:
   m_ObjectHideFlags: 0
@@ -223471,6 +223499,7 @@ GameObject:
   - component: {fileID: 824483892}
   - component: {fileID: 824483894}
   - component: {fileID: 824483895}
+  - component: {fileID: 824483896}
   m_Layer: 0
   m_Name: CharacterHUD
   m_TagString: Untagged
@@ -223554,6 +223583,33 @@ MonoBehaviour:
   _barHeight: 16
   _barFill: {r: 0.95, g: 0.75, b: 0.15, a: 1}
   _barBack: {r: 0, g: 0, b: 0, a: 0.65}
+--- !u!114 &824483896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824483891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5bf2ebff6dc8e469a10d62fa62b4f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MissionMessageUI
+  _gothicFont: {fileID: 0}
+  _fontSize: 44
+  _subFontSize: 24
+  _color: {r: 0.93, g: 0.88, b: 0.78, a: 1}
+  _unlockColor: {r: 0.6, g: 1, b: 0.65, a: 1}
+  _lossColor: {r: 0.85, g: 0.12, b: 0.08, a: 1}
+  _verticalAnchor: 0.28
+  _fadeIn: 0.4
+  _hold: 2.5
+  _fadeOut: 1
+  _generatorFormat: Generator {0}/{1} running
+  _unlockTitle: The way out is open
+  _unlockSub: Bring the evidence to the extraction point
+  _winTitle: You made it out
+  _lossTitle: You didn't make it
 --- !u!1 &824929707
 GameObject:
   m_ObjectHideFlags: 0
