@@ -19,7 +19,9 @@ public class InventoryHUD : MonoBehaviour
         InitStyles();
 
         var inv      = _character.Inventory;
-        int maxSlots = inv.MaxSlots;
+        var torch    = _character.TorchCarrier != null ? _character.TorchCarrier.Carried : null;
+        int maxSlots = Mathf.Max(inv.MaxSlots, inv.Items.Count + (torch != null ? 1 : 0));
+        int used     = inv.Items.Count + (torch != null ? 1 : 0);
 
         float totalWidth = maxSlots * SlotSize + (maxSlots - 1) * SlotPadding;
         float startX     = (Screen.width - totalWidth) * 0.5f;
@@ -30,9 +32,19 @@ public class InventoryHUD : MonoBehaviour
             float x = startX + i * (SlotSize + SlotPadding);
             var rect = new Rect(x, startY, SlotSize, SlotSize);
 
-            bool hasItem = i < inv.Items.Count;
+            bool hasItem  = i < inv.Items.Count;
+            bool isTorch  = !hasItem && torch != null && i == inv.Items.Count;
 
-            if (hasItem)
+            if (isTorch)
+            {
+                // The carried torch occupies the first free slot (it lives on TorchCarrier, not InventorySystem).
+                GUI.Box(rect, "", _slotStyle);
+                var nameRect = new Rect(rect.x + 4, rect.y + 4, rect.width - 8, rect.height - 24);
+                GUI.Label(nameRect, torch.DisplayName, _labelStyle);
+                var hintRect = new Rect(rect.x + 4, rect.yMax - 22, rect.width - 8, 18);
+                GUI.Label(hintRect, "G to throw", _labelStyle);
+            }
+            else if (hasItem)
             {
                 var item = inv.Items[i];
                 GUI.Box(rect, "", _slotStyle);
@@ -57,7 +69,7 @@ public class InventoryHUD : MonoBehaviour
 
         // Slot count label above the slots
         var countRect = new Rect(startX, startY - 22, totalWidth, 20);
-        GUI.Label(countRect, $"Inventory  {inv.Items.Count} / {maxSlots}", _labelStyle);
+        GUI.Label(countRect, $"Inventory  {used} / {maxSlots}", _labelStyle);
     }
 
     private void InitStyles()

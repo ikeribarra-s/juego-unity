@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "blender": {
+      "command": "uvx",
+      "args": [
+        "mcp-for-blender==2.3.1"
+      ]
+    },
+    "comfy": {
+      "command": "C:\\Users\\redux\\ComfyUI\\.venv\\Scripts\\comfy-mcp.exe",
+      "env": {
+        "COMFY_BIN": "C:\\Users\\redux\\ComfyUI\\.venv\\Scripts\\comfy.exe",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

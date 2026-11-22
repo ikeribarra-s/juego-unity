@@ -41,6 +41,8 @@ public class PhysicsGrabber : MonoBehaviour
 
     public EvidencePickup Held      => _held;
     public bool           IsHolding => _held != null;
+    /// <summary>Frame of the last release/throw — lets other DropItem listeners (TorchCarrier) skip that frame.</summary>
+    public int            LastReleaseFrame { get; private set; } = -1;
 
     public event Action<EvidencePickup> ItemGrabbed;
     public event Action<EvidencePickup> ItemReleased;
@@ -102,6 +104,7 @@ public class PhysicsGrabber : MonoBehaviour
         var rb   = _heldRb;
 
         rb.useGravity = _heldUsedGravity;
+        LastReleaseFrame = Time.frameCount;
         item.OnReleased();
         Clear();
 

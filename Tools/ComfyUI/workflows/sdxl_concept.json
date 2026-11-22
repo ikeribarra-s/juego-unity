@@ -1,0 +1,92 @@
+{
+ "1": {
+  "class_type": "CheckpointLoaderSimple",
+  "inputs": {
+   "ckpt_name": "sd_xl_base_1.0.safetensors"
+  }
+ },
+ "2": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Positive prompt"
+  },
+  "inputs": {
+   "clip": [
+    "1",
+    1
+   ],
+   "text": "Fluffterror style: cute round plush-toy creatures in a dark cold medieval dungeon, comedic horror, chunky readable silhouettes, low detail, desaturated blue-grey stone, warm amber torchlight as the only warm colour, soft pastel character colours, film grain, slightly crude hand-made feel, SUBJECT"
+  }
+ },
+ "3": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Negative prompt"
+  },
+  "inputs": {
+   "clip": [
+    "1",
+    1
+   ],
+   "text": "photo, photorealistic, realistic, 3d render, text, watermark, signature, logo, blurry, jpeg artifacts, deformed, extra limbs, gore, lowres"
+  }
+ },
+ "4": {
+  "class_type": "EmptyLatentImage",
+  "inputs": {
+   "width": 1344,
+   "height": 768,
+   "batch_size": 1
+  }
+ },
+ "5": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "positive": [
+    "2",
+    0
+   ],
+   "negative": [
+    "3",
+    0
+   ],
+   "latent_image": [
+    "4",
+    0
+   ],
+   "seed": 1234,
+   "steps": 28,
+   "cfg": 6.5,
+   "sampler_name": "dpmpp_2m",
+   "scheduler": "karras",
+   "denoise": 1.0
+  }
+ },
+ "6": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "5",
+    0
+   ],
+   "vae": [
+    "1",
+    2
+   ]
+  }
+ },
+ "7": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "6",
+    0
+   ],
+   "filename_prefix": "fluffterror/concept"
+  }
+ }
+}

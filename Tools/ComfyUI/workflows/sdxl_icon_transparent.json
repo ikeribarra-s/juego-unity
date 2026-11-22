@@ -1,0 +1,110 @@
+{
+ "1": {
+  "class_type": "CheckpointLoaderSimple",
+  "inputs": {
+   "ckpt_name": "sd_xl_base_1.0.safetensors"
+  }
+ },
+ "2": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Positive prompt"
+  },
+  "inputs": {
+   "clip": [
+    "1",
+    1
+   ],
+   "text": "a single SUBJECT, one object only, game inventory icon, centered, isolated on plain flat light grey background, thick dark outline, flat cel shading, chunky readable silhouette, slightly crude hand-drawn feel, muted cold palette with one warm accent, dark comedic horror game item art"
+  }
+ },
+ "3": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Negative prompt"
+  },
+  "inputs": {
+   "clip": [
+    "1",
+    1
+   ],
+   "text": "photo, photorealistic, realistic, 3d render, text, watermark, signature, logo, blurry, jpeg artifacts, deformed, extra limbs, gore, lowres, multiple objects, pattern, collage, sticker sheet, grid, many items, character, creature, animal, face"
+  }
+ },
+ "4": {
+  "class_type": "EmptyLatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "5": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "positive": [
+    "2",
+    0
+   ],
+   "negative": [
+    "3",
+    0
+   ],
+   "latent_image": [
+    "4",
+    0
+   ],
+   "seed": 1234,
+   "steps": 28,
+   "cfg": 6.5,
+   "sampler_name": "dpmpp_2m",
+   "scheduler": "karras",
+   "denoise": 1.0
+  }
+ },
+ "6": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "5",
+    0
+   ],
+   "vae": [
+    "1",
+    2
+   ]
+  }
+ },
+ "7": {
+  "class_type": "BiRefNetRMBG",
+  "inputs": {
+   "image": [
+    "6",
+    0
+   ],
+   "model": "BiRefNet_toonout",
+   "sensitivity": 1.0,
+   "mask_blur": 0,
+   "mask_offset": 0,
+   "invert_output": false,
+   "refine_foreground": true,
+   "unload_model": false,
+   "background": "Alpha",
+   "background_color": "#222222"
+  }
+ },
+ "8": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "7",
+    0
+   ],
+   "filename_prefix": "fluffterror/icon"
+  }
+ }
+}

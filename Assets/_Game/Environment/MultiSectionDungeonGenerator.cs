@@ -1320,7 +1320,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             GameObject t = InstantiatePrefab(TorchPrefab);
             t.transform.SetParent(_detailsRoot, false);
             t.transform.localPosition = e.Surface + Vector3.up * 2.4f;
-            t.transform.localRotation = WallFacing(e);
+            t.transform.localRotation = WallFacing(e) * TorchPrefab.transform.localRotation; // keep the prefab's upright (-90° X) correction
             return;
         }
 

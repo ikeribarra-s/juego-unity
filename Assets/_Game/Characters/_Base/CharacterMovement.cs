@@ -16,6 +16,7 @@ public class CharacterMovement : MonoBehaviour
     protected Vector2 _lookInput;
     protected bool    _isSprinting;
     protected bool    _isCrouching;
+    protected bool    _crouchHeld;      // raw input state — _isCrouching can lag it while a ceiling blocks standing
     protected bool    _jumpRequested;
     protected float   _cameraPitch;
     protected float   _verticalVelocity;
@@ -42,6 +43,7 @@ public class CharacterMovement : MonoBehaviour
 
     private float _standHeight;
     private float _standCameraY;
+    private readonly RaycastHit[] _standHits = new RaycastHit[8];
 
     protected virtual void Awake()
     {
@@ -106,6 +108,15 @@ public class CharacterMovement : MonoBehaviour
     protected virtual void ApplyCrouch()
     {
         if (_character.CameraRoot == null) return;
+
+        // Hold-to-crouch: once the key is released, stand as soon as there is headroom. Re-checked
+        // every frame so releasing under a low ceiling stands you up automatically on leaving it
+        // (previously it only checked once on release, so you stayed crouched until re-pressing → felt like a toggle).
+        if (_isCrouching && !_crouchHeld && CanStand())
+        {
+            _isCrouching = false;
+            if (_debugCrouch) Debug.Log("[Crouch] headroom clear — standing up", this);
+        }
 
         float targetHeight  = _isCrouching ? _crouchHeight : _standHeight;
         float targetCameraY = _isCrouching ? _crouchCameraY : _standCameraY;
@@ -174,20 +185,12 @@ public class CharacterMovement : MonoBehaviour
         if (_debugCrouch)
             Debug.Log($"[Crouch] event received: pressed={pressed}, wasCrouching={_isCrouching}", this);
 
+        _crouchHeld = pressed;
         if (pressed)
-        {
             _isCrouching = true;
-        }
-        else
-        {
-            bool canStand = CanStand();
-            if (_debugCrouch && !canStand)
-                Debug.Log("[Crouch] release blocked — ceiling above, staying crouched", this);
-            if (canStand) _isCrouching = false;
-        }
-
-        if (_debugCrouch)
-            Debug.Log($"[Crouch] state now: isCrouching={_isCrouching}", this);
+        else if (_debugCrouch && !CanStand())
+            Debug.Log("[Crouch] release blocked — ceiling above, staying crouched until clear", this);
+        // Standing up on release happens in ApplyCrouch (same frame if clear, later if blocked).
     }
 
     private bool CanStand()
@@ -198,13 +201,27 @@ public class CharacterMovement : MonoBehaviour
         float radius = _controller.radius;
         Vector3 top  = transform.position + Vector3.up * (_controller.height - radius);
         float gap    = _standHeight - _controller.height;
-        bool blocked = Physics.SphereCast(top, radius * 0.9f, Vector3.up, out RaycastHit hit, gap + 0.05f);
+        if (gap <= 0f) return true;
+
+        // Ignore triggers (extraction zone etc.) and the character's own colliders/held items,
+        // which would otherwise pin the player crouched.
+        int count = Physics.SphereCastNonAlloc(top, radius * 0.9f, Vector3.up, _standHits, gap + 0.05f,
+                                               ~0, QueryTriggerInteraction.Ignore);
+        Collider blocker = null;
+        for (int i = 0; i < count; i++)
+        {
+            Collider c = _standHits[i].collider;
+            if (c == null || c.transform.IsChildOf(transform)) continue;
+            blocker = c;
+            break;
+        }
+        bool blocked = blocker != null;
 
         if (_debugCrouch)
         {
             Debug.DrawRay(top, Vector3.up * (gap + 0.05f), blocked ? Color.red : Color.green, 1f);
             if (blocked)
-                Debug.Log($"[Crouch] CanStand=false, blocked by '{hit.collider.name}' at {hit.distance:F2}m", this);
+                Debug.Log($"[Crouch] CanStand=false, blocked by '{blocker.name}'", this);
         }
 
         return !blocked;

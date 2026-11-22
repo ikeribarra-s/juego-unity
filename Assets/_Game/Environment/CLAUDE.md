@@ -172,7 +172,7 @@ While hold-repairing, `PowerGenerator.DriveSkillChecks` (called from `OnHoldTick
 ## 10b. Torches (prefab + pickup)
 
 - **Reduced count + prefab:** `TorchDensity` default is now **0.1** (was 0.22). `BuildTorch` uses the optional **`TorchPrefab`** if assigned (instantiated via the editor/runtime-safe `InstantiatePrefab`), skipping the primitive flame + `SpawnLight` — the prefab brings its own flame + light. Prefab torches are **not** marked static (they can move).
-- **Pickup/carry:** `Assets/_Game/Environment/Torch.cs` (`IInteractable`, on the prefab root + a collider) routes `Interact` → `CharacterBase.TorchCarrier`. `Assets/_Game/Characters/_Base/TorchCarrier.cs` (auto-added by `CharacterBase`, like Grabber/Vitals) carries **one torch at a time**: parents it to the player camera at a front-left offset (`_holdLocalPosition`), disables its colliders while held. `Drop()` exists but no input is bound yet (static-carry only, per current scope).
+- **Pickup/carry:** `Assets/_Game/Environment/Torch.cs` (`IInteractable`, on the prefab root + a collider) routes `Interact` → `CharacterBase.TorchCarrier`. `Assets/_Game/Characters/_Base/TorchCarrier.cs` (auto-added by `CharacterBase`, like Grabber/Vitals) carries **one torch at a time**: parents it to the player camera at a front-left offset (`_holdLocalPosition`), disables its colliders while held, keeps it upright (yaw-only, `Torch.UprightRotation` = the FBX's -90° X). **G** throws it (`Torch.Launch` adds a Rigidbody) unless the grabber holds evidence; the HUD shows it as an inventory slot. `BuildTorch` composes `WallFacing(e) * TorchPrefab.transform.localRotation` so the prefab's upright correction survives.
 
 ## 11. Related files
 
