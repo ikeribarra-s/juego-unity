@@ -223470,6 +223470,7 @@ GameObject:
   - component: {fileID: 824483893}
   - component: {fileID: 824483892}
   - component: {fileID: 824483894}
+  - component: {fileID: 824483895}
   m_Layer: 0
   m_Name: CharacterHUD
   m_TagString: Untagged
@@ -223522,6 +223523,37 @@ MonoBehaviour:
   _fontSize: 28
   _color: {r: 0.93, g: 0.88, b: 0.78, a: 1}
   _verticalAnchor: 0.66
+--- !u!114 &824483895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824483891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58d85dd79e0e212499159f01e12c073a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillCheckController
+  _input: {fileID: 11400000, guid: 139da2548071c5445af3c62c0695a6a7, type: 2}
+  _sweepDuration: 1.5
+  _successArc: 55
+  _greatArc: 14
+  _minZoneAngle: 70
+  _maxZoneAngle: 300
+  _radius: 95
+  _ringThickness: 16
+  _screenOffset: {x: 0, y: 30}
+  _ringColor: {r: 0.12, g: 0.12, b: 0.14, a: 0.85}
+  _goodColor: {r: 0.92, g: 0.92, b: 0.95, a: 0.95}
+  _greatColor: {r: 0.95, g: 0.12, b: 0.1, a: 1}
+  _needleColor: {r: 1, g: 0.95, b: 0.6, a: 1}
+  _successFlash: {r: 0.3, g: 1, b: 0.4, a: 1}
+  _showRepairBar: 1
+  _barWidth: 240
+  _barHeight: 16
+  _barFill: {r: 0.95, g: 0.75, b: 0.15, a: 1}
+  _barBack: {r: 0, g: 0, b: 0, a: 0.65}
 --- !u!1 &824929707
 GameObject:
   m_ObjectHideFlags: 0
@@ -230285,6 +230317,7 @@ GameObject:
   - component: {fileID: 847111787}
   - component: {fileID: 847111789}
   - component: {fileID: 847111790}
+  - component: {fileID: 847111791}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -230453,6 +230486,24 @@ MonoBehaviour:
   _moonIntensity: 0.3
   _moonEuler: {x: 55, y: 35, z: 0}
   _moonShadows: 1
+--- !u!114 &847111791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847111786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ddc345575140f140af562c3fe7d2c40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  _enemyPrefab: {fileID: 0}
+  _enemyCount: 1
+  _minDistanceFromPlayer: 25
+  _spawnDelay: 0.25
+  _surface: {fileID: 0}
+  _bakeOnStart: 1
 --- !u!1 &847173615
 GameObject:
   m_ObjectHideFlags: 0
@@ -331681,6 +331732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MissionManager
   _config: {fileID: 11400000, guid: 587711743f332e348b3dd60f8add131b, type: 2}
   _playerCount: 1
+  _requireGenerators: 1
 --- !u!4 &1227109254
 Transform:
   m_ObjectHideFlags: 0
@@ -572726,6 +572778,10 @@ PrefabInstance:
     - target: {fileID: 287002696603071173, guid: cbb57edaefb3fe74aa45411ff513a8e6, type: 3}
       propertyPath: m_Name
       value: Generator
+      objectReference: {fileID: 0}
+    - target: {fileID: 287002696603071173, guid: cbb57edaefb3fe74aa45411ff513a8e6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7316162840747402747, guid: cbb57edaefb3fe74aa45411ff513a8e6, type: 3}
       propertyPath: m_LocalPosition.x

@@ -48,6 +48,9 @@ public class DebugHUD : MonoBehaviour
         {
             GUILayout.Label($"  Active: {_mission.IsActive}");
             GUILayout.Label($"  Time left: {_mission.TimeRemaining:F0}s");
+            if (_mission.RequiresGenerators)
+                GUILayout.Label($"  Generators:  {_mission.RunningGeneratorCount}/{_mission.TotalGeneratorCount} running" +
+                                (_mission.GeneratorsComplete ? "  (extraction unlocked)" : "  (extraction locked)"));
             GUILayout.Label($"  Evidence in scene: {_mission.AllEvidence.Count}");
 
             int inWorld = 0, carried = 0, atZone = 0, destroyed = 0;

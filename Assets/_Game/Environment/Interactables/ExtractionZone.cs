@@ -69,6 +69,9 @@ public class ExtractionZone : MonoBehaviour
 
     private bool CheckWinConditions()
     {
+        // Extraction is locked until every generator is running (if the mission requires it).
+        if (!MissionManager.Instance.GeneratorsComplete) return false;
+
         var allEvidence = MissionManager.Instance.AllEvidence;
         if (allEvidence.Count == 0) return false;
 
