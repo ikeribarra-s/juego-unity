@@ -201,6 +201,34 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     [Tooltip("Degrees added to every generator's facing. The machine faces its room's entrance; use this to correct a model whose 'front' isn't +Z.")]
     [SerializeField] private float GeneratorYawOffset = 0f;
 
+    [Header("Mission placement")]
+    [Tooltip("On Generate, move the extraction zone, player start and evidence onto the freshly built floor.")]
+    [SerializeField] private bool PlaceMissionObjects = true;
+    [Tooltip("Extraction zone to move. Auto-found in the scene if empty.")]
+    [SerializeField] private ExtractionZone Extraction;
+    [Tooltip("Player (or spawn point) to move next to the extraction. Auto-found (first CharacterBase) if empty.")]
+    [SerializeField] private Transform PlayerStart;
+    [Tooltip("Evidence to scatter. Every EvidencePickup in the scene is used if empty.")]
+    [SerializeField] private EvidencePickup[] Evidence;
+    [Tooltip("Preferred section for the extraction (open-sky Graveyard keeps the beacon visible). Falls back to any themed section.")]
+    [SerializeField] private SectionType ExtractionPreferredSection = SectionType.Graveyard;
+    [Tooltip("Walking distance (tiles) from the extraction to the player start.")]
+    [SerializeField] private Vector2Int PlayerStartDistance = new Vector2Int(8, 18);
+    [Tooltip("Minimum walking distance (tiles) from the player start to any evidence.")]
+    [SerializeField] private int EvidenceMinDistance = 30;
+    [Tooltip("Maximum walking distance (tiles) from the player start to any evidence — keeps runs doable within the mission timer. Dropped only if the map can't fit the evidence otherwise.")]
+    [SerializeField] private int EvidenceMaxDistance = 110;
+    [Tooltip("Minimum straight-line spacing (tiles) between two evidence items. Relaxed automatically if the map can't fit it.")]
+    [SerializeField] private int EvidenceSpacing = 35;
+    [Tooltip("Keep evidence at least this many tiles from a generator so the two objectives don't overlap.")]
+    [SerializeField] private int EvidenceGeneratorGap = 8;
+    [Tooltip("Height above the floor evidence is dropped from (it settles with physics).")]
+    [SerializeField] private float EvidenceDropHeight = 0.65f;
+    [Tooltip("Extraction transform height above the floor.")]
+    [SerializeField] private float ExtractionHeightOffset = 0.5f;
+    [Tooltip("Player root height above the floor (the character's pivot is at its feet; a little slack avoids spawning inside the floor).")]
+    [SerializeField] private float PlayerHeightOffset = 0.1f;
+
     [Header("Debug")]
     [SerializeField] private bool DebugDrawSectionBounds = true;
 
@@ -275,6 +303,11 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
         // Machinery: place a generator in each carved room (reserves its tiles before décor).
         SpawnGenerators();
+
+        // Mission objects (extraction, player start, evidence) onto the new floor. Uses its own RNG so
+        // the layout and décor of a given Seed stay identical whether this runs or not; reserves the
+        // chosen tiles before décor so no grave/pillar/rock lands on top of them.
+        if (PlaceMissionObjects) PlaceMissionObjectsOnFloor(new System.Random(seed ^ 0x5EED));
 
         // Geometry from the grid.
         BuildFloors();
@@ -2001,6 +2034,266 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
         if (!go.TryGetComponent<PowerGenerator>(out _))
             go.AddComponent<PowerGenerator>();   // safety net if a prefab forgot the component
+    }
+
+    // ---------------------------------------------------------------------
+    // Mission objects — the extraction zone, the player start and the evidence are SCENE objects
+    // (configured by hand: beacon, glow, etc.), so instead of spawning them we move them onto tiles
+    // of the freshly carved floor. Every pick is reachable by construction: there is one connected
+    // floor region after PruneFloorIslands, and distances are real walking distances (BFS).
+    //   1. Extraction: centre of a clear square big enough for its trigger box, preferring
+    //      ExtractionPreferredSection (open sky → the beacon reads from afar).
+    //   2. Player start: a clear tile PlayerStartDistance tiles' walk from the extraction, facing it.
+    //   3. Evidence: themed-section tiles ≥ EvidenceMinDistance walk from the start, spread apart
+    //      (EvidenceSpacing), away from generators, one per section type where possible.
+    // Chosen tiles are reserved so the décor pass can't bury them.
+    // ---------------------------------------------------------------------
+
+    private void PlaceMissionObjectsOnFloor(System.Random rng)
+    {
+        ExtractionZone extraction = Extraction != null ? Extraction : FindAnyObjectByType<ExtractionZone>();
+        Transform player = PlayerStart;
+        if (player == null)
+        {
+            CharacterBase cb = FindAnyObjectByType<CharacterBase>();
+            if (cb != null) player = cb.transform;
+        }
+        List<EvidencePickup> evidence = CollectEvidence();
+
+        int[,] sum = BuildFloorPrefixSum();
+
+        // 1. Extraction.
+        Vector2Int extTile;
+        if (!TryPickExtractionTile(sum, extraction, rng, out extTile))
+        {
+            Debug.LogWarning("[MultiSectionDungeon] No clear floor for the extraction zone — mission objects not placed.", this);
+            return;
+        }
+        int extClear = ExtractionClearance(extraction);
+        ReserveArea(extTile, extClear);   // keep graves/pillars out of the whole trigger footprint
+
+        // 2. Player start.
+        int[,] fromExt = WalkDistances(extTile);
+        Vector2Int startTile = PickPlayerStartTile(sum, fromExt, extTile, extClear, rng);
+        ReserveArea(startTile, 1);
+
+        // 3. Evidence.
+        int[,] fromStart = WalkDistances(startTile);
+        List<Vector2Int> evTiles = PickEvidenceTiles(sum, fromStart, extTile, evidence.Count, rng);
+        foreach (Vector2Int t in evTiles) ReserveArea(t, 1);
+
+        // Move the scene objects.
+        if (extraction != null)
+        {
+            Transform et = extraction.transform;
+            Vector3 world = TileWorld(extTile);
+            // Centre the trigger volume (not the pivot) over the tile.
+            Vector3 offset = et.TryGetComponent(out BoxCollider box) ? et.TransformVector(box.center) : Vector3.zero;
+            MoveObject(et, new Vector3(world.x - offset.x, world.y + ExtractionHeightOffset, world.z - offset.z), null);
+        }
+
+        if (player != null)
+        {
+            Vector3 world = TileWorld(startTile);
+            Vector3 look = TileWorld(extTile) - world; look.y = 0f;
+            Quaternion yaw = look.sqrMagnitude > 0.01f ? Quaternion.LookRotation(look) : player.rotation;
+            MoveObject(player, world + Vector3.up * PlayerHeightOffset, yaw);
+        }
+
+        for (int i = 0; i < evidence.Count; i++)
+        {
+            if (i >= evTiles.Count)
+            {
+                Debug.LogWarning($"[MultiSectionDungeon] Found spots for only {evTiles.Count}/{evidence.Count} evidence — '{evidence[i].name}' left where it was.", this);
+                continue;
+            }
+            Quaternion spin = Quaternion.Euler(0f, rng.Next(0, 360), 0f);
+            MoveObject(evidence[i].transform, TileWorld(evTiles[i]) + Vector3.up * EvidenceDropHeight, spin);
+        }
+
+        Debug.Log($"[MultiSectionDungeon] Mission placed — extraction {_section[extTile.x, extTile.y]} {extTile}, start {startTile} " +
+                  $"({fromExt[startTile.x, startTile.y]} tiles), evidence {evTiles.Count}/{evidence.Count}.", this);
+    }
+
+    private List<EvidencePickup> CollectEvidence()
+    {
+        var list = new List<EvidencePickup>();
+        if (Evidence != null && Evidence.Length > 0)
+        {
+            foreach (EvidencePickup e in Evidence) if (e != null) list.Add(e);
+            return list;
+        }
+        foreach (EvidencePickup e in FindObjectsByType<EvidencePickup>(FindObjectsSortMode.None))
+            if (!e.transform.IsChildOf(transform)) list.Add(e);   // never grab something the dungeon spawned
+        list.Sort((a, b) => string.CompareOrdinal(a.name, b.name)); // stable order → deterministic per seed
+        return list;
+    }
+
+    // Half-size (tiles) of the clear square the extraction trigger needs.
+    private static int ExtractionClearance(ExtractionZone ext)
+    {
+        if (ext == null || !ext.TryGetComponent(out BoxCollider box)) return 3;
+        Vector3 size = Vector3.Scale(box.size, ext.transform.lossyScale);
+        return Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(Mathf.Abs(size.x), Mathf.Abs(size.z)) * 0.5f), 2, 8);
+    }
+
+    private bool TryPickExtractionTile(int[,] sum, ExtractionZone ext, System.Random rng, out Vector2Int tile)
+    {
+        int clear = ExtractionClearance(ext);
+        // (clearance, preferred section only) — relax step by step.
+        (int r, bool preferred)[] steps = { (clear, true), (clear, false), (clear - 1, false), (Mathf.Max(2, clear - 2), false) };
+        foreach (var step in steps)
+        {
+            var spots = new List<Vector2Int>();
+            for (int x = 0; x < _width; x++)
+                for (int y = 0; y < _height; y++)
+                {
+                    if (!_floor[x, y] || _section[x, y] == SectionType.Transition) continue;
+                    if (step.preferred && _section[x, y] != ExtractionPreferredSection) continue;
+                    if (!IsClearSquare(sum, x, y, step.r) || NearGenerator(x, y, step.r + 2)) continue;
+                    spots.Add(new Vector2Int(x, y));
+                }
+            if (spots.Count > 0) { tile = spots[rng.Next(spots.Count)]; return true; }
+        }
+        tile = default;
+        return false;
+    }
+
+    private Vector2Int PickPlayerStartTile(int[,] sum, int[,] fromExt, Vector2Int ext, int extClear, System.Random rng)
+    {
+        int lo = Mathf.Max(extClear + 1, PlayerStartDistance.x);
+        int hi = Mathf.Max(lo, PlayerStartDistance.y);
+        var spots = new List<Vector2Int>();
+        Vector2Int best = ext; int bestD = int.MaxValue;
+        for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
+            {
+                int d = fromExt[x, y];
+                if (d < 0 || !IsClearSquare(sum, x, y, 1)) continue;
+                // Outside the extraction footprint so the player doesn't start "already extracted".
+                if (Mathf.Max(Mathf.Abs(x - ext.x), Mathf.Abs(y - ext.y)) <= extClear) continue;
+                if (d >= lo && d <= hi) spots.Add(new Vector2Int(x, y));
+                else if (Mathf.Abs(d - lo) < bestD) { bestD = Mathf.Abs(d - lo); best = new Vector2Int(x, y); }
+            }
+        return spots.Count > 0 ? spots[rng.Next(spots.Count)] : best;
+    }
+
+    private List<Vector2Int> PickEvidenceTiles(int[,] sum, int[,] fromStart, Vector2Int ext, int count, System.Random rng)
+    {
+        var result = new List<Vector2Int>();
+        if (count <= 0) return result;
+
+        var candidates = new List<Vector2Int>();
+        for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++)
+            {
+                if (fromStart[x, y] < 0 || _section[x, y] == SectionType.Transition) continue;
+                if (_reserved[x, y] || !IsClearSquare(sum, x, y, 1)) continue;   // off corridors / objective tiles
+                if (NearGenerator(x, y, EvidenceGeneratorGap)) continue;
+                if (Mathf.Abs(x - ext.x) + Mathf.Abs(y - ext.y) < 12) continue;
+                candidates.Add(new Vector2Int(x, y));
+            }
+        // Shuffle once; the passes below then pick greedily in this random order.
+        for (int i = candidates.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
+        }
+
+        // Relax distance/spacing/variety until enough spots are found.
+        float[] relax = { 1f, 0.66f, 0.4f, 0.2f, 0f };
+        foreach (float k in relax)
+        {
+            result.Clear();
+            int minDist = Mathf.RoundToInt(EvidenceMinDistance * k);
+            int maxDist = k >= 0.4f ? Mathf.Max(minDist + 1, EvidenceMaxDistance) : int.MaxValue;
+            int spacingSqr = Mathf.RoundToInt(EvidenceSpacing * k) * Mathf.RoundToInt(EvidenceSpacing * k);
+            var usedTypes = new HashSet<SectionType>();
+
+            for (int pass = 0; pass < 2 && result.Count < count; pass++)   // pass 0: one per section type
+                foreach (Vector2Int c in candidates)
+                {
+                    if (result.Count >= count) break;
+                    if (fromStart[c.x, c.y] < minDist || fromStart[c.x, c.y] > maxDist) continue;
+                    if (pass == 0 && usedTypes.Contains(_section[c.x, c.y])) continue;
+                    bool tooClose = false;
+                    foreach (Vector2Int p in result)
+                        if ((p - c).sqrMagnitude < Mathf.Max(spacingSqr, 4)) { tooClose = true; break; }
+                    if (tooClose) continue;
+                    result.Add(c);
+                    usedTypes.Add(_section[c.x, c.y]);
+                }
+
+            if (result.Count >= count) break;
+        }
+        return result;
+    }
+
+    private bool IsClearSquare(int[,] sum, int x, int y, int r)
+    {
+        int side = 2 * r + 1;
+        if (x - r < 0 || y - r < 0 || x + r >= _width || y + r >= _height) return false;
+        return RectFloorCount(sum, new RectInt(x - r, y - r, side, side)) == side * side;
+    }
+
+    private bool NearGenerator(int x, int y, int gap)
+    {
+        foreach (GeneratorRoom gr in _generatorRooms)
+        {
+            RectInt r = gr.Rect;
+            if (x >= r.xMin - gap && x < r.xMax + gap && y >= r.yMin - gap && y < r.yMax + gap) return true;
+        }
+        return false;
+    }
+
+    // 4-connected BFS over the floor grid. -1 = unreachable.
+    private int[,] WalkDistances(Vector2Int from)
+    {
+        var dist = new int[_width, _height];
+        for (int x = 0; x < _width; x++)
+            for (int y = 0; y < _height; y++) dist[x, y] = -1;
+        if (!IsFloor(from.x, from.y)) return dist;
+
+        var q = new Queue<Vector2Int>();
+        dist[from.x, from.y] = 0;
+        q.Enqueue(from);
+        while (q.Count > 0)
+        {
+            Vector2Int p = q.Dequeue();
+            int d = dist[p.x, p.y] + 1;
+            TryVisit(p.x + 1, p.y); TryVisit(p.x - 1, p.y); TryVisit(p.x, p.y + 1); TryVisit(p.x, p.y - 1);
+
+            void TryVisit(int nx, int ny)
+            {
+                if (!IsFloor(nx, ny) || dist[nx, ny] >= 0) return;
+                dist[nx, ny] = d;
+                q.Enqueue(new Vector2Int(nx, ny));
+            }
+        }
+        return dist;
+    }
+
+    private Vector3 TileWorld(Vector2Int t) => _root.TransformPoint(TileLocal(t.x, t.y));
+
+    // Teleport a scene object: undoable in the editor; CharacterController / Rigidbody safe at runtime.
+    private static void MoveObject(Transform t, Vector3 position, Quaternion? rotation)
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying) Undo.RecordObject(t, "Place Mission Objects");
+#endif
+        var cc = t.GetComponent<CharacterController>();
+        bool reenable = Application.isPlaying && cc != null && cc.enabled;
+        if (reenable) cc.enabled = false;   // a CharacterController overrides direct position writes
+
+        t.position = position;
+        if (rotation.HasValue) t.rotation = rotation.Value;
+
+        if (reenable) cc.enabled = true;
+        if (Application.isPlaying && t.TryGetComponent(out Rigidbody rb) && !rb.isKinematic)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     // Editor/runtime-safe prefab instantiation, keeping the prefab link in-editor. Used for the

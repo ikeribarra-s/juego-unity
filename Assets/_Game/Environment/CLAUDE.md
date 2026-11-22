@@ -38,6 +38,7 @@ Determinism: **all** randomness flows through one `System.Random _rng` seeded fr
 | 9 | `PruneFloorIslands()` | Keep only the largest connected floor region; everything else → wall. |
 | 10 | `AssignSectionOwnership()` | Fill `_section[,]` from section bounds; non-section floor = `Transition`. |
 | 11 | **`SpawnGenerators()`** | Instantiate one `PowerGenerator` per carved room (see §7). |
+| 11b | **`PlaceMissionObjectsOnFloor()`** | Move the scene's extraction zone, player and evidence onto the new floor (see §7). |
 | 12 | `BuildFloors / BuildCeilings / BuildWalls / BuildCeilingSkirts` | Geometry from the grid. |
 | 13 | `DecorateGothic/Graveyard/Hell/Catacombs/Cavern` | Themed primitive dressing. |
 | 14 | fog + ambient/moon | Skipped if a `DungeonLightingController` is in the scene (it owns RenderSettings). |
@@ -99,6 +100,15 @@ Because the room tiles fall outside every section, ownership leaves them `Transi
 
 ### Placing the machines — `SpawnGenerators()` (pipeline step 11)
 One per room: reserve a clearance box (`ReserveArea`, `GeneratorClearance`) and `PlaceGenerator(tile, yaw)`. Uses `GeneratorPrefab` if assigned (via `InstantiatePrefab` — `PrefabUtility.InstantiatePrefab` in-editor, `Instantiate` at runtime), else `BuildPrimitiveGenerator` (box body using `GeneratorMaterial` or default metal, an emissive `Indicator` child, a `StatusLight` point light, a solid root `BoxCollider`, and the `PowerGenerator` component). Final rotation = `yaw + GeneratorYawOffset`.
+
+### Mission objects placement — `PlaceMissionObjectsOnFloor()` (pipeline step 11b)
+
+The extraction zone, the player and the evidence are **hand-configured scene objects** (beacon, glow, …), so Generate **moves** them instead of spawning them — regenerating with any `Seed` never leaves them floating over the void. Gated by `PlaceMissionObjects`; refs `Extraction` / `PlayerStart` / `Evidence[]` auto-find if empty (evidence: every `EvidencePickup` not under the generator, sorted by name).
+- Uses its **own RNG** (`seed ^ 0x5EED`) so the floor layout for a given `Seed` is identical with or without this pass (décor shifts slightly because the chosen tiles are reserved).
+- **Extraction**: centre of a clear all-floor square big enough for its `BoxCollider` (`ExtractionClearance`), preferring `ExtractionPreferredSection` (Graveyard = open sky, beacon visible), away from generator rooms. The **trigger box centre** (not the pivot) lands on the tile. Whole footprint reserved → no graves inside the zone.
+- **Player start**: clear tile `PlayerStartDistance` (8–18) tiles' **BFS walking distance** from the extraction, outside its footprint, facing it.
+- **Evidence**: themed-section tiles off reserved corridors, `EvidenceMinDistance`–`EvidenceMaxDistance` walk tiles from the start, ≥ `EvidenceSpacing` apart, ≥ `EvidenceGeneratorGap` from generator rooms, one per section type first. Constraints relax stepwise if the map can't fit them (logs a warning if items are left unplaced).
+- `MoveObject`: `Undo.RecordObject` in the editor; at runtime toggles the `CharacterController` and zeroes rigidbody velocity, so the pass also works if Generate is ever called in Play mode.
 
 ### The machine — `PowerGenerator.cs` (`Assets/_Game/Environment/`)
 Self-contained `MonoBehaviour, IHoldInteractable`. States **Broken → Repaired → Running**: hold E to fill a repair charge (`_repairTime`, drains at `_chargeDrain` when released), then press E to start (`_runDuration`). Recolours its `Indicator` renderer (instanced emissive material) + `StatusLight` per state (red→amber→green pulse). Auto-finds a child renderer named `Indicator` and any child `Light` if the fields are empty. Static hooks for a future win condition: `All`, `RepairedCount`, `AnyStateChanged`. See memory `[[generator-machinery]]`.
