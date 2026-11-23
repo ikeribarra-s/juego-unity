@@ -1,5 +1,6 @@
 """
-gen.py — generate images with the local ComfyUI and copy them into the Unity project.
+gen.py — generate images (SDXL) or sound effects (Stable Audio Open) with the local ComfyUI
+and copy them into the Unity project.
 
 Stdlib only. ComfyUI must be running (C:\\Users\\redux\\ComfyUI\\start-comfyui.bat → http://127.0.0.1:8188).
 
@@ -8,12 +9,18 @@ USAGE
 
   <workflow>  icon     → workflows/sdxl_icon_transparent.json (1024², transparent PNG)
               concept  → workflows/sdxl_concept.json          (1344×768, opaque)
+              sfx      → workflows/stable_audio_sfx.json      (Stable Audio Open 1.0, stereo 44.1 kHz FLAC)
               or a path to any API-format workflow JSON containing the word SUBJECT in a prompt.
   --out       destination folder (e.g. Assets/Art/UI/Icons). Created if missing.
   --name      base filename (default: slug of the subject).
   --count     number of variations (different seeds). Default 1.
   --seed      first seed (default: random).
   --steps / --cfg   override sampler settings.
+  --seconds   audio length for sfx workflows (EmptyLatentAudio). Default 3. Keep it short: 1–4 s for one-shots.
+
+Audio outputs (flac/wav/mp3/opus) are copied with their own extension. Raw Stable Audio output is
+stereo with silence/tails — run Tools/Audio/process_sfx.py on it before importing into Unity.
+Models: python Tools/ComfyUI/download_stable_audio.py
 
 Prints one line per saved file: the destination path.
 """
@@ -25,6 +32,7 @@ COMFY_OUTPUT = os.environ.get("COMFY_OUTPUT", r"C:\Users\redux\ComfyUI\output")
 PRESETS = {
     "icon": os.path.join(HERE, "workflows", "sdxl_icon_transparent.json"),
     "concept": os.path.join(HERE, "workflows", "sdxl_concept.json"),
+    "sfx": os.path.join(HERE, "workflows", "stable_audio_sfx.json"),
 }
 
 
@@ -45,6 +53,7 @@ def main():
     ap.add_argument("--seed", type=int)
     ap.add_argument("--steps", type=int)
     ap.add_argument("--cfg", type=float)
+    ap.add_argument("--seconds", type=float, default=3.0)
     a = ap.parse_args()
 
     try:
@@ -67,6 +76,8 @@ def main():
                 ins["seed"] = seed + i
                 if a.steps: ins["steps"] = a.steps
                 if a.cfg: ins["cfg"] = a.cfg
+            if node.get("class_type") == "EmptyLatentAudio":
+                ins["seconds"] = a.seconds
         pid = call("/prompt", {"prompt": wf})["prompt_id"]
         while True:
             hist = call(f"/history/{pid}")
@@ -76,11 +87,15 @@ def main():
         entry = hist[pid]
         if entry["status"]["status_str"] != "success":
             sys.exit(f"generation failed: {json.dumps(entry['status'].get('messages'))[-800:]}")
+        suffix = f"_{i + 1:02d}" if a.count > 1 else ""
         for out in entry["outputs"].values():
-            for img in out.get("images", []):
-                src = os.path.join(COMFY_OUTPUT, img.get("subfolder", ""), img["filename"])
-                suffix = f"_{i + 1:02d}" if a.count > 1 else ""
-                dst = os.path.join(a.out, f"{name}{suffix}.png")
+            # images → .png; audio nodes report under "audio" (older builds: "audios")
+            for item in out.get("images", []) + out.get("audio", []) + out.get("audios", []):
+                if item.get("type") == "temp":
+                    continue
+                src = os.path.join(COMFY_OUTPUT, item.get("subfolder", ""), item["filename"])
+                ext = os.path.splitext(item["filename"])[1] or ".png"
+                dst = os.path.join(a.out, f"{name}{suffix}{ext}")
                 shutil.copyfile(src, dst)
                 print(f"{dst}  (seed {seed + i})")
 

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_StoneWalk
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 1db68e0109247d04ab8db1595db4b1a2, type: 3}
+  - {fileID: 8300000, guid: 1341cf7bb5e18c94e9a6454dcbb3475b, type: 3}
+  - {fileID: 8300000, guid: 7b80fa525114f9d4ab6f4653c01c267e, type: 3}
+  - {fileID: 8300000, guid: 45b35aa2d741cee4bbbf9d863b16daec, type: 3}
+  - {fileID: 8300000, guid: 579b7c5af8b88784a9d726264540ae26, type: 3}
+  - {fileID: 8300000, guid: ae401b3044a1bce40a71e35769fce5f6, type: 3}
+  - {fileID: 8300000, guid: 182c89185f3f8f343b0bf0209a6b424d, type: 3}
+  - {fileID: 8300000, guid: b49062e3687c0e446b326832fe77e56d, type: 3}
+  _volume: 0.6
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 94faeffa20711144788afc324065b977, type: 2}

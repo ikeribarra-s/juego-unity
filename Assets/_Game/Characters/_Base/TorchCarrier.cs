@@ -61,8 +61,15 @@ public class TorchCarrier : MonoBehaviour
 
     public event Action<Torch> TorchPickedUp;
     public event Action<Torch> TorchDropped;
+    /// <summary>Fired after <see cref="TorchDropped"/> when the release was a throw (G), not a plain drop.</summary>
+    public event Action<Torch> TorchThrown;
 
-    private void Awake() => _character = GetComponent<CharacterBase>();
+    private void Awake()
+    {
+        _character = GetComponent<CharacterBase>();
+        // Keeps the held light off the local first-person viewmodel (no white blow-out), see HeldTorchLighting.
+        if (GetComponent<HeldTorchLighting>() == null) gameObject.AddComponent<HeldTorchLighting>();
+    }
 
     private void OnEnable()
     {
@@ -124,8 +131,11 @@ public class TorchCarrier : MonoBehaviour
     /// <summary>Throw the carried torch forward from the camera.</summary>
     public void Throw()
     {
+        Torch torch = _carried;
+        if (torch == null) return;
         Transform anchor = ResolveAnchor();
         Release(anchor.forward * _throwSpeed + Vector3.up * _throwUpward);
+        TorchThrown?.Invoke(torch);
     }
 
     private void Release(Vector3 velocity)

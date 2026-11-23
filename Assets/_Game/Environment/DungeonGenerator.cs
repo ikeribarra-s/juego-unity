@@ -896,6 +896,15 @@ public class DungeonGenerator : MonoBehaviour
             Vector2 outward = -inward;
             Vector3 pos = new(t.x + 0.5f + outward.x * _wallFixtureInset, e.YOffset, t.y + 0.5f + outward.y * _wallFixtureInset);
             var go = SpawnPropAt(e, pos, YawFromDir(inward), addCollider: false);
+            if (go != null && go.TryGetComponent(out Torch torch))
+            {
+                // Lantern prefabs are Z-up: keep the upright correction, then pull the model out of the wall
+                // so the flame light isn't buried (pivot = lantern centre).
+                go.transform.rotation = Quaternion.Euler(0f, YawFromDir(inward), 0f) * torch.UprightRotation;
+                Vector3 inwardW = new(inward.x, 0f, inward.y);
+                Vector3 wallFace = new(t.x + 0.5f - inward.x * 0.5f, pos.y, t.y + 0.5f - inward.y * 0.5f);
+                WallMount.PushOffWall(go.transform, wallFace, inwardW, 0.04f); // SpawnPropAt uses world-space tile coords
+            }
             ConfigureLights(go);
             _fixtureUsed.Add(t);
             count--;

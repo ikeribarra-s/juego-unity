@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_Pickup
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 3860c64f10610a84db820c3df516be4c, type: 3}
+  - {fileID: 8300000, guid: c184a7794ee633a4a89058b8a8fb2c8d, type: 3}
+  - {fileID: 8300000, guid: d1769cf59335b5f47b771a91e3270a83, type: 3}
+  - {fileID: 8300000, guid: 02b556474b8480f41bc19bf8873fc603, type: 3}
+  _volume: 0.6
+  _pitchRange: {x: 0.95, y: 1.05}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}

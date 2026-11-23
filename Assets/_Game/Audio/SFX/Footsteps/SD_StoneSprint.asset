@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_StoneSprint
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 6c90c3d993a47b04191fbb24ce205a9b, type: 3}
+  - {fileID: 8300000, guid: d3d58a29376732d4e9f6f1ddee58168c, type: 3}
+  - {fileID: 8300000, guid: 567b5eeb6ba70cb43aca1ccab483c8f3, type: 3}
+  - {fileID: 8300000, guid: d3d16b09762941d4887bd5ebefa4c95e, type: 3}
+  - {fileID: 8300000, guid: eb874ac94e6363e49b0eff9da9bb8a25, type: 3}
+  - {fileID: 8300000, guid: a5e28a71cc15d3c4ba75d1338c4fd9f4, type: 3}
+  - {fileID: 8300000, guid: be3f953285c2e3848b0d52a554b16bea, type: 3}
+  - {fileID: 8300000, guid: a33e2e0020ded294782f0f236cc4fe23, type: 3}
+  _volume: 0.6
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 94faeffa20711144788afc324065b977, type: 2}

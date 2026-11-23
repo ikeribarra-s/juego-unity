@@ -1,0 +1,59 @@
+{
+ "1": {
+  "class_type": "CheckpointLoaderSimple",
+  "_meta": {"title": "Load Stable Audio Open 1.0"},
+  "inputs": {"ckpt_name": "stable-audio-open-1.0.safetensors"}
+ },
+ "2": {
+  "class_type": "CLIPLoader",
+  "_meta": {"title": "Load T5 text encoder"},
+  "inputs": {"clip_name": "t5-base.safetensors", "type": "stable_audio", "device": "default"}
+ },
+ "3": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {"title": "Positive prompt"},
+  "inputs": {
+   "clip": ["2", 0],
+   "text": "SUBJECT, single sound effect, isolated, close-miked, dry, no music, no reverb tail, game sfx"
+  }
+ },
+ "4": {
+  "class_type": "CLIPTextEncode",
+  "_meta": {"title": "Negative prompt"},
+  "inputs": {
+   "clip": ["2", 0],
+   "text": "music, melody, drums, beat, rhythm, singing, voice, speech, ambience, background noise, hiss, low quality, distorted, reverb"
+  }
+ },
+ "5": {
+  "class_type": "EmptyLatentAudio",
+  "_meta": {"title": "Duration (seconds)"},
+  "inputs": {"seconds": 3.0, "batch_size": 1}
+ },
+ "6": {
+  "class_type": "KSampler",
+  "_meta": {"title": "Sample"},
+  "inputs": {
+   "model": ["1", 0],
+   "positive": ["3", 0],
+   "negative": ["4", 0],
+   "latent_image": ["5", 0],
+   "seed": 1234,
+   "steps": 50,
+   "cfg": 5.0,
+   "sampler_name": "dpmpp_3m_sde_gpu",
+   "scheduler": "exponential",
+   "denoise": 1.0
+  }
+ },
+ "7": {
+  "class_type": "VAEDecodeAudio",
+  "_meta": {"title": "Decode audio"},
+  "inputs": {"samples": ["6", 0], "vae": ["1", 2]}
+ },
+ "8": {
+  "class_type": "SaveAudioAdvanced",
+  "_meta": {"title": "Save FLAC"},
+  "inputs": {"audio": ["7", 0], "filename_prefix": "fluffterror/sfx", "format": "flac"}
+ }
+}

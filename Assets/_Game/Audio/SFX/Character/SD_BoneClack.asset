@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_BoneClack
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 16f45629ce281e24c9d6cd6e83131813, type: 3}
+  - {fileID: 8300000, guid: d9e09db2d4143444d870928e67277e0d, type: 3}
+  - {fileID: 8300000, guid: 59fbb65bee615a74f9ce3445377b9eba, type: 3}
+  - {fileID: 8300000, guid: bf9cb3e258541c846a2f1093f9a1cf03, type: 3}
+  _volume: 0.5
+  _pitchRange: {x: 0.92, y: 1.08}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}

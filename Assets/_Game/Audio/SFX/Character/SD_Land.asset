@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_Land
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 96f2619a8433dac4c94404300075ffd0, type: 3}
+  - {fileID: 8300000, guid: 1baa7745bb972ad4e831bf4c4ffa7960, type: 3}
+  - {fileID: 8300000, guid: 07e22bba3270500449e8d0cfd1cb062f, type: 3}
+  - {fileID: 8300000, guid: 569c8a40946e00f4697614553b9f528f, type: 3}
+  _volume: 0.7
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}

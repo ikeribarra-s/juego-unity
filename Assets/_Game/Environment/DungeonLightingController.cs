@@ -154,10 +154,24 @@ public class DungeonLightingController : MonoBehaviour
         Transform existing = transform.Find(MoonName);
         if (existing != null) { _moonLight = existing.GetComponent<Light>(); return; }
 
+        // Reuse the scene's directional light instead of adding a second one. URP only shadows the
+        // MAIN directional light; any extra directional is an unshadowed additional light that shines
+        // through every roof and lights all interior floors uniformly ("light from nowhere").
+        Light sceneDirectional = FindSceneDirectional();
+        if (sceneDirectional != null) { _moonLight = sceneDirectional; return; }
+
         var go = new GameObject(MoonName);
         go.transform.SetParent(transform, false);
         _moonLight = go.AddComponent<Light>();
         _moonLight.type = LightType.Directional;
+    }
+
+    private static Light FindSceneDirectional()
+    {
+        if (RenderSettings.sun != null && RenderSettings.sun.type == LightType.Directional) return RenderSettings.sun;
+        foreach (var l in FindObjectsByType<Light>(FindObjectsInactive.Exclude))
+            if (l.type == LightType.Directional) return l;
+        return null;
     }
 
     private void ApplyMoon()

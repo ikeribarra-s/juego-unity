@@ -35,3 +35,7 @@ Thumbs.db
 RefineCaptures/
 Assets/_Game/Environment/*.bak.*
 Assets/_Game/Environment/*.bak.*.meta
+
+# Python
+__pycache__/
+*.pyc

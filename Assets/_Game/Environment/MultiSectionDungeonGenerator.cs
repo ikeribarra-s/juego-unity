@@ -106,6 +106,8 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float CavernRockDensity = 0.14f;
 
     [Header("Lighting Budget")]
+    [Tooltip("Clearance between the wall face and the back of a prefab wall torch (metres). The torch is pushed out along the wall normal by its measured mesh bounds.")]
+    [SerializeField, Min(0f)] private float TorchWallGap = 0.04f;
     [Tooltip("Cap on real-time lights for the whole map. Raise for the larger grid (the map is ~16x the old area).")]
     [SerializeField] private int MaxRealtimeLights = 220;
     [SerializeField, Range(0f, 1f)] private float GraveyardLightDensity = 0.05f;
@@ -1321,6 +1323,9 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             t.transform.SetParent(_detailsRoot, false);
             t.transform.localPosition = e.Surface + Vector3.up * 2.4f;
             t.transform.localRotation = WallFacing(e) * TorchPrefab.transform.localRotation; // keep the prefab's upright (-90° X) correction
+            // The lantern's pivot is its centre: sitting on the wall face buries half of it (and the flame
+            // light) in the wall. Slide it out until its back clears the wall by TorchWallGap.
+            WallMount.PushOffWall(t.transform, _detailsRoot.TransformPoint(e.Surface), _detailsRoot.TransformDirection(e.IntoRoom), TorchWallGap);
             return;
         }
 
@@ -1783,7 +1788,15 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             RenderSettings.ambientIntensity = AmbientIntensity; // used when a skybox is the source
         }
 
-        if (AddMoonlight)
+        // Only ever ONE directional light: URP shadows just the main one, so a second "moon" next to
+        // the scene's sun would be an unshadowed additional light flooding every roofed interior.
+        if (AddMoonlight && HasSceneDirectional(out Light existing))
+        {
+            existing.color = MoonlightColor;
+            existing.intensity = MoonlightIntensity;
+            existing.shadows = LightShadows.Soft;
+        }
+        else if (AddMoonlight)
         {
             var go = new GameObject("Moonlight");
             go.transform.SetParent(_lightsRoot, false);
@@ -1797,6 +1810,19 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             l.lightmapBakeType = LightmapBakeType.Mixed; // bakes outdoor shadows if the user bakes GI
 #endif
         }
+    }
+
+    private bool HasSceneDirectional(out Light light)
+    {
+        foreach (var l in FindObjectsByType<Light>(FindObjectsInactive.Exclude))
+        {
+            if (l.type != LightType.Directional) continue;
+            if (_lightsRoot != null && l.transform.IsChildOf(_lightsRoot)) continue; // ours, about to be rebuilt
+            light = l;
+            return true;
+        }
+        light = null;
+        return false;
     }
 
     // Editor-only: flag generated geometry as static so occlusion culling and GI baking can use it.

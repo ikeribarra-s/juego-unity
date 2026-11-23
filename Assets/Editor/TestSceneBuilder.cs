@@ -100,11 +100,18 @@ public static class TestSceneBuilder
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = new Color(0.45f, 0.47f, 0.52f);
 
+        // Exactly ONE directional light: URP only shadows the main one, every extra directional is an
+        // unshadowed additional light that lights roofed interiors from nowhere.
         Light sun = null;
         foreach (var l in Object.FindObjectsByType<Light>())
-            if (l.type == LightType.Directional) { sun = l; break; }
+        {
+            if (l.type != LightType.Directional) continue;
+            if (sun == null) sun = l;
+            else Object.DestroyImmediate(l.gameObject);
+        }
         if (sun != null)
         {
+            RenderSettings.sun = sun;
             sun.intensity = 1.1f;
             sun.color = new Color(1f, 0.96f, 0.9f);
             sun.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
@@ -201,7 +208,11 @@ public static class TestSceneBuilder
         {
             var pos = new Vector3(14 + i * 2.5f, 0, 2);
             Box($"Pedestal_{i + 1}", torches, pos + Vector3.up * 0.5f, new Vector3(0.6f, 1f, 0.6f), _blockMat);
-            if (torchPrefab != null) Spawn(torchPrefab, torches, pos + Vector3.up * 1.0f, torchPrefab.transform.rotation); // keep the FBX's -90° X (upright)
+            if (torchPrefab != null)
+            {
+                var torch = Spawn(torchPrefab, torches, pos + Vector3.up * 1.0f, torchPrefab.GetComponent<Torch>().UprightRotation); // FBX is Z-up: stand it upright
+                WallMount.PlaceInFrontOf(torch.transform, pos + Vector3.up * 1.0f, Vector3.up, 0f);                 // pivot = lantern centre: rest its base on the pedestal
+            }
         }
         Label(torchPrefab != null ? "TORCHES — E to take" : "TORCHES (prefab missing)", torches, new Vector3(15.25f, 2.4f, 2), 0.4f);
 
