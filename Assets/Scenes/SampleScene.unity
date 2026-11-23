@@ -410772,7 +410772,7 @@ PrefabInstance:
       addedObject: {fileID: 1564144269}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 91f2f5f1810c97a478f01f54b2d3d51e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1564144268}
+      addedObject: {fileID: 1564144273}
   m_SourcePrefab: {fileID: 100100000, guid: 91f2f5f1810c97a478f01f54b2d3d51e, type: 3}
 --- !u!4 &1564144265 stripped
 Transform:
@@ -410789,26 +410789,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 91f2f5f1810c97a478f01f54b2d3d51e, type: 3}
   m_PrefabInstance: {fileID: 1564144264}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1564144268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1564144267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a86ceeaf0e0259249b921adee6a8391a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TorchArmAnimator
-  _layerName: LeftArm_Torch
-  _blendTime: 0.25
-  _gripOffset: {x: 0, y: 0.104, z: 0.036}
-  _gripEuler: {x: 0, y: 0, z: 270}
-  _smoothLocalView: 1
-  _handSmoothTime: 0.1
-  _handRotationSharpness: 10
-  _viewOffset: {x: 0.25, y: -0.02, z: -0.04}
 --- !u!114 &1564144269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410880,6 +410860,30 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   _lookSmoothing: 12
+--- !u!114 &1564144273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564144267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a86ceeaf0e0259249b921adee6a8391a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TorchArmAnimator
+  _layerName: LeftArm_Torch
+  _blendTime: 0.25
+  _gripOffset: {x: 0, y: 0.092, z: 0.034}
+  _gripEuler: {x: 0, y: 0, z: 270}
+  _smoothLocalView: 1
+  _handSmoothTime: 0.1
+  _handRotationSharpness: 10
+  _viewOffset: {x: 0.052, y: -0.065, z: -0.035}
+  _pitchFollow: 1
+  _pitchTiltFollow: 0.5
+  _pitchFollowLimit: 30
+  _maxReach: 0.99
 --- !u!1 &1564149326
 GameObject:
   m_ObjectHideFlags: 0

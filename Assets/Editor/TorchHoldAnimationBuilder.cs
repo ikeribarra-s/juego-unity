@@ -18,10 +18,11 @@ using UnityEngine;
 ///    defaults — tied to this pose — replace any stale serialized values).
 ///
 /// Tweak the pose with the constants below and re-run the menu. Muscle values are normalized
-/// (-1..1, Unity's Muscles &amp; Settings space); the arm values were solved numerically against the
-/// Starter Assets idle (wrist ~2.0 m up, forward-left, elbow below the fist, wrist cocked so the fist's grip
-/// axis — the torch shaft — points up, ~14° off vertical). The first-person framing on top of this is
-/// <see cref="TorchArmAnimator"/>'s camera-space view offset. The finger/thumb values were re-solved for the
+/// (-1..1, Unity's Muscles &amp; Settings space); the arm values were solved numerically (HumanPoseHandler +
+/// coordinate descent, evaluating the real Animator incl. the head-look IK) on the 5-finger skeleton against the
+/// Starter Assets idle so the <i>animated</i> pose itself frames the lantern for first person and reads right for
+/// other players: fist centre ~(-0.18, 1.97, 0.61) m from the character root (lantern ~0.35 m above it), shaft ~3°
+/// off vertical, elbow bent (~0.31 m forward, out to the left, below the fist), arm at ~85 % of its reach. <see cref="TorchArmAnimator"/> only adds a tiny view offset on top. The finger/thumb values were re-solved for the
 /// 5-finger Mixamo skeleton (fingers loop around the hand's X axis, thumb closes over the index/middle).
 /// Muscles kept at or under ~0.85 to avoid limit pops.
 /// </summary>
@@ -35,30 +36,34 @@ public static class TorchHoldAnimationBuilder
     public  const string LayerName      = "LeftArm_Torch";
 
     // ── Pose (normalized muscle values) ─────────────────────────────────────────
-    private const float ShoulderDownUp     =  0.76f;
-    private const float ShoulderFrontBack  = -0.75f;
-    private const float ArmDownUp          =  0.35f;
-    private const float ArmFrontBack       = -0.30f;
-    private const float ArmTwist           =  0.34f;
-    private const float ForearmStretch     =  0.78f;
-    private const float ForearmTwist       =  0.76f;
-    private const float HandDownUp         =  0.76f;
-    private const float HandInOut          =  0.77f;
+    private const float ShoulderDownUp     = 0.175f;
+    private const float ShoulderFrontBack  =  0.24f;
+    private const float ArmDownUp          = 0.395f;
+    private const float ArmFrontBack       = -0.42f;
+    private const float ArmTwist           =  0.15f;
+    private const float ForearmStretch     =  0.21f;
+    private const float ForearmTwist       = 0.845f;
+    private const float HandDownUp         = 0.565f;
+    private const float HandInOut          = 0.855f;
 
-    // Fist (negative "Stretched" = curled). Calibrated on the 5-finger Mixamo skeleton
-    // (Assets/Art/Characters/Skeleton): index/middle/ring/little curl into a loop around the
-    // hand's X axis (the shaft); the thumb closes over the index/middle middle phalanges.
-    private const float FingerCurl         = -0.85f;
+    // Fist (negative "Stretched" = curled). Solved on the 5-finger Mixamo skeleton (Assets/Art/Characters/Skeleton)
+    // against the torch handle (radius ~0.03 m at the 0.3 hold scale): every finger joint/segment centre sits
+    // 0.041–0.057 m from the shaft axis (= touching the handle, no intersection), the shaft running along the
+    // hand's X axis through TorchArmAnimator._gripOffset. The thumb lies along the handle above the index
+    // (thumb-up grip), its distal joint resting on the shaft.
+    private const float FingerCurl         = -0.74f;  // .1 Stretched (proximal)
+    private const float FingerCurlDistal   = -0.42f;  // .2 / .3 Stretched
     private const float FingerSpread       = -0.2f;
-    private const float ThumbProximal      = -0.3f;   // Thumb.1 Stretched
-    private const float ThumbDistal        = -0.6f;   // Thumb.2 / Thumb.3 Stretched
-    private const float ThumbSpread        = -0.75f;  // negative = toward the palm front (opposition)
+    private const float ThumbProximal      =  0.5f;   // Thumb.1 Stretched
+    private const float ThumbDistal        = -0.34f;  // Thumb.2 / Thumb.3 Stretched
+    private const float ThumbSpread        = -1.0f;   // negative = toward the palm front (opposition)
 
     // ── Idle sway (loop) ────────────────────────────────────────────────────────
     private const float SwayPeriod         =  2.4f;   // seconds per loop
-    private const float SwayArm            =  0.03f;  // Arm Down-Up amplitude
-    private const float SwayForearm        =  0.04f;  // Forearm Stretch amplitude
-    private const float SwayHand           =  0.06f;  // Hand Down-Up amplitude (flame bob)
+    private const float SwayArm            =  0.02f;  // Arm Down-Up amplitude
+    private const float SwayForearm        =  0.02f;  // Forearm Stretch amplitude
+    private const float SwayHand           =  0.03f;  // Hand Down-Up amplitude (flame bob) — kept small so the
+                                                       // close-up lantern stays on screen in first person
     private const int   SwaySamples        = 12;
 
     [MenuItem("Fluffterror/Animation/Build Torch Hold")]
@@ -115,8 +120,8 @@ public static class TorchHoldAnimationBuilder
         foreach (string f in new[] { "Index", "Middle", "Ring", "Little" })
         {
             Constant($"LeftHand.{f}.1 Stretched", FingerCurl);
-            Constant($"LeftHand.{f}.2 Stretched", FingerCurl);
-            Constant($"LeftHand.{f}.3 Stretched", FingerCurl);
+            Constant($"LeftHand.{f}.2 Stretched", FingerCurlDistal);
+            Constant($"LeftHand.{f}.3 Stretched", FingerCurlDistal);
             Constant($"LeftHand.{f}.Spread",      FingerSpread);
         }
         Constant("LeftHand.Thumb.1 Stretched", ThumbProximal);

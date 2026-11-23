@@ -8,14 +8,21 @@ using UnityEngine;
 /// of the body. While the layer exists it hands TorchCarrier the left-hand bone + grip, and TorchCarrier
 /// attaches the torch <b>rigidly</b> to the hand (handle in the fist, zero lag).
 ///
-/// <b>First-person smoothing (local view).</b> <see cref="RetroAnimationStepper"/> poses the body only on
+/// <b>First-person view (local player).</b> <see cref="RetroAnimationStepper"/> poses the body only on
 /// stepped frames while the camera moves every frame, so the raised hand (and the torch in it) would tick
 /// on screen. When <see cref="_smoothLocalView"/> is on, every LateUpdate (after the camera moved, before
-/// TorchCarrier) this takes the latest <i>animated</i> hand pose, SmoothDamps it in camera space, and
-/// re-solves the arm with an analytic two-bone IK (upper arm / forearm, elbow kept on the animated bend
-/// plane) so the hand itself glides every frame. Only the left arm is touched; the body stays stepped.
-/// A small camera-space <see cref="_viewOffset"/> frames the lantern in the upper-left of the screen
-/// (viewmodel-style); remote viewers see the plain animated pose.
+/// TorchCarrier) this takes the latest <i>animated</i> hand pose, expresses it in the <b>chest frame</b>
+/// (camera position, upper-chest orientation relative to its bind pose), SmoothDamps it there, and re-solves
+/// the arm with an analytic two-bone IK (upper arm / forearm, elbow kept on the animated bend plane) so the
+/// hand glides every frame. In the chest frame the hand only moves with the arm animation — not with the
+/// head-look IK leaning/twisting the spine (which lags the mouse) nor the stepped body. The smoothed pose is then
+/// placed in the camera's view frame (yaw + pitch, pitch clamped to <see cref="_pitchFollowLimit"/>) like a
+/// viewmodel, so looking around neither drifts the lantern across the screen nor trails behind the mouse; the
+/// rotation follows only part of the pitch (<see cref="_pitchTiltFollow"/>) so the torch stays nearly upright.
+/// The IK reach is soft-limited (<see cref="_maxReach"/>) so the elbow never snaps straight (the straight-arm
+/// singularity made the elbow wave when the target crossed the arm's reach). Only the left arm is touched;
+/// the body stays stepped. A small <see cref="_viewOffset"/> fine-tunes the framing; remote viewers see the
+/// plain animated pose (which itself already raises the lantern forward-left at head height).
 /// The IK blends in with the layer weight. Turn it off for remote (non-owner) characters.
 ///
 /// Place on the model child (the GameObject with the Animator).
@@ -30,7 +37,7 @@ public class TorchArmAnimator : MonoBehaviour
 
     [Header("Grip (torch in the fist)")]
     [Tooltip("Fist centre relative to the left-hand bone, in metres along the bone's axes. The torch handle passes through it.")]
-    [SerializeField] private Vector3 _gripOffset = new(0f, 0.104f, 0.036f);
+    [SerializeField] private Vector3 _gripOffset = new(0f, 0.092f, 0.034f);
     [Tooltip("Rotation from the hand bone's frame to the torch's upright frame (shaft along +Y). " +
              "Default: +Y = the hand's +X (index side, the curled-finger loop axis of the 5-finger skeleton rig), +Z = hand +Z.")]
     [SerializeField] private Vector3 _gripEuler = new(0f, 0f, 270f);
@@ -39,17 +46,28 @@ public class TorchArmAnimator : MonoBehaviour
     [Tooltip("Local player only: smooth the raised hand every frame in camera space (two-bone IK) so it " +
              "doesn't tick with the stepped body animation. Off = raw stepped animation (e.g. remote players).")]
     [SerializeField] private bool _smoothLocalView = true;
-    [Tooltip("SmoothDamp time (s) of the hand position in camera space.")]
+    [Tooltip("SmoothDamp time (s) of the hand position in the chest frame.")]
     [SerializeField] private float _handSmoothTime = 0.1f;
-    [Tooltip("Exponential smoothing speed of the hand rotation in camera space (higher = snappier).")]
+    [Tooltip("Exponential smoothing speed of the hand rotation in the chest frame (higher = snappier).")]
     [SerializeField] private float _handRotationSharpness = 10f;
-    [Tooltip("First-person framing (local view only): camera-space offset (m) added to the smoothed hand target so " +
-             "the lantern sits upper-left on screen when looking level. Other players see the plain animated pose.")]
-    [SerializeField] private Vector3 _viewOffset = new(0.25f, -0.02f, -0.04f);
+    [Tooltip("First-person framing (local view only): view-space offset (m) added to the smoothed hand target. " +
+             "Keep it small — the animated pose already frames the lantern; a big offset pushes the IK target out of reach.")]
+    [SerializeField] private Vector3 _viewOffset = new(0.052f, -0.065f, -0.035f);
+    [Tooltip("How much the hand follows the camera pitch (1 = locked in view like a viewmodel, 0 = level).")]
+    [SerializeField, Range(0f, 1f)] private float _pitchFollow = 1f;
+    [Tooltip("How much the torch tilts with the camera pitch (0 = always upright, 1 = fixed in view). A little tilt keeps " +
+             "the lantern's size/height on screen steadier when looking up or down.")]
+    [SerializeField, Range(0f, 1f)] private float _pitchTiltFollow = 0.5f;
+    [Tooltip("Pitch (deg) beyond which the hand stops following the camera, so it never chases an unreachable target.")]
+    [SerializeField] private float _pitchFollowLimit = 30f;
+    [Tooltip("Soft IK reach limit as a fraction of the arm length. The target is eased in before full extension so " +
+             "the elbow never snaps straight (the straight-arm singularity makes the elbow wave).")]
+    [SerializeField, Range(0.8f, 1f)] private float _maxReach = 0.99f;
 
     private Animator     _animator;
     private TorchCarrier _carrier;
-    private Transform    _upper, _lower, _hand;
+    private Transform    _upper, _lower, _hand, _chest;
+    private Quaternion   _chestBindInv = Quaternion.identity; // inverse of the chest's bind rotation relative to the model
     private Camera       _camera;
     private int          _layer = -1;
     private float        _blend;     // linear 0..1, eased when applied
@@ -59,8 +77,8 @@ public class TorchArmAnimator : MonoBehaviour
     private Quaternion _animUpper, _animLower, _animHand;
     private Quaternion _wroteUpper, _wroteLower, _wroteHand;
     private bool       _hasWritten;
-    private Vector3    _smoothPos, _smoothVel;   // camera space
-    private Quaternion _smoothRot;               // camera space
+    private Vector3    _smoothPos, _smoothVel;   // chest frame (camera position, chest orientation vs bind)
+    private Quaternion _smoothRot;               // chest frame
     private bool       _smoothInit;
 
     private void Awake()
@@ -69,6 +87,11 @@ public class TorchArmAnimator : MonoBehaviour
         _upper    = _animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
         _lower    = _animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
         _hand     = _animator.GetBoneTransform(HumanBodyBones.LeftHand);
+        _chest    = _animator.GetBoneTransform(HumanBodyBones.UpperChest);
+        if (_chest == null) _chest = _animator.GetBoneTransform(HumanBodyBones.Chest);
+        if (_chest == null) _chest = _animator.GetBoneTransform(HumanBodyBones.Spine);
+        // Awake runs before the Animator first poses the rig, so this is the bind (T-pose) orientation.
+        if (_chest != null) _chestBindInv = Quaternion.Inverse(Quaternion.Inverse(transform.rotation) * _chest.rotation);
         _layer    = _animator.GetLayerIndex(_layerName);
         if (_layer < 0)
             Debug.LogWarning($"[TorchArmAnimator] Animator has no '{_layerName}' layer — run " +
@@ -138,10 +161,16 @@ public class TorchArmAnimator : MonoBehaviour
         float w = Weight;
         if (w <= 0f) { _hasWritten = false; _smoothInit = false; return; }
 
-        // 2. Smooth the animated hand in camera space (what the player sees).
-        Transform cam = _camera.transform;
-        Vector3    rawPos = cam.InverseTransformPoint(_hand.position);
-        Quaternion rawRot = Quaternion.Inverse(cam.rotation) * _hand.rotation;
+        // 2. Smooth the animated hand in the chest frame (camera position + chest orientation relative to bind).
+        //    In this frame the hand only moves with the arm animation: the head-look IK leaning/twisting the spine
+        //    (it lags the mouse) and the stepped body cancel out. Smoothing it in full camera space instead made it
+        //    trail every pitch/yaw change and drift up the screen.
+        Transform  cam   = _camera.transform;
+        Quaternion level = Quaternion.Euler(0f, cam.eulerAngles.y, 0f);
+        Quaternion body  = _chest != null ? _chest.rotation * _chestBindInv : level;
+        Quaternion invBody = Quaternion.Inverse(body);
+        Vector3    rawPos = invBody * (_hand.position - cam.position);
+        Quaternion rawRot = invBody * _hand.rotation;
         if (!_smoothInit)
         {
             _smoothPos = rawPos; _smoothVel = Vector3.zero; _smoothRot = rawRot; _smoothInit = true;
@@ -149,8 +178,16 @@ public class TorchArmAnimator : MonoBehaviour
         _smoothPos = Vector3.SmoothDamp(_smoothPos, rawPos, ref _smoothVel, _handSmoothTime);
         _smoothRot = Quaternion.Slerp(_smoothRot, rawRot, 1f - Mathf.Exp(-_handRotationSharpness * Time.deltaTime));
 
-        Vector3    targetPos = Vector3.Lerp(_hand.position, cam.TransformPoint(_smoothPos + _viewOffset), w);
-        Quaternion targetRot = Quaternion.Slerp(_hand.rotation, cam.rotation * _smoothRot, w);
+        // Place it in the view frame (camera yaw + clamped pitch) so it stays put on screen; the rotation only
+        // follows part of the pitch (_pitchTiltFollow) so the torch stays nearly upright.
+        Vector3 fwd   = Quaternion.Inverse(level) * cam.forward;
+        float   pitch = -Mathf.Atan2(fwd.y, new Vector2(fwd.x, fwd.z).magnitude) * Mathf.Rad2Deg; // + = looking down
+        pitch = Mathf.Clamp(pitch, -_pitchFollowLimit, _pitchFollowLimit) * _pitchFollow;
+        Quaternion view = level * Quaternion.Euler(pitch, 0f, 0f);
+
+        Vector3    targetPos = Vector3.Lerp(_hand.position, cam.position + view * (_smoothPos + _viewOffset), w);
+        Quaternion tilt      = level * Quaternion.Euler(pitch * _pitchTiltFollow, 0f, 0f);
+        Quaternion targetRot = Quaternion.Slerp(_hand.rotation, tilt * _smoothRot, w);
 
         // 3. Two-bone IK to the smoothed target, then set the hand rotation.
         SolveTwoBone(targetPos);
@@ -168,7 +205,12 @@ public class TorchArmAnimator : MonoBehaviour
         Vector3 a = _upper.position, b = _lower.position, c = _hand.position;
         float lab = Vector3.Distance(a, b), lbc = Vector3.Distance(b, c);
         Vector3 toT = target - a;
-        float lat = Mathf.Clamp(toT.magnitude, Mathf.Abs(lab - lbc) + 1e-4f, lab + lbc - 1e-4f);
+        // Soft reach: ease distances past 98 % of the limit toward it, never reaching full extension (where the
+        // elbow is infinitely sensitive). Keep the normal pose (incl. the walk cycle) below the soft zone, or the
+        // hand would follow the stepped shoulder instead of the smoothed target.
+        float maxR = (lab + lbc) * _maxReach, soft = maxR * 0.98f, d = toT.magnitude;
+        if (d > soft) d = soft + (maxR - soft) * (1f - Mathf.Exp(-(d - soft) / (maxR - soft)));
+        float lat = Mathf.Clamp(d, Mathf.Abs(lab - lbc) + 1e-4f, maxR);
         Vector3 dir = toT.sqrMagnitude > 1e-8f ? toT.normalized : (c - a).normalized;
 
         Vector3 pole = Vector3.ProjectOnPlane(b - a, dir);
