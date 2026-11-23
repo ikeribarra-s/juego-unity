@@ -30,10 +30,10 @@ public class TorchArmAnimator : MonoBehaviour
 
     [Header("Grip (torch in the fist)")]
     [Tooltip("Fist centre relative to the left-hand bone, in metres along the bone's axes. The torch handle passes through it.")]
-    [SerializeField] private Vector3 _gripOffset = new(-0.036f, 0.04f, 0.048f);
+    [SerializeField] private Vector3 _gripOffset = new(0f, 0.104f, 0.036f);
     [Tooltip("Rotation from the hand bone's frame to the torch's upright frame (shaft along +Y). " +
-             "Default: +Y = the curled-finger loop axis of this 3-finger rig, so the shaft passes through the fist.")]
-    [SerializeField] private Vector3 _gripEuler = new(327.4f, 323.1f, 270f);
+             "Default: +Y = the hand's +X (index side, the curled-finger loop axis of the 5-finger skeleton rig), +Z = hand +Z.")]
+    [SerializeField] private Vector3 _gripEuler = new(0f, 0f, 270f);
 
     [Header("First-person arm smoothing")]
     [Tooltip("Local player only: smooth the raised hand every frame in camera space (two-bone IK) so it " +
@@ -45,7 +45,7 @@ public class TorchArmAnimator : MonoBehaviour
     [SerializeField] private float _handRotationSharpness = 10f;
     [Tooltip("First-person framing (local view only): camera-space offset (m) added to the smoothed hand target so " +
              "the lantern sits upper-left on screen when looking level. Other players see the plain animated pose.")]
-    [SerializeField] private Vector3 _viewOffset = new(0.08f, 0.06f, 0.05f);
+    [SerializeField] private Vector3 _viewOffset = new(0.25f, -0.02f, -0.04f);
 
     private Animator     _animator;
     private TorchCarrier _carrier;
