@@ -6,10 +6,10 @@ the level-designer integrates them next (see *Integration notes*).
 
 | | |
 |---|---|
-| Source scene | `ArtSource/Environment/Chunks/Chunks.blend` (all chunks laid out side by side) |
-| Build script | `ArtSource/Environment/Chunks/build_chunks.py` — rebuilds every chunk, the palette texture, the FBX files and `chunks_manifest.json`. Run inside Blender: `exec(open(r"<repo>/ArtSource/Environment/Chunks/build_chunks.py").read())` (or `blender --background --python build_chunks.py`) |
+| Source scene | `ArtSource/Environment/Chunks/Chunks.blend` (all chunks laid out side by side; regenerate it with the build script — the script is the source of truth) |
+| Build script | `ArtSource/Environment/Chunks/build_chunks.py` (+ `chunks_extra.py`: round-2 chunks, corridor variants, `TAGS`, `THEME_HEIGHTS`; `render_chunks.py`: renders + kit sheet) — rebuilds every chunk, the palette texture, the FBX files and `chunks_manifest.json`. Run inside Blender: `exec(open(r"<repo>/ArtSource/Environment/Chunks/build_chunks.py").read())` (or `blender --background --python build_chunks.py`) |
 | Manifest | `ArtSource/Environment/Chunks/chunks_manifest.json` (+ copy next to the prefabs) — per chunk: footprint, doors, walkable tile mask, sockets in Unity coordinates, tri counts |
-| Unity | FBX: `Assets/Art/Environment/Chunks/Models/CH_<Name>.fbx` · prefabs: `Assets/Art/Environment/Chunks/CH_<Name>.prefab` · material `M_Chunks` (+ `M_ChunksWater`) · texture `T_Chunks_D.png` |
+| Unity | FBX: `Assets/Art/Environment/Chunks/Models/CH_<Name>.fbx` · prefabs: `Assets/Art/Environment/Chunks/CH_<Name>.prefab` · material `M_Chunks` (+ `M_ChunksWater`, `M_ChunksShaft`) · texture `T_Chunks_D.png` · runtime component `Assets/_Game/Environment/Chunks/AuthoredChunk.cs` |
 | Prefab builder | `Assets/Editor/ChunkPrefabBuilder.cs` — menu **Fluffterror › Chunks › Build Authored Chunk Prefabs** (re-run after re-exporting) |
 
 ## 1. Grid standard
@@ -24,7 +24,7 @@ the level-designer integrates them next (see *Integration notes*).
 | Facing | prefab +Z = **North**, +X = **East** (unrotated) | doors named by side |
 | Floor | top of walkable floor at **Y = 0** (except the authored pits / flooded basins / balconies) | matches generator floors |
 | Wall ring | the **outer 1-tile ring** of every footprint is wall/rock; walls are **0.5 m thick on the inner half** of the ring (outer half empty) | chunks can sit edge-to-edge with no z-fighting (wall + 1 m gap + wall) |
-| Wall height | **4 m** (ceiling at 4 m); Pillar hall & Ritual room **5 m**; Bell tower **12 m** | between the generator's Catacomb 3.6 m and Gothic 5 m; 2 kit wall modules; clears the 2.39 m skeleton + held lantern |
+| Wall height | **parametric** (`Chunk(H=…)`): base pieces 4 m; halls 4.5–7 m; Bell tower 12 m; the 5 base corridors also ship as **`_H36`** (Catacombs 3.6 m) and **`_H50`** (Gothic / Transition / Hell 5 m) variants. Every chunk has a door **collar** (see §8) so any theme height closes cleanly | generator `WallHeightFor`: Gothic 5, Transition corridors 5 (Gothic default), Catacombs 3.6, Hell 6.5, Cavern 7.5, Graveyard 1.4 (no ceiling) |
 | Corridors | **4 m** clear (= `CorridorWidth` 4) | 2×2 nav flood fill passes |
 | **Door socket** | opening **3 m wide × 3 m high**, centred on each **8 m edge segment**; the 1-tile ring at the socket is walkable floor with 0.5 m stone jambs on both sides + lintel + faceted (chamfered) top corners | any two sockets meet face to face: two chunks form a 2 m deep arched passage |
 | Door sockets per edge | one per 8 m segment; named `SOCKET_Door_<Side>` when the edge has one segment, `SOCKET_Door_<Side><i>` (i = 0,1 from West→East / South→North) when it has two | |
@@ -35,15 +35,20 @@ the level-designer integrates them next (see *Integration notes*).
 
 | Object | Meaning |
 |---|---|
-| `SM_<Chunk>` | all static visual geometry (walls, floor, dressing) — **one mesh, one material `M_Chunks`** |
-| `SM_<Chunk>_Ceiling` | ceiling + ribs (toggleable) |
+| `SM_<Chunk>` | **structure** (walls, trims, big props, the boldest wall stones): LOD0 + LOD1, casts shadows (one-sided), occluder |
+| `SM_<Chunk>_Detail` | **detail** (small jutting stones, chamfered flagstones, bones, candles, books, bars…): LOD0 only, no shadows, occludee only |
+| `SM_<Chunk>_FloorLOD1` | flat merged floor quads: LOD1 only, no shadows |
+| `SM_<Chunk>_Ceiling` | ceiling + ribs, both LODs, **two-sided** shadows (blocks the moon — generator §9) |
+| `SM_<Chunk>_Collar` / `SM_<Chunk>_Roof` | inactive by default; `AuthoredChunk.FitToTheme` scales the collar (pivot at the wall top, 1 m tall → scale Y = corridorHeight − H) and enables the roof for open sky |
+| `SM_<Chunk>_Shaft` | additive light shaft (`M_ChunksShaft`, Chapel) |
+| `SM_<Chunk>_Lid_NN` | sliding sarcophagus lids (Mausoleum), each with its `COL_Lid_NN` child |
 | `SM_<Chunk>_Water` | water surface, material `M_ChunksWater` (flooded room only) |
 | `SM_<Chunk>_Bell` / `SM_<Chunk>_Gate` | movable parts, pivot = hinge (bell top) / gate bottom centre (lift along +Y to open) |
 | `COL_Wall_NN` | box collider, **layer `Walls`** (EnvironmentReverb rays, creature sight blockers) |
 | `COL_Block_NN` | box collider for solid props that should also block sight (pillars, rubble, stairs mass) → layer `Walls` |
 | `COL_Floor_NN` / `COL_Ramp_NN` | walkable box colliders, layer `Default` (ramps are rotated boxes under stairs) |
 | `COL_Rail_NN` | low railings / small solids, layer `Default` |
-| `VOL_Water` | trigger volume (BoxCollider, isTrigger) of the flooded basin |
+| `VOL_Water` / `VOL_Trap` | trigger volumes (flooded basin + sewer channel / spike pit) |
 | `SOCKET_*` | empties: position + orientation. **Socket +Z (forward) = the facing direction** (Unity), +Y = up |
 
 Collision meshes are axis-aligned boxes in their own local space; the prefab builder replaces each
@@ -91,11 +96,11 @@ Tri counts / sockets per chunk: see `chunks_manifest.json` (and the final table 
 
 ## 4. Style
 
-- Chunky faceted low-poly, flat-shaded, PS1-ish: big stone blocks, plinth + cornice courses, jutting
-  stones, chamfered arches, ribbed vaults. Detail is geometry, not texture (pixelation eats texture).
-- **One shared palette atlas** `T_Chunks_D.png` (64 × 64, 8 × 8 cells of 8 px, flat colour + faint
-  2-tone dither) on **one material** `M_Chunks` (URP Lit, Point filter, no mips). Each face's UVs sit
-  inside one colour cell, so Point filtering never bleeds. Palette = ArtDirection §3 (blue-grey stone,
+- **PS2 look (2026-11-24, see §9)**: chunky low-poly silhouettes (plinth + cornice courses, a few bold
+  jutting stones, chamfered arches, ribbed vaults), flat floors, and the small-scale detail in **low-res
+  point-filtered textures + baked vertex-colour AO/grime**. (Round 1–2 were flat-colour PS1-ish; superseded.)
+- **One shared atlas** `T_Chunks_D.png` (512 × 512, 8 × 8 cells of 64 px, one tileable pattern per
+  palette entry) on **one material** `M_Chunks` (`Fluffterror/PS2Lit`, Point filter, no mips). Palette = ArtDirection §3 (blue-grey stone,
   near-black shadow, amber/ember accents, sick red ritual, ghost green exit, bone white) + wood, iron,
   straw, dirt, brass. The kits are flat-colour URP Lit too, so kit props sit in the chunks naturally.
 - No baked lighting; light comes from the torch sockets (≤ 4 per set piece, landmark lights unshadowed).
@@ -103,6 +108,7 @@ Tri counts / sockets per chunk: see `chunks_manifest.json` (and the final table 
 ## 5. Budgets
 
 ≤ 3k tris per corridor chunk, ≤ 8k per room / set piece (visual meshes; colliders are boxes). Shared materials only.
+PS2 targets (§9.3) are tighter.
 
 ## 6. Build results (2026-11-24)
 
@@ -175,3 +181,193 @@ blocks a standing one; stair ramps 31° / 34°, flooded ramps 18°, balcony at 3
 10. **Rebuild**: edit `build_chunks.py` → run it in Blender (re-exports FBX + manifest) → Unity
     **Fluffterror › Chunks › Build Authored Chunk Prefabs**. Renders: `render_chunks.py`
     (`render_all()`, `kit_render()`).
+
+---
+
+## 8. Round 2 (2026-11-24): warm palette, theme heights, 16 new chunks, built-in performance
+
+> The round-1 numbers in §6 are superseded by the table in §8.5 (walls were rebuilt with the warm palette and LOD split).
+
+### 8.1 Palette
+Walls now use the measured **Modular Dungeon kit** colours (Unity `_BaseColor`): Wall_Dark `7A6B57`, Wall_Medium `77634E`,
+Wall_Highlights `90816E` (+ trim `A39280`, shadow `5E5142`). Floors use the kit's cool floor greys `4D4C5A` / `3C3A46`, so
+floor and wall stay separate in value and hue; ceilings are a dark warm `463B30`. Torch amber `FFB347` is still the most saturated
+warm colour on screen. New cells: rock ×4, crystal, stained glass ×4, meat ×2 (56 of 64 cells used). `Docs/ArtDirection.md` §3/§5 updated.
+
+### 8.2 Theme heights
+| Theme (SectionType) | Generator wall height | Chunk handling |
+|---|---|---|
+| Catacombs | 3.6 m | use `_H36` corridor variants; 4 m chunks: the door lintel (3–4 m) already closes a 3.6 m corridor |
+| GothicRuins / **Transition** (all generator corridors) | 5.0 m | `_H50` variants, or any chunk + `FitToTheme(5)` → collar 1 m |
+| HellPillars | 6.5 m | `FitToTheme(6.5)` → collar scaled to 6.5 m |
+| Cavern | 7.5 m | `FitToTheme(7.5)` → collar to 7.5 m |
+| Graveyard | 1.4 m, open sky | `FitToTheme(1.4, openSky: true)` → collar off, roof cap on (the chunk reads as a small building) |
+
+`AuthoredChunk` (root of every prefab): `FootprintTiles`, `WallHeight`, `FitToTheme(corridorHeight, openSky)`, `GetSockets(kind)`.
+Verified: the collar top lands exactly on 5.0 / 6.5 / 7.5 m, and is off for 3.6 m and for open sky (roof on).
+
+### 8.3 New chunks
+| Chunk | Size | Doors | Identity / landmark | Gameplay reason |
+|---|---|---|---|---|
+| `CH_Room_Library` | 8×16, 5 m | N, S | wall-to-wall bookcases, giant open book on a lectern, library ladder | two freestanding rows break line of sight; **hidden crawl route** (1.4 × 1.3 m) under a toppled bookcase is a shortcut, with evidence inside it |
+| `CH_Room_Larder` | 8×8 | S, E | curtain of hanging hams and sacks, butcher table with a cleaver, cheese, jar shelves | **hiding aisle** behind the meat curtain (2 Hide sockets); a loop room (2 doors) |
+| `CH_SP_Ossuary` | 8×16, 4.5 m | N, S | walls made of skulls, skull pyramid, a skeleton-shaped **"VACANCY"** niche (comedy: the hero fits) | landmark; pyramid breaks line of sight; evidence at the niche |
+| `CH_Room_Chapel` | 8×16, 6 m | S, E0 | pews, altar, broken stained-glass window with an additive **moonlight shaft**, chandelier | crouch cover behind the pews (Hide ×2, evidence under a pew); `SOCKET_LightShaft` for an optional spot light |
+| `CH_Room_PrisonBlock` | 8×16 | N, S | 8 barred cells (4 open with swung doors, 4 locked), tally marks, a prisoner who never left | **hiding spots** in open cells (Hide ×4); bars are see-through (Default layer) but block movement |
+| `CH_SP_WellRoom` | 8×8 | S, W, E | well with a 6 m shaft, winch, bucket | 3-door **loop junction**; the well breaks line of sight; evidence in the bucket (within the 2.5 m interaction range from the rim) |
+| `CH_Room_Mausoleum` | 8×16, 5 m | S | 3 sarcophagi with **sliding lids** (separate objects), knight effigy on a dais, angel statues | a dead-end reward room: evidence inside each sarcophagus |
+| `CH_SP_SewerChannel` | 8×16 | N, S | sunken channel with water, culvert mouth, big outflow **grate** (`SOCKET_Grate`), footbridge | risk/reward evidence on the grate platform across the water, another in the channel (side stairs down); water volume to slow players |
+| `CH_SP_CaveTransition` | 8×16, 5 m | N, S | masonry turns into faceted natural rock, a stalagnate column, stalactites, crystals, puddle | breaks up the masonry between Catacombs and Cavern; the column breaks line of sight |
+| `CH_Room_SpiralHall` | 16×16, 7 m | S0, S1, W0 | **tight spiral stair** (14 steps × 0.25 m) up to a 3.5 m balcony overlooking the hall, long table, chandelier, banners | verticality and a vantage point; evidence at the far end of the balcony |
+| `CH_Corridor_Chewed` | 8×8 | N, S | Chucho's territory: bitten door jambs, claw marks, a chewed door, dug holes, a junk pile with a boot | tells players the den is near (tag `near: CH_SP_ChuchoDen`); evidence in the junk pile |
+| `CH_SP_TrapCorridor` | 8×8 | N, S | spike pit (1.2 m deep) with an unlucky skeleton, a warning skull on a stick | safe 1.2 m ledge detour vs a 0.5 m **plank shortcut** with evidence halfway along; `VOL_Trap` + `SOCKET_Trap` for a kill/damage hook |
+| `CH_Junction_BrokenFloor` | 8×8 cross | N, E, S, W | collapsed floor revealing a cellar and a broken grate over the deeper dark | 4-way junction; evidence down in the cellar (0.24 m steps back up) |
+| `CH_Corridor_Straight_B` | 8×8 | N, S | wall breach with spilled rubble, fallen rib, hanging roots, moss | variety for repeats; evidence tucked behind the rubble |
+| `CH_Corridor_Corner_B` | 8×8 | N, E | corner skull shelf with candle, broken barrel, puddle under a drip | variety for repeats |
+| `CH_Corridor_T_B` | 8×8 | N, E, W | half-raised portcullis (bottom at 2.5 m), banners, weapon rack | variety; you walk under the gate |
+| `CH_Corridor_{Straight,Corner,T,Cross,DeadEnd}_H36` / `_H50` | 8×8 | as base | — | theme-height variants |
+
+### 8.4 Manifest tags (`chunks_manifest.json` → `chunks[].tags`)
+`themes` (SectionType names or `Any`), `role` (corridor / room / setpiece / objective), `weight` (relative pick chance),
+`min` / `max` per map, `torches_suggested` (how many torch sockets to light; corridors 1, rooms ≤ 3, extraction 2 + braziers),
+optional `near` (e.g. the chewed corridor near the den). Source: `TAGS` in `chunks_extra.py`. Required: Chucho's den (1),
+Generator alcove (3), Extraction gate (1), Dead end (≥ 1).
+
+### 8.5 Performance (measured on the prefabs)
+- **LODs**: one `LODGroup` per chunk. LOD0 = structure + detail; LOD1 = structure + flat floor (the boldest wall stones stay).
+  The switch is at screen height 0.30 and the cull at 0.05 (with lodBias 2 and fov 60: an 8 m chunk switches at about 47 m and is culled at about 280 m; a 16 m chunk at about 93 m and 560 m).
+  Checked by rendering: at 20 and 40 m the detail mesh draws and the LOD1 floor does not; at 55 and 120 m it is the reverse; at 320 m nothing draws.
+- **Static flags**: structure has Batching + Occluder + Occludee; detail, LOD1 floor, ceiling, water and shaft have Batching + Occludee; the bell, gate and lids are not static.
+- **Materials**: one shared atlas material `M_Chunks` (URP Lit, SRP Batcher compatible, instancing enabled), plus water or shaft only where they exist.
+- **Shadows**: only the structure (one-sided) and the ceiling (two-sided) cast shadows, plus the moving parts. Detail, floors, water and the shaft cast none.
+- **Colliders**: boxes only, no MeshColliders. Floors are greedy-merged and walls are one box per wall run. Triggers exist only for water and traps.
+- **Lights**: the prefabs contain no lights. Light only `torches_suggested` torch sockets so `DynamicLightBudget` keeps its ≤ 24 visible additional lights.
+
+| Chunk | LOD0 tris | LOD1 tris | Renderers (active) | Materials | Colliders | Shadow casters | Torch sockets |
+|---|---|---|---|---|---|---|---|
+| Corridor_Straight | 1246 | 580 | 4 | 1 | 9 | 2 | 1 |
+| Corridor_Straight_B | 1456 | 832 | 4 | 1 | 10 | 2 | 1 |
+| Corridor_Straight_H36 / H50 | 1042 / 1330 | 472 / 640 | 4 | 1 | 9 | 2 | 1 |
+| Corridor_Corner | 1340 | 688 | 4 | 1 | 12 | 2 | 1 |
+| Corridor_Corner_B | 1348 | 583 | 5 | 2 | 14 | 2 | 1 |
+| Corridor_Corner_H36 / H50 | 1196 / 1472 | 628 / 808 | 4 | 1 | 12 | 2 | 1 |
+| Corridor_T | 1298 | 734 | 4 | 1 | 16 | 2 | 1 |
+| Corridor_T_B | 1618 | 934 | 4 | 1 | 18 | 2 | 1 |
+| Corridor_T_H36 / H50 | 1178 / 1406 | 530 / 746 | 4 | 1 | 16 | 2 | 1 |
+| Corridor_Cross (+H36 / H50) | 1628 (1604 / 1676) | 902 (902 / 986) | 4 | 1 | 23 | 2 | 0 |
+| Corridor_DeadEnd (+H36 / H50) | 1354 (1330 / 1642) | 518 (542 / 806) | 4 | 1 | 8 | 2 | 1 |
+| Corridor_Chewed | 1782 | 596 | 4 | 1 | 10 | 2 | 1 |
+| Junction_BrokenFloor | 1906 | 1022 | 4 | 1 | 34 | 2 | 1 |
+| Room_Storage | 1728 | 998 | 4 | 1 | 15 | 2 | 1 |
+| Room_Larder | 1887 | 1080 | 4 | 1 | 28 | 2 | 1 |
+| Room_Crypt | 3062 | 1332 | 4 | 1 | 22 | 2 | 2 |
+| Room_Library | 4712 | 1792 | 4 | 1 | 29 | 2 | 2 |
+| Room_Chapel | 3652 | 2072 | 5 | 2 | 30 | 2 | 2 |
+| Room_PrisonBlock | 4438 | 1496 | 4 | 1 | 47 | 2 | 2 |
+| Room_Mausoleum | 3284 | 1640 | 7 | 1 | 22 | 5 | 2 |
+| Room_PillarHall | 4938 | 1930 | 4 | 1 | 42 | 2 | 4 |
+| Room_Ritual | 5300 | 1992 | 4 | 1 | 27 | 2 | 2 |
+| Room_SpiralHall | 6232 | 2484 | 4 | 1 | 71 | 2 | 3 |
+| SP_CollapsedCorridor | 3006 | 864 | 4 | 1 | 11 | 2 | 1 |
+| SP_FloodedCrypt | 2260 | 1254 | 5 | 2 | 28 (1 trigger) | 2 | 2 |
+| SP_PitBridge | 3388 | 1734 | 4 | 1 | 29 | 2 | 2 |
+| SP_BellTower | 2844 | 1644 | 5 | 1 | 24 | 3 | 2 |
+| SP_ChuchoDen | 4971 | 1995 | 4 | 1 | 14 | 2 | 1 |
+| SP_Ossuary | 6806 | 322 | 4 | 1 | 20 | 2 | 2 |
+| SP_WellRoom | 1393 | 756 | 4 | 1 | 33 | 2 | 2 |
+| SP_SewerChannel | 2531 | 1145 | 5 | 2 | 31 (1 trigger) | 2 | 2 |
+| SP_CaveTransition | 3478 | 848 | 5 | 2 | 23 | 2 | 1 |
+| SP_TrapCorridor | 1568 | 830 | 4 | 1 | 15 (1 trigger) | 2 | 1 |
+| Generator_Alcove | 1638 | 1004 | 4 | 1 | 13 | 2 | 1 |
+| Extraction_Gate | 5322 | 2126 | 5 | 1 | 27 | 3 | 4 (2 are braziers) |
+
+"Renderers (active)" counts SM_* meshes that are on by default (the collar and roof are off). Most LOD1s are 40–60 % of LOD0.
+The Ossuary's LOD1 is only 5 %: its skull walls become flat bone panels. The Cave's is 24 %: its rocks are detail.
+The SpiralHall has 71 colliders because each spiral step is two boxes; all of them are cheap static boxes.
+
+### 8.6 Verification (Unity, throwaway additive scenes, closed unsaved)
+- **Doors**: all 92 door sockets across the 42 prefabs sit on the footprint edge at a segment centre and face outward. A straight corridor snapped to each door, at all four rotations, gives a clear 0.8 m capsule path through the door, with floor under it and jambs and lintel present.
+- **Torch sockets**: all 59 have a wall within 0.6 m behind them (the Extraction braziers are free-standing).
+- **Walkability**: a multi-level flood fill per chunk (0.25 m grid, a 0.33 m capsule that steps 0.3 m like the CharacterController, crouching to 1.25 m). Every door, evidence, spawn, hide, den, generator and extraction socket is reachable. The only exception is the well bucket, 1.63 m from the rim, which is inside the 2.5 m interaction range.
+- **Layout bugs this test found and fixed**:
+  - The flooded crypt's log plus a column walled off the room.
+  - The bell tower stair foot was flush against a wall: the balcony is now at 2.65 m and the stair foot is 0.6 m from the wall.
+  - The spiral step colliders overlapped each other, and the railings blocked the top landing.
+  - The sewer channel was split by its footbridge: a side stair now goes down from the walkway, and the evidence moved.
+  - The trap evidence sat inside the kill volume: it is now on the plank.
+
+### 8.7 Integration additions (level-designer)
+- After placing a chunk, call `AuthoredChunk.FitToTheme(WallHeightFor(theme of the tiles outside its doors), theme == Graveyard)`.
+  Use the `_H36` variants in Catacombs and the `_H50` variants for corridors in Gothic/Transition.
+- Pick chunks with `tags` (theme, weight, min/max). The den must exist once, and chewed corridors should go near it.
+- `SOCKET_Hide_*` → future hiding logic / creature search points. `SOCKET_Trap` + `VOL_Trap` → damage/kill hook.
+  `SOCKET_Grate` → secret or vent route. `SOCKET_LightShaft` → optional unshadowed spot light (counts toward the light budget).
+  `SM_*_Lid_NN` → slide them along local X to open.
+- Static batching of LOD-grouped objects works in builds. If the generator instantiates chunks at runtime, call `StaticBatchingUtility.Combine` on the chunk roots after generation.
+
+---
+
+## 9. PS2 surface pass (2026-11-24)
+
+Source: `ps2_style.py` (exec'd by `build_chunks.py`). Everything is reproducible from the script; nothing was hand-edited.
+
+### 9.1 What changed
+| | Before | After |
+|---|---|---|
+| Atlas | 64 × 64, 8 px flat-colour cells | **512 × 512, 64 px tileable cells**, one per palette key (same index/order): masonry courses (walls, 2 m period = 32 px/m), dressed ashlar (trim), slab ceiling, irregular flagstones (2 m), planks, riveted plates, rust, bone, straw, weave, rock strata, organic blotches, `skulls` (ossuary wall), `books` (shelf row). Each cell quantised to 6–7 shades of its colour with a 4×4 ordered dither, mean re-centred on the §3 palette value |
+| UVs | each face stretched over one colour cell | **world-anchored**: projected on the dominant axis, `u,v = world position mod period`. Faces larger than one period are cut on the period grid (+ every metre below 2 m on the vertical, for vertex lighting); small faces keep a local origin; thin faces (< 0.2 m: bars, trims) stretch along their length |
+| Vertex colour | none | `Col` (corner, linear float → FBX colour): 14-ray AO against the chunk itself (1.3 m, strength 0.55) × floor-contact grime (warm-dark, bottom 0.9 m of non-floor faces) × low-frequency mottling |
+| Shader | URP Lit | **`Fluffterror/PS2Lit`** (`Assets/Materials/Shaders/PS2Lit.shader`): albedo × vertex colour, Lambert, main + all additional lights (Forward+ cluster loop, Light Layers), shadows, SH ambient, SSAO, fog, optional 32-level colour depth with ordered dither (`_ColorDepth`, 0 = off) |
+| Floors | 5-poly chamfered flagstone per tile | one flat quad per tile (seams/chips are in the texture) |
+| Walls | all 6 box faces | bottom, back (inside the rock ring) and top (under the ceiling) faces dropped; jutting stones 0.45 → 0.16 chance, bolder (0.09–0.15 m) |
+| Ossuary | ~1700 skull quads + 48 modelled skulls | `skulls` panels on both walls and on the pyramid tiers, 4 modelled corner skulls |
+| Library | one quad per book | one `books` panel per shelf row |
+
+Blender renders use the same maths (material = texture × `Col`, backface culling on). `render_chunks.py` takes
+`CHUNK_RENDER_ENGINE=EEVEE` for lit renders. Partial rebuilds: set `CHUNKS_ONLY = ["CH_…"]` in the exec globals
+(the manifest keeps every other entry); `CHUNKS_NO_AUTORUN = True` to just load the functions.
+
+### 9.2 Layout untouched
+Colliders, triggers, sockets, moving parts, collars/roofs and `AuthoredChunk` data of all 42 prefabs were diffed
+before/after in Unity: 1 400 / 1 400 entries identical. Prefab GUIDs kept (overwritten in place).
+
+### 9.3 Budgets (LOD0 visual tris) and results
+Targets: corridor 1×1 ≤ 1.6k · room / set piece 1×1 ≤ 2k · 1×2 ≤ 4k · 2×2 ≤ 5k · bell tower ≤ 3k.
+LOD1 is now 80–95 % of LOD0 on most chunks (the structure mesh carries the tessellation); it only removes small detail.
+See `chunks_manifest.json` for per-object counts.
+
+### 9.4 Meshy hero props (2026-11-24)
+`HERO_PROPS = True` (top of `build_chunks.py`): the procedural feature a Meshy prop supersedes is still generated into a
+throw-away `c.scratch_mb()` (same RNG draws, so every other piece is unchanged) and a `HERO_<Prop>[_NN][__<Part>]` empty
+marks the spot (+Z = prop front, uniform scale in the empty). `ChunkPrefabBuilder.NestHeroProps` nests
+`Assets/Art/Environment/Props/Meshy/PROP_Meshy<Prop>.prefab` there, strips the prop's own collider (the chunk's `COL_*`
+boxes already cover it, so colliders/sockets stay identical: 1 400/1 400 entries), adds it to both LODs and re-parents
+`__<Part>` anchors under the moving object (`SM_SP_BellTower_Bell`, `SM_Room_Mausoleum_Lid_03`) so they swing/slide with it.
+Do not parent empties under meshes in Blender: the FBX `bake_space_transform` then exports them Y/Z-swapped.
+
+| Chunk | Prop | Replaces | Tris |
+|---|---|---|---|
+| SP_BellTower | Bell (under `SM_*_Bell`, rope kept) | procedural bell + clapper | 1 163 |
+| SP_Ossuary | Skull | the 0.45 m top skull | 584 |
+| Room_Mausoleum | Effigy (on lid 3), Angel x2 (on the pedestals) | effigy boxes, statue boxes | 1 454, 1 455 |
+| Room_Library | Lectern | lectern box + book | 780 |
+| SP_ChuchoDen | Nest | straw mound + loose straws | 1 940 |
+| Room_Ritual | Altar (on the dais) | altar block + drips | 1 164 |
+| Room_Larder | Butcher | table, cleaver, cheese | 1 455 |
+| SP_WellRoom | Winch (posts, beam, rope; well + bucket stay procedural) | posts, roller, crank | 873 |
+| Room_Chapel / Room_SpiralHall (x1.45) | Chandelier | ring + candles | 880 |
+| SP_CaveTransition | Stalagnate | 3-cylinder column | 970 |
+
+Processing (`ArtSource/Props/Meshy/process_meshy.py`, file `MeshyLibrary.blend`): fit to a target box, weld + collapse
+decimate (planar dissolve, then fine voxel remesh when collapse stalls), Smart UV, bake Meshy albedo, nearest-colour
+palette snap to ArtDirection ramps with a 4x4 dither (128-256 px, Point, no mips), Cycles AO -> vertex colour, PS2Lit.
+
+### 9.5 Meshy prop library (`ArtSource/Props/Meshy/MeshyLibrary.blend`)
+One file is both the working file for `process_meshy.py` and a Blender **asset library**: add the folder
+`ArtSource/Props/Meshy` under Preferences > File Paths > Asset Libraries. Every `SM_Meshy<Name>` (low-poly only, 26 so far)
+is a marked asset in a `Meshy/<Category>` catalogue (Furniture, Containers, Lighting, Funerary, Ritual, Debris, Structural;
+`blender_assets.cats.txt`, deterministic UUIDs) with tags `tris:N`, `chunk:CH_...`, `tex:Npx`, a description naming its Unity
+prefab, and a preview. Unity counterparts: `Assets/Art/Environment/Props/Meshy/PROP_Meshy<Name>.prefab` (PS2Lit, BoxCollider).
+To use one in a chunk: add `c.hero("<Name>", pos, face)` in the chunk definition (see 9.4) and rebuild.
+New props: generate (Meshy 6, prompt prefix in `PROPS`/report), add a `PROPS` + `LIB` entry, `process(...)`, `mark_library()`.
+Hi-poly originals stay outside the repo in `juego-unity/meshy_sources/*.glb` (`import_archive(name)` re-imports one for a re-bake).

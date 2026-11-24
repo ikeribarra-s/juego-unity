@@ -29,7 +29,9 @@ big shapes, and readable value contrast over texture detail.
 
 | Role | Colour | Use |
 |---|---|---|
-| Environment base | Desaturated stone greys / blue-greys `#2B2F36` `#3E4450` `#5A6270` | Walls, floors |
+| Environment walls | Muted warm-brown stone, matched to the Modular Dungeon kit: `#7A6B57` `#77634E` `#90816E` (trim `#A39280`, shadowed `#5E5142`) | Walls, arches, pillars, trims (2026-11-24, was blue-grey) |
+| Environment floors | Cool dark grey-violet flagstone, matched to the kit floor: `#4D4C5A` `#3C3A46` `#45444F` | Floors; keeps floor/wall contrast |
+| Natural rock | `#5B5248` `#4A433B` `#6A6156` `#3A342E` | Caves (`CH_SP_CaveTransition`) |
 | Shadow | Near-black blue `#0D0F14` | Never pure black |
 | Warm light | Torch amber `#FFB347` → ember `#C2502A` | The only warm tones in the world |
 | Characters | **[DECIDE]** Saturated pastels (pink, mint, butter yellow, lilac)? | Must pop against the cold environment |
@@ -60,6 +62,15 @@ big shapes, and readable value contrast over texture detail.
 - Base kits in use: *Updated Modular Dungeon (May 2019)*, *Ultimate Modular Ruins (Aug 2021)*, *Furniture Pack (Mar 2019)*.
 - New environment assets must **match those kits' scale and low-poly style** — measure against them.
 - Grid: 1 tile = 1 world unit (`DungeonGenerator`), wall height 3.
+- **Authored map chunks** (`ArtSource/Environment/Chunks/README.md`, prefabs in `Assets/Art/Environment/Chunks/`):
+  8 m cells, one atlas `T_Chunks_D` (512², Point, no mips) on one material (`Fluffterror/PS2Lit`). Walls use the
+  kit's warm brown, floors the kit's cool grey, so the torch amber `#FFB347` stays the warmest thing on screen
+  (wall browns are low-saturation, value ≈ 0.45).
+- **PS2 look (2026-11-24):** big shapes and silhouettes are geometry (courses, arches, ribs, pillars); small-scale
+  detail is **texture**: tileable 64 px cells per material at ~32 px/m (walls, floors) / 64 px/m (props), Point
+  filtered, 6–7 shades per material with ordered dither, mean on the §3 palette colour. Lighting depth comes from
+  **baked vertex-colour AO + floor grime** (1 m vertex grid), multiplied in by `PS2Lit`. No bevels or chamfers
+  smaller than ~0.3 m; no normal maps; no mips. New environment pieces follow `ArtSource/Environment/Chunks/ps2_style.py`.
 - Prop budget: ≤ 1.5k tris for small props, ≤ 3k for furniture.
 
 ## 6. UI

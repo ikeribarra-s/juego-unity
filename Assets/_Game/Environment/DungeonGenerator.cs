@@ -900,6 +900,7 @@ public class DungeonGenerator : MonoBehaviour
             {
                 // Lantern prefabs are Z-up: keep the upright correction, then pull the model out of the wall
                 // so the flame light isn't buried (pivot = lantern centre).
+                Torch.ApplySpawnScale(go);
                 go.transform.rotation = Quaternion.Euler(0f, YawFromDir(inward), 0f) * torch.UprightRotation;
                 Vector3 inwardW = new(inward.x, 0f, inward.y);
                 Vector3 wallFace = new(t.x + 0.5f - inward.x * 0.5f, pos.y, t.y + 0.5f - inward.y * 0.5f);

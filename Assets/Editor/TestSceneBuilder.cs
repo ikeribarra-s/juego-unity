@@ -211,7 +211,8 @@ public static class TestSceneBuilder
             if (torchPrefab != null)
             {
                 var torch = Spawn(torchPrefab, torches, pos + Vector3.up * 1.0f, torchPrefab.GetComponent<Torch>().UprightRotation); // FBX is Z-up: stand it upright
-                WallMount.PlaceInFrontOf(torch.transform, pos + Vector3.up * 1.0f, Vector3.up, 0f);                 // pivot = lantern centre: rest its base on the pedestal
+                Torch.ApplySpawnScale(torch);
+                WallMount.PlaceInFrontOf(torch.transform, pos + Vector3.up * 1.0f, Vector3.up, 0f);              // pivot = lantern centre: rest its base on the pedestal
             }
         }
         Label(torchPrefab != null ? "TORCHES — E to take" : "TORCHES (prefab missing)", torches, new Vector3(15.25f, 2.4f, 2), 0.4f);

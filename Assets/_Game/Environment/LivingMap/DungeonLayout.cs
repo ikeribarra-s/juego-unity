@@ -33,6 +33,15 @@ public class DungeonLayout : MonoBehaviour
     [SerializeField] private int _startToExtractionWalk;
     [SerializeField] private int _sectionLinks;
     [SerializeField] private int _extraLoops;
+    [Header("Authored chunks")]
+    [SerializeField] private string[] _chunks = Array.Empty<string>();
+    [Tooltip("SOCKET_Hide_* — hiding spots (future hiding logic / creature search points).")]
+    [SerializeField] private Vector3[] _hidePoints = Array.Empty<Vector3>();
+    [Tooltip("VOL_Water centres (flooded crypt, sewer) — for a future Flooded modifier.")]
+    [SerializeField] private Vector3[] _waterPoints = Array.Empty<Vector3>();
+    [SerializeField] private bool _hasDen;
+    [Tooltip("SOCKET_Den — Chucho's den drop point (CreatureDen).")]
+    [SerializeField] private Vector3 _den;
 
     public static DungeonLayout Current { get; private set; }
 
@@ -45,6 +54,20 @@ public class DungeonLayout : MonoBehaviour
     public int StartToExtractionWalk => _startToExtractionWalk;
     public int SectionLinks => _sectionLinks;
     public int ExtraLoops => _extraLoops;
+    public IReadOnlyList<string> Chunks => _chunks;
+    public IReadOnlyList<Vector3> HidePoints => _hidePoints;
+    public IReadOnlyList<Vector3> WaterPoints => _waterPoints;
+    public bool HasDen => _hasDen;
+    public Vector3 Den => _den;
+
+    public void SetChunkData(string[] chunks, Vector3[] hide, Vector3[] water, bool hasDen, Vector3 den)
+    {
+        _chunks = chunks ?? Array.Empty<string>();
+        _hidePoints = hide ?? Array.Empty<Vector3>();
+        _waterPoints = water ?? Array.Empty<Vector3>();
+        _hasDen = hasDen;
+        _den = den;
+    }
 
     private void OnEnable() => Current = this;
     private void OnDisable() { if (Current == this) Current = null; }

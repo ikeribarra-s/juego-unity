@@ -1,0 +1,1496 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faf86f23c09652d45b64dbe09ac61b5b, type: 3}
+  m_Name: ChunkLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::ChunkLibrary
+  _entries:
+  - Name: CH_Corridor_Straight
+    Prefab: {fileID: 4830422357752543439, guid: c7548a98e3f086447860c7bd5d5ca64b, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 1
+    Min: 0
+    Max: 12
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Corridor_Corner
+    Prefab: {fileID: 4238404893712969205, guid: 875caac48b2beee4684c9a784a03eac8, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 1
+    Min: 0
+    Max: 10
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Corridor_T
+    Prefab: {fileID: 7663273520625538991, guid: 582962faf8a26a9488fa4f41fac28156, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.8
+    Min: 0
+    Max: 8
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Cross
+    Prefab: {fileID: 8570078221394248202, guid: 79e4962ceaadf1448bd6d657755629f8, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.5
+    Min: 0
+    Max: 4
+    TorchesSuggested: 0
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_DeadEnd
+    Prefab: {fileID: 848030898015005278, guid: aa4cf96ee6a211c4198cf660dfd781d2, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.4
+    Min: 1
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '########'
+    - '########'
+    - '##oooo##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Room_Storage
+    Prefab: {fileID: 1157613841391079141, guid: 736b924237b3aa74c8e9493538fa44a7, type: 3}
+    Role: room
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.6
+    Min: 0
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '########'
+    - '#oo...o#'
+    - '#oo...o#'
+    - '#.....o#'
+    - '#.....o#'
+    - '#.....o#'
+    - '#.....o#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Room_PillarHall
+    Prefab: {fileID: 1134797258101322770, guid: 9f09928eae7bdd14fbc790e36ecea253, type: 3}
+    Role: room
+    Size: {x: 16, y: 16}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - HellPillars
+    Weight: 0.4
+    Min: 0
+    Max: 2
+    TorchesSuggested: 3
+    Near: 
+    DisplayName: the Pillar Hall
+    Mask:
+    - '##########DDDD##'
+    - '#............oo#'
+    - D..ooo....ooooo#
+    - D..ooo....ooo..#
+    - D..ooo....ooo..#
+    - D..............#
+    - '#..............#'
+    - '#..ooo....ooo..#'
+    - '#..ooo....ooo..#'
+    - '#..............#'
+    - '#..............D'
+    - '#..ooo....ooo..D'
+    - '#..ooo....ooo..D'
+    - '#..ooo....oooo.D'
+    - '#..........ooo.#'
+    - '##DDDD##########'
+    Doors:
+    - Label: N1
+      Side: 78
+      LocalPos: {x: 4, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S0
+      Side: 83
+      LocalPos: {x: -4, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: E0
+      Side: 69
+      LocalPos: {x: 8, y: 0, z: -4}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: W1
+      Side: 87
+      LocalPos: {x: -8, y: 0, z: 4}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Room_Crypt
+    Prefab: {fileID: 7996008005411471353, guid: 0a9638a5b6989ce4f90ef10080aee3c4, type: 3}
+    Role: room
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - Catacombs
+    - Graveyard
+    Weight: 0.5
+    Min: 0
+    Max: 2
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Crypt
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o.oo.o#'
+    - '#o.oo.o#'
+    - '#o.oo.o#'
+    - '#o.oo.o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_Room_Ritual
+    Prefab: {fileID: 6054219907573905884, guid: 286061f9806306e47804dd9d40db717c, type: 3}
+    Role: room
+    Size: {x: 16, y: 16}
+    WallHeight: 5
+    Themes:
+    - HellPillars
+    - GothicRuins
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Ritual Altar
+    Mask:
+    - '##########DDDD##'
+    - '#ooo........ooo#'
+    - '#ooo........ooo#'
+    - '#ooo........ooo#'
+    - '#..............#'
+    - '#..............#'
+    - '#.....oooo.....#'
+    - '#.....oooo.....#'
+    - '#.....oooo.....#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '#ooo........ooo#'
+    - '#ooo........ooo#'
+    - '#ooo........ooo#'
+    - '##DDDD##########'
+    Doors:
+    - Label: S0
+      Side: 83
+      LocalPos: {x: -4, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N1
+      Side: 78
+      LocalPos: {x: 4, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_SP_CollapsedCorridor
+    Prefab: {fileID: 4595459536207417303, guid: 082e8a0fbec77c34e9286ab40e57b444, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.3
+    Min: 0
+    Max: 2
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##ooo.##'
+    - '##ooo.##'
+    - '##ooo.##'
+    - '##ooo.##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_SP_FloodedCrypt
+    Prefab: {fileID: 5182632156657043866, guid: 59c8fbeb8d9130a46ad12c35f76ba633, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - Catacombs
+    - Cavern
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Flooded Crypt
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#ooo...#'
+    - '#ooo...#'
+    - '#ooo...#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_SP_PitBridge
+    Prefab: {fileID: 2299985245939920757, guid: 6c45bfcb6eb8fe34e94642251b31a16d, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - Cavern
+    - HellPillars
+    - GothicRuins
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Pit Bridge
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#oooooo#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_SP_BellTower
+    Prefab: {fileID: 3321418830519666443, guid: f3e6968324173244194faa295e7d695d, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 8}
+    WallHeight: 12
+    Themes:
+    - GothicRuins
+    - Graveyard
+    Weight: 0.2
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Bell Tower
+    Mask:
+    - '########'
+    - '#......#'
+    - D....oo#
+    - D....oo#
+    - D....oo#
+    - D....oo#
+    - '#....oo#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_SP_ChuchoDen
+    Prefab: {fileID: 794266819482838448, guid: 7b6242f1688f55041990d48bb180969c, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 1
+    Min: 1
+    Max: 1
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: the Den
+    Mask:
+    - '########'
+    - '#ooo...#'
+    - '#ooo...#'
+    - '#ooo...#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Generator_Alcove
+    Prefab: {fileID: 3689768235484304364, guid: 0d7a4423bd166ee4f90c4780668040f7, type: 3}
+    Role: objective
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 1
+    Min: 3
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '########'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Extraction_Gate
+    Prefab: {fileID: 7745572291804054968, guid: 138e731ffceff9c4c89150a92844ec0f, type: 3}
+    Role: objective
+    Size: {x: 16, y: 16}
+    WallHeight: 5
+    Themes:
+    - Any
+    Weight: 1
+    Min: 1
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Gate
+    Mask:
+    - '######....######'
+    - '#..............#'
+    - '#.oooo....oooo.#'
+    - '#.oooo....oooo.#'
+    - '#.oo........oo.#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '#.oo........oo.#'
+    - '#.oo........oo.#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '##DDDD##########'
+    Doors:
+    - Label: S0
+      Side: 83
+      LocalPos: {x: -4, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Room_Library
+    Prefab: {fileID: 5977749601318379443, guid: 7d109a098bd838b489d094e55404211e, type: 3}
+    Role: room
+    Size: {x: 8, y: 16}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    Weight: 0.3
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Library
+    Mask:
+    - '##DDDD##'
+    - '#.....o#'
+    - '#.....o#'
+    - '#.....o#'
+    - '#o.oooo#'
+    - '#o.oooo#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#oooo.o#'
+    - '#oooo.o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '#o....o#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_Room_Larder
+    Prefab: {fileID: 705490956731893843, guid: 5052e07410a9549488b645ce343406fa, type: 3}
+    Role: room
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - GothicRuins
+    - Transition
+    Weight: 0.35
+    Min: 0
+    Max: 1
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: the Larder
+    Mask:
+    - '########'
+    - '#......#'
+    - '#......D'
+    - '#......D'
+    - '#.oooo.D'
+    - '#.oooo.D'
+    - '#oo....#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_SP_Ossuary
+    Prefab: {fileID: 6796079148352512855, guid: 425c288489010f64d95178b3782b0cde, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 4.5
+    Themes:
+    - Catacombs
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Ossuary
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#..oo..#'
+    - '#..oo..#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_Room_Chapel
+    Prefab: {fileID: 5380876854691915114, guid: 15ca646ee135e754595c4485fcd16565, type: 3}
+    Role: room
+    Size: {x: 8, y: 16}
+    WallHeight: 6
+    Themes:
+    - GothicRuins
+    - Graveyard
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Chapel
+    Mask:
+    - '########'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#oo....D'
+    - '#......D'
+    - '#oo....D'
+    - '#......D'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: E0
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: -4}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Room_PrisonBlock
+    Prefab: {fileID: 7210970770840679725, guid: 48f103ca7cea89542b45f926cc05da36, type: 3}
+    Role: room
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - GothicRuins
+    - Catacombs
+    Weight: 0.3
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Prison
+    Mask:
+    - '##DDDD##'
+    - '#oo....#'
+    - '#oo....#'
+    - '#oo....#'
+    - '#oo..oo#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#oo..oo#'
+    - '#oo....#'
+    - '#oo....#'
+    - '#oo....#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_SP_WellRoom
+    Prefab: {fileID: 8778949524370251341, guid: 64d76c80942639244b9cd09e8835fc08, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.3
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Well Room
+    Mask:
+    - '########'
+    - '#......#'
+    - D.oooo.D
+    - D.oooo.D
+    - D.oooo.D
+    - D.oooo.D
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Room_Mausoleum
+    Prefab: {fileID: 4752880357962582578, guid: 444c8d6cd625c8049a982ec624d32ac6, type: 3}
+    Role: room
+    Size: {x: 8, y: 16}
+    WallHeight: 5
+    Themes:
+    - Graveyard
+    - Catacombs
+    Weight: 0.3
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Mausoleum
+    Mask:
+    - '########'
+    - '#..oo..#'
+    - '#..oo..#'
+    - '#..oo..#'
+    - '#..oo..#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '#......#'
+    - '#......#'
+    - '#oo..oo#'
+    - '#oo..oo#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_SP_SewerChannel
+    Prefab: {fileID: 7034094483721063734, guid: b0fc325c0a290ed44b6192d35a015784, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 4
+    Themes:
+    - Catacombs
+    - Transition
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 2
+    Near: 
+    DisplayName: the Sewer
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_SP_CaveTransition
+    Prefab: {fileID: 8150053924934375407, guid: 10e848f7af4da414d9679e6b14529039, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 16}
+    WallHeight: 5
+    Themes:
+    - Cavern
+    - Catacombs
+    Weight: 0.4
+    Min: 0
+    Max: 2
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: the Crystal Cave
+    Mask:
+    - '##DDDD##'
+    - '#......#'
+    - '#....oo#'
+    - '#......#'
+    - '#oo....#'
+    - '#oo....#'
+    - '#..ooo.#'
+    - '#..ooo.#'
+    - '#..ooo.#'
+    - '#....oo#'
+    - '#....oo#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '#......#'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 8}
+      LocalForward: {x: 0, y: 0, z: 1}
+  - Name: CH_Room_SpiralHall
+    Prefab: {fileID: 6239512596571498803, guid: dd648e2ba0f82dd4095d9d194dcac630, type: 3}
+    Role: room
+    Size: {x: 16, y: 16}
+    WallHeight: 7
+    Themes:
+    - GothicRuins
+    Weight: 0.2
+    Min: 0
+    Max: 1
+    TorchesSuggested: 3
+    Near: 
+    DisplayName: the Spiral Hall
+    Mask:
+    - '################'
+    - '#..........oooo#'
+    - '#..........oooo#'
+    - '#..........oooo#'
+    - '#..........oooo#'
+    - '#..............#'
+    - '#..............#'
+    - '#..............#'
+    - '#....oooo......#'
+    - '#....oooo......#'
+    - D..............#
+    - D..............#
+    - D..............#
+    - D..............#
+    - '#..............#'
+    - '##DDDD####DDDD##'
+    Doors:
+    - Label: S0
+      Side: 83
+      LocalPos: {x: -4, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: S1
+      Side: 83
+      LocalPos: {x: 4, y: 0, z: -8}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W0
+      Side: 87
+      LocalPos: {x: -8, y: 0, z: -4}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Chewed
+    Prefab: {fileID: 8171365024331286174, guid: ae3127cc14a9d2c4e872390d6b691858, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.3
+    Min: 0
+    Max: 3
+    TorchesSuggested: 1
+    Near: CH_SP_ChuchoDen
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_SP_TrapCorridor
+    Prefab: {fileID: 6413361055128442448, guid: f4a3c99f3e385eb4486ef9bb0cb5fa9a, type: 3}
+    Role: setpiece
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.25
+    Min: 0
+    Max: 2
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Junction_BrokenFloor
+    Prefab: {fileID: 318990674499881363, guid: bd956956473957345a9285d7de38ac73, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - GothicRuins
+    - Catacombs
+    Weight: 0.25
+    Min: 0
+    Max: 1
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Straight_B
+    Prefab: {fileID: 6424314155367605309, guid: fb12f5e8523695545ab17e02ba882612, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Any
+    Weight: 0.6
+    Min: 0
+    Max: 4
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##...o##'
+    - '##...o##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Corridor_Corner_B
+    Prefab: {fileID: 6669471707446458970, guid: a3f78aaa8984c684d9faaa7a5c322efe, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - Catacombs
+    - Cavern
+    - Transition
+    Weight: 0.5
+    Min: 0
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Corridor_T_B
+    Prefab: {fileID: 5345414564277955007, guid: 2a888ea97a686ac4b9c5df0cc6baa6fb, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 4
+    Themes:
+    - GothicRuins
+    - Transition
+    Weight: 0.4
+    Min: 0
+    Max: 2
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Straight_H36
+    Prefab: {fileID: 3120759704473142855, guid: 540f9c0479221cb40913be72029b87d9, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 3.6
+    Themes:
+    - Catacombs
+    Weight: 1
+    Min: 0
+    Max: 12
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Corridor_Straight_H50
+    Prefab: {fileID: 2253907395069760415, guid: 0a5c63a59ad0357449e0877b2abb0415, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - Transition
+    - HellPillars
+    Weight: 1
+    Min: 0
+    Max: 12
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Corridor_Corner_H36
+    Prefab: {fileID: 4080255790598260265, guid: 9b64fd28ddfd0544c842f2efbff96c6c, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 3.6
+    Themes:
+    - Catacombs
+    Weight: 1
+    Min: 0
+    Max: 10
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Corridor_Corner_H50
+    Prefab: {fileID: 345603738707328406, guid: b3cba05ad0aa03e4499be7964858fe00, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - Transition
+    - HellPillars
+    Weight: 1
+    Min: 0
+    Max: 10
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '##.....D'
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+  - Name: CH_Corridor_T_H36
+    Prefab: {fileID: 8783092765191958043, guid: a745791910843c2499bf19b11e9995e7, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 3.6
+    Themes:
+    - Catacombs
+    Weight: 0.8
+    Min: 0
+    Max: 8
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_T_H50
+    Prefab: {fileID: 7788998588202009856, guid: ed7311fbb0117884392dd20584349fc8, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - Transition
+    - HellPillars
+    Weight: 0.8
+    Min: 0
+    Max: 8
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '########'
+    - '########'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Cross_H36
+    Prefab: {fileID: 1797664169476588372, guid: e2a526201d1b4fe4fbd24e86d11028d1, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 3.6
+    Themes:
+    - Catacombs
+    Weight: 0.5
+    Min: 0
+    Max: 4
+    TorchesSuggested: 0
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_Cross_H50
+    Prefab: {fileID: 4471103552863017230, guid: 00a2e45e287ebcc4fbb056ce74355559, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - Transition
+    - HellPillars
+    Weight: 0.5
+    Min: 0
+    Max: 4
+    TorchesSuggested: 0
+    Near: 
+    DisplayName: 
+    Mask:
+    - '##DDDD##'
+    - '##....##'
+    - D......D
+    - D......D
+    - D......D
+    - D......D
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: N
+      Side: 78
+      LocalPos: {x: 0, y: 0, z: 4}
+      LocalForward: {x: 0, y: 0, z: 1}
+    - Label: E
+      Side: 69
+      LocalPos: {x: 4, y: 0, z: 0}
+      LocalForward: {x: 1, y: 0, z: 0}
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+    - Label: W
+      Side: 87
+      LocalPos: {x: -4, y: 0, z: 0}
+      LocalForward: {x: -1, y: 0, z: 0}
+  - Name: CH_Corridor_DeadEnd_H36
+    Prefab: {fileID: 2693865608753634246, guid: a6d343208911b56429745e6293320d3a, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 3.6
+    Themes:
+    - Catacombs
+    Weight: 0.4
+    Min: 1
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '########'
+    - '########'
+    - '##oooo##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}
+  - Name: CH_Corridor_DeadEnd_H50
+    Prefab: {fileID: 287172386206429554, guid: 2d29ab0b677568240904788706366dcd, type: 3}
+    Role: corridor
+    Size: {x: 8, y: 8}
+    WallHeight: 5
+    Themes:
+    - GothicRuins
+    - Transition
+    - HellPillars
+    Weight: 0.4
+    Min: 1
+    Max: 3
+    TorchesSuggested: 1
+    Near: 
+    DisplayName: 
+    Mask:
+    - '########'
+    - '########'
+    - '##oooo##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##....##'
+    - '##DDDD##'
+    Doors:
+    - Label: S
+      Side: 83
+      LocalPos: {x: 0, y: 0, z: -4}
+      LocalForward: {x: 0, y: 0, z: -1}

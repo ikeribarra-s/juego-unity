@@ -246,7 +246,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
     private readonly List<SectionInfo> _sections = new();
 
-    private struct GeneratorRoom { public RectInt Rect; public float Yaw; }   // chamber + facing toward its entrance
+    private struct GeneratorRoom { public RectInt Rect; public float Yaw; public ChunkPlacement Chunk; }   // chamber + facing toward its entrance (+ the alcove chunk, if any)
     private readonly List<GeneratorRoom> _generatorRooms = new();
 
     private Transform _root, _floorsRoot, _wallsRoot, _ceilingsRoot, _detailsRoot, _decorRoot, _lightsRoot, _generatorsRoot;
@@ -275,7 +275,9 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         _spawnedHeroShadows = 0;
         _sections.Clear();
 
-        LayoutSections();
+        // Chunk-grid mode: the whole map is authored chunks on an 8 m grid (MultiSectionDungeonGenerator.ChunkGrid.cs).
+        _gridActive = GridOn;
+        if (_gridActive) LayoutChunkGrid(); else LayoutSections();
 
         _floor = new bool[_width, _height];
         _reserved = new bool[_width, _height];
@@ -283,9 +285,22 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         _hasSection = new bool[_width, _height];
         _blocked = new bool[_width, _height];
         _lane = new bool[_width, _height];
+        AllocChunkGrids();
 
         CreateRoots();
         EnsureMaterials();
+
+        if (_gridActive)
+        {
+            BuildChunkGrid();
+            PruneFloorIslands();
+            ValidateChunkGrid();
+        }
+        else
+        {
+        // Authored chunks that live INSIDE sections (extraction gate, den + chewed corridor, themed rooms) are
+        // stamped before the sections are carved, so the procedural rooms and corridors wrap around them.
+        PlanSectionChunks();
 
         // Carve each section's floor into the global grid. Catacombs reuse the BSP room carver
         // (tight cellular layout); Cavern reuses the eroded open-area carver (organic cave).
@@ -304,10 +319,14 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         // Living Map S5: a spanning tree of sections + a few loops (main routes, far wings, chokepoints)
         // instead of the full lattice. Old behaviour with UseSpanningTree off.
         if (UseSpanningTree) ConnectSectionsTree(); else ConnectSections();
-        CarveGeneratorRooms();   // dedicated machine chambers + their connecting corridors
-        CarveDeadEndRooms();     // single-entrance side rooms (evidence prefers them)
+        if (!PlaceGeneratorAlcoves()) CarveGeneratorRooms();   // alcove chunks, else carved machine chambers
+        if (!PlaceDeadEndChunks()) CarveDeadEndRooms();        // dead-end chunks, else carved side rooms
+        ConnectChunkDoors();     // stub + A* corridor from every free chunk door to the main network
         PruneFloorIslands();
         ValidateLayoutConnectivity();
+        ValidateChunks();        // chunks whose doors lead nowhere are removed
+        PlaceCorridorChunks();   // corridor chunks over straight procedural corridors (nav-flood checked)
+        }
         AssignSectionOwnership();
 
         // Machinery: place a generator in each carved room (reserves its tiles before décor).
@@ -323,22 +342,27 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         BuildCeilings();
         BuildWalls();
         BuildCeilingSkirts();   // close the vertical gaps where ceiling heights change
+        FinishChunks();         // FitToTheme, torches, drips, hide/water/trap/den sockets, gate lift
 
         // Living Map S6: one landmark per section first, so it gets the clearest spot.
         _landmarkRoot = NewChild("Landmarks");
         PlaceSectionLandmarks();
 
         // Themed dressing (kit swaps inside the builders when palettes are assigned) + kit dressing.
-        DecorateGothic();
-        DecorateGraveyard();
-        DecorateHell();
-        DecorateCatacombs();
-        DecorateCavern();
-        DressWithKit();
-
-        CollectDripPoints();
+        // Chunk-grid maps bring their own dressing (and props/lights via sockets).
+        if (!_gridActive)
+        {
+            DecorateGothic();
+            DecorateGraveyard();
+            DecorateHell();
+            DecorateCatacombs();
+            DecorateCavern();
+            DressWithKit();
+            CollectDripPoints();
+        }
         ValidateNavigationAndFix();   // props never cut off floor, rooms or objectives
         WriteLayout(seed);
+        CombineChunksAtRuntime();
 
         // Atmosphere & lighting. If a DungeonLightingController owns the scene lighting, defer to
         // it (it applies ambient/fog/moon live) so the two don't fight over RenderSettings.
@@ -374,6 +398,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         _generatorRooms.Clear();
         _builtMeshes.Clear();
         ResetLivingMapState();
+        ResetChunkState();
     }
 
     private void CreateRoots()
@@ -576,6 +601,8 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
             int y = leaf.Bounds.yMin + 1 + _rng.Next(0, leaf.Bounds.height - h - 1);
 
             var room = new RectInt(x, y, w, h);
+            Vector2Int rc = RectCenter(room);
+            if (_chunkClaim != null && _chunkClaim[rc.x, rc.y]) continue;   // an authored chunk sits here
             rooms.Add(room);
             for (int rx = room.xMin; rx < room.xMax; rx++)
                 for (int ry = room.yMin; ry < room.yMax; ry++)
@@ -589,6 +616,10 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         // neighbouring section or the padding between them.
         // Living Map: these lanes are reserved so kit furniture never blocks a route through the rooms.
         _markLanes = true;
+        foreach (var cp in _chunks)
+            if (!cp.Removed && cp.Section == s)
+                foreach (var d in cp.Doors)
+                    if (!d.Linked) { Vector2Int o = DoorOutside(d, 3); rooms.Insert(_rng.Next(rooms.Count + 1), new RectInt(o.x, o.y, 1, 1)); }
         for (int i = 0; i < rooms.Count - 1; i++)
             CarveCorridorAStar(RectCenter(rooms[i]), RectCenter(rooms[i + 1]), s.Bounds, reserve: true);
 
@@ -659,6 +690,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
                 if (nx < bounds.xMin || nx >= bounds.xMax || ny < bounds.yMin || ny >= bounds.yMax) continue;
                 int ni = Index(nx, ny);
                 if (closed[ni]) continue;
+                if (NoCarve(nx, ny) && !(nx == b.x && ny == b.y)) continue;   // never route through a chunk / its border
 
                 int step = IsFloor(nx, ny) ? CorridorReuseCost : CorridorStepFresh;
                 if (dir[cur] != -1 && dir[cur] != d) step += CorridorTurnPenalty;
@@ -965,7 +997,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void SetFloor(int x, int y)
     {
-        if (InBounds(x, y)) _floor[x, y] = true;
+        if (InBounds(x, y) && !NoCarve(x, y)) _floor[x, y] = true;
     }
 
     private bool IsFloor(int x, int y) => InBounds(x, y) && _floor[x, y];
@@ -1035,7 +1067,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void TrySkirt(int x, int y, SectionType ta, float ha, int nx, int ny, int dir, bool alongX)
     {
-        if (!IsFloor(nx, ny)) return;              // non-floor borders are handled by walls
+        if (!IsFloor(nx, ny) || IsChunkTile(x, y) || IsChunkTile(nx, ny)) return;   // walls / chunks handle these
         SectionType tb = _section[nx, ny];
         if (!CeilingEnabledFor(tb)) return;        // neighbour open to sky -> intended opening
         float hb = WallHeightFor(tb);
@@ -1072,7 +1104,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             for (int x = 0; x < _width; x++)
             {
-                if (!_floor[x, y] || _section[x, y] != type) continue;
+                if (!_floor[x, y] || _section[x, y] != type || IsChunkTile(x, y)) continue;
                 AddTileQuad(verts, tris, uvs, x, y, height, faceUp);
             }
         }
@@ -1205,7 +1237,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         return !InBounds(ex, ey) || !IsWallEdge(ex, ey, dx, dz);
     }
 
-    private bool IsWallEdge(int x, int y, int dx, int dz) => InBounds(x, y) && _floor[x, y] && !IsFloor(x + dx, y + dz);
+    private bool IsWallEdge(int x, int y, int dx, int dz) => InBounds(x, y) && _floor[x, y] && !IsChunkTile(x, y) && !IsFloor(x + dx, y + dz);
 
     private float WallHeightFor(SectionType type) => type switch
     {
@@ -1289,7 +1321,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             for (int x = 0; x < _width; x++)
             {
-                if (!_floor[x, y] || !accept(_section[x, y])) continue;
+                if (!_floor[x, y] || IsChunkTile(x, y) || !accept(_section[x, y])) continue;
                 SectionType st = _section[x, y];
 
                 if (!IsFloor(x, y + 1)) edges.Add(MakeEdge(x, y, 0, new Vector3(x + 0.5f, 0, y + 1 - inset), new Vector3(0, 0, -1), st));
@@ -1341,6 +1373,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             GameObject t = InstantiatePrefab(TorchPrefab);
             t.transform.SetParent(_detailsRoot, false);
+            Torch.ApplySpawnScale(t);
             t.transform.localPosition = e.Surface + Vector3.up * 2.4f;
             t.transform.localRotation = WallFacing(e) * TorchPrefab.transform.localRotation; // keep the prefab's upright (-90° X) correction
             // The lantern's pivot is its centre: sitting on the wall face buries half of it (and the flame
@@ -1462,7 +1495,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             int x = _rng.Next(b.xMin + 1, b.xMax - 1);
             int y = _rng.Next(b.yMin + 1, b.yMax - 1);
-            if (!IsFloor(x, y)) continue;
+            if (!IsFloor(x, y) || IsChunkTile(x, y)) continue;
             bool lantern = Roll(0.25f);
             Color c = lantern ? GraveyardLanternColor : PickFrom(GraveyardColors);
             SpawnLight(TileLocal(x, y) + Vector3.up * (lantern ? 1.5f : 3f), c, new Vector2(0.5f, 1.1f), lantern ? 6f : 9f, flicker: lantern, heroEligible: false);
@@ -1562,7 +1595,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             int x = _rng.Next(b.xMin, b.xMax);
             int y = _rng.Next(b.yMin, b.yMax);
-            if (!IsFloor(x, y)) continue;
+            if (!IsFloor(x, y) || IsChunkTile(x, y)) continue;
             bool along = _rng.Next(0, 2) == 0;
             Vector3 scale = along ? new Vector3(RandomRange(1.5f, 3.5f), RandomRange(0.4f, 0.9f), 1f)
                                   : new Vector3(RandomRange(0.4f, 0.9f), RandomRange(1.5f, 3.5f), 1f);
@@ -1575,7 +1608,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         {
             int x = _rng.Next(b.xMin, b.xMax);
             int y = _rng.Next(b.yMin, b.yMax);
-            if (!IsFloor(x, y)) continue;
+            if (!IsFloor(x, y) || IsChunkTile(x, y)) continue;
             SpawnLight(TileLocal(x, y) + Vector3.up * RandomRange(0.3f, 2f), PickFrom(HellColors), new Vector2(1.5f, 3f), 9f, flicker: true, heroEligible: true);
         }
     }
@@ -1726,7 +1759,7 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
             {
                 int x = _rng.Next(b.xMin, b.xMax);
                 int y = _rng.Next(b.yMin, b.yMax);
-                if (!IsFloor(x, y)) continue;
+                if (!IsFloor(x, y) || IsChunkTile(x, y)) continue;
                 BuildStalactite(TileLocal(x, y), CavernWallHeight);
             }
         }
@@ -2098,6 +2131,16 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
         _generatorsRoot = NewChild("Generators");
         foreach (GeneratorRoom gr in _generatorRooms)
         {
+            Transform socket = gr.Chunk?.Go != null ? FindChildDeep(gr.Chunk.Go.transform, "SOCKET_Generator_01", endsWith: false) : null;
+            if (socket != null)
+            {
+                GameObject go = GeneratorPrefab != null ? InstantiatePrefab(GeneratorPrefab) : BuildPrimitiveGenerator();
+                go.transform.SetParent(_generatorsRoot, true);
+                go.transform.position = socket.position;
+                go.transform.rotation = Quaternion.LookRotation(socket.forward, Vector3.up) * Quaternion.Euler(0f, GeneratorYawOffset, 0f);
+                if (!go.TryGetComponent<PowerGenerator>(out _)) go.AddComponent<PowerGenerator>();
+                continue;
+            }
             Vector2Int tile = RectCenter(gr.Rect);
             ReserveArea(tile, GeneratorClearance);
             PlaceGenerator(tile, gr.Yaw);
@@ -2150,7 +2193,10 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
         // 1. Extraction.
         Vector2Int extTile;
-        bool picked = VariedPlacement ? TryPickExtractionVaried(sum, extraction, rng, out extTile)
+        Transform gateSocket = _gateChunk?.Go != null ? FindChildDeep(_gateChunk.Go.transform, "SOCKET_Extraction_01", endsWith: false) : null;
+        bool picked;
+        if (gateSocket != null) { extTile = WorldToTile(gateSocket.position); picked = true; }
+        else picked = VariedPlacement ? TryPickExtractionVaried(sum, extraction, rng, out extTile)
                                       : TryPickExtractionTile(sum, extraction, rng, out extTile);
         if (!picked)
         {
@@ -2162,7 +2208,9 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
         // 2. Player start.
         int[,] fromExt = WalkDistances(extTile);
-        Vector2Int startTile = VariedPlacement ? PickPlayerStartVaried(sum, fromExt, extTile, extClear, rng)
+        Transform spawnSocket = PickChunkSpawn(fromExt, rng);
+        Vector2Int startTile = spawnSocket != null ? WorldToTile(spawnSocket.position)
+                             : VariedPlacement ? PickPlayerStartVaried(sum, fromExt, extTile, extClear, rng)
                                                : PickPlayerStartTile(sum, fromExt, extTile, extClear, rng);
         ReserveArea(startTile, 1);
         _extTile = extTile; _startTile = startTile; _startWalk = fromExt[startTile.x, startTile.y];
@@ -2172,7 +2220,10 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
 
         // 3. Evidence.
         int[,] fromStart = WalkDistances(startTile);
-        List<Vector2Int> evTiles = PickEvidenceTiles(sum, fromStart, extTile, evidence.Count, rng);
+        List<Transform> evSockets = PickChunkEvidence(fromStart, evidence.Count, rng);
+        // Chunk sockets are not flood targets: the chunk authoring verified them with the real capsule (crawl gaps,
+        // pit stairs…) — the 2×2 flood is too coarse inside a chunk. The chunk doors are validated instead.
+        List<Vector2Int> evTiles = PickEvidenceTiles(sum, fromStart, extTile, evidence.Count - evSockets.Count, rng);
         foreach (Vector2Int t in evTiles) { ReserveArea(t, 1); _missionTargets.Add(t); }
 
         // Move the scene objects.
@@ -2181,31 +2232,49 @@ public partial class MultiSectionDungeonGenerator : MonoBehaviour
             Transform et = extraction.transform;
             Vector3 world = TileWorld(extTile);
             // Centre the trigger volume (not the pivot) over the tile.
-            Vector3 offset = et.TryGetComponent(out BoxCollider box) ? et.TransformVector(box.center) : Vector3.zero;
-            MoveObject(et, new Vector3(world.x - offset.x, world.y + ExtractionHeightOffset, world.z - offset.z), null);
+            if (gateSocket != null)
+            {
+                // Inside the Extraction Gate chunk: trigger box centred on the socket, aligned with the chunk.
+                Quaternion rot = Quaternion.Euler(0f, _gateChunk.Yaw, 0f);
+                MoveObject(et, gateSocket.position, rot);
+                Vector3 off = et.TryGetComponent(out BoxCollider gbox) ? et.TransformVector(gbox.center) : Vector3.zero;
+                MoveObject(et, new Vector3(gateSocket.position.x - off.x, gateSocket.position.y + ExtractionHeightOffset, gateSocket.position.z - off.z), rot);
+            }
+            else
+            {
+                Vector3 offset = et.TryGetComponent(out BoxCollider box) ? et.TransformVector(box.center) : Vector3.zero;
+                MoveObject(et, new Vector3(world.x - offset.x, world.y + ExtractionHeightOffset, world.z - offset.z), null);
+            }
         }
 
         if (player != null)
         {
-            Vector3 world = TileWorld(startTile);
-            Vector3 look = TileWorld(extTile) - world; look.y = 0f;
+            Vector3 world = spawnSocket != null ? spawnSocket.position : TileWorld(startTile);
+            Vector3 look = spawnSocket != null ? spawnSocket.forward : TileWorld(extTile) - world; look.y = 0f;
             Quaternion yaw = look.sqrMagnitude > 0.01f ? Quaternion.LookRotation(look) : player.rotation;
             MoveObject(player, world + Vector3.up * PlayerHeightOffset, yaw);
         }
 
         for (int i = 0; i < evidence.Count; i++)
         {
-            if (i >= evTiles.Count)
+            if (i < evSockets.Count)
+            {
+                MoveObject(evidence[i].transform, evSockets[i].position + Vector3.up * 0.2f, Quaternion.Euler(0f, rng.Next(0, 360), 0f));
+                continue;
+            }
+            int ti = i - evSockets.Count;
+            if (ti >= evTiles.Count)
             {
                 Debug.LogWarning($"[MultiSectionDungeon] Found spots for only {evTiles.Count}/{evidence.Count} evidence — '{evidence[i].name}' left where it was.", this);
                 continue;
             }
             Quaternion spin = Quaternion.Euler(0f, rng.Next(0, 360), 0f);
-            MoveObject(evidence[i].transform, TileWorld(evTiles[i]) + Vector3.up * EvidenceDropHeight, spin);
+            MoveObject(evidence[i].transform, TileWorld(evTiles[ti]) + Vector3.up * EvidenceDropHeight, spin);
         }
 
         Debug.Log($"[MultiSectionDungeon] Mission placed — extraction {_section[extTile.x, extTile.y]} {extTile}, start {startTile} " +
-                  $"({fromExt[startTile.x, startTile.y]} tiles), evidence {evTiles.Count}/{evidence.Count}.", this);
+                  $"({fromExt[startTile.x, startTile.y]} tiles{(spawnSocket != null ? ", chunk spawn" : "")}), evidence {evTiles.Count + evSockets.Count}/{evidence.Count} " +
+                  $"({evSockets.Count} in chunk sockets).", this);
     }
 
     private List<EvidencePickup> CollectEvidence()

@@ -1,0 +1,10 @@
+# Blender asset catalogue for the Fluffterror Meshy prop library (written by process_meshy.py)
+VERSION 1
+
+5aa228d8-c36c-5ba5-9a29-ed6031f53dfb:Meshy/Furniture:Meshy-Furniture
+bce698c9-a691-5bbd-8271-982eec95fefe:Meshy/Containers:Meshy-Containers
+273b6eee-15af-5a8d-8eff-42df0d295e56:Meshy/Lighting:Meshy-Lighting
+689df4da-e68d-5c60-8789-dd06d3d110b1:Meshy/Funerary:Meshy-Funerary
+1b7733cf-431b-5eb6-a070-c44f25edda95:Meshy/Ritual:Meshy-Ritual
+722c5193-8fdf-5e17-b2d8-64f4826a6cf0:Meshy/Debris:Meshy-Debris
+2078c381-7342-5968-9635-3e8e9b5d57ac:Meshy/Structural:Meshy-Structural

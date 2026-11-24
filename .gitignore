@@ -42,3 +42,6 @@ __pycache__/
 
 # stray LFS hook copies (created when git runs with hooksPath=/dev/null)
 /dev/
+
+# Blender backups
+*.blend1

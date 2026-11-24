@@ -24,15 +24,61 @@ EYE = {
     "CH_SP_ChuchoDen": ((0, -7.4, 1.7), (-0.5, 4, 0.3)),
     "CH_Generator_Alcove": ((0, -3.6, 1.7), (0, 2, 1.0)),
     "CH_Extraction_Gate": ((-4, -7.4, 1.8), (0, 5, 1.6)),
+    "CH_Room_Library": ((1.8, -7.4, 1.7), (-0.5, 0, 1.4)),
+    "CH_Room_Larder": ((2.0, -3.6, 1.7), (-1.0, 1.5, 1.4)),
+    "CH_SP_Ossuary": ((0.8, -7.4, 1.7), (-0.5, 1.0, 1.4)),
+    "CH_Room_Chapel": ((0, -7.4, 1.7), (0, 5, 2.2)),
+    "CH_Room_PrisonBlock": ((0, -7.4, 1.7), (0, 3, 1.4)),
+    "CH_SP_WellRoom": ((0, -3.6, 1.7), (0, 0.5, 0.6)),
+    "CH_Room_Mausoleum": ((0, -7.4, 1.8), (0, 4, 0.9)),
+    "CH_SP_SewerChannel": ((-1.5, -7.4, 1.7), (1.5, 2, -0.4)),
+    "CH_SP_CaveTransition": ((-1.0, -7.4, 1.7), (0.6, 3, 1.5)),
+    "CH_Room_SpiralHall": ((-4, -7.4, 1.8), (4.0, 4.0, 2.5)),
+    "CH_Corridor_Chewed": ((0, -3.6, 1.7), (0, 2, 1.0)),
+    "CH_SP_TrapCorridor": ((0.5, -3.6, 1.7), (-0.5, 1.5, -0.6)),
+    "CH_Junction_BrokenFloor": ((1.5, -3.6, 1.7), (-1.5, 1.0, -0.8)),
+    "CH_Corridor_Straight_B": ((0, -3.6, 1.7), (0, 2, 1.2)),
+    "CH_Corridor_Corner_B": ((-0.5, 3.6, 1.7), (-1.0, -1.2, 0.8)),
+    "CH_Corridor_T_B": ((0, 3.6, 1.7), (-2.5, -0.5, 2.2)),
 }
+PREFIX = "r2_"
+
+
+ENGINE = os.environ.get("CHUNK_RENDER_ENGINE", "WORKBENCH")   # "EEVEE": texture x baked vertex colour, lit
+
+
+def setup_eevee(sc):
+    for eng in ('BLENDER_EEVEE_NEXT', 'BLENDER_EEVEE'):
+        try:
+            sc.render.engine = eng
+            break
+        except TypeError:
+            pass
+    sc.eevee.taa_render_samples = 8
+    w = sc.world or bpy.data.worlds.new("World")
+    sc.world = w
+    w.use_nodes = True
+    bg = next(n for n in w.node_tree.nodes if n.type == "BACKGROUND")
+    bg.inputs[0].default_value = (0.16, 0.17, 0.2, 1)
+    bg.inputs[1].default_value = 1.0
+    sun = bpy.data.objects.get("InspectSun")
+    if not sun:
+        sun = bpy.data.objects.new("InspectSun", bpy.data.lights.new("InspectSun", 'SUN'))
+        sc.collection.objects.link(sun)
+    sun.data.energy = 2.2
+    sun.data.color = (1.0, 0.85, 0.7)
+    sun.rotation_euler = (math.radians(40), math.radians(15), math.radians(150))
 
 
 def setup():
     sc = bpy.context.scene
-    try:
-        sc.render.engine = 'BLENDER_WORKBENCH'
-    except TypeError as e:
-        print(e)
+    if ENGINE == "EEVEE":
+        setup_eevee(sc)
+    else:
+        try:
+            sc.render.engine = 'BLENDER_WORKBENCH'
+        except TypeError as e:
+            print(e)
     sh = sc.display.shading
     sh.light = 'STUDIO'
     sh.color_type = 'TEXTURE'
@@ -85,13 +131,15 @@ def r_dims(coll):
     return max(xs), max(ys)
 
 
-def render_all(names=None):
+def render_all(names=None, skip=("_H36", "_H50")):
     os.makedirs(OUT, exist_ok=True)
     sc, cam = setup()
     roots = [o for o in bpy.data.objects if o.name.startswith("CH_") and o.type == 'EMPTY']
     out = []
     for r in sorted(roots, key=lambda o: o.location.x):
         if names and r.name not in names:
+            continue
+        if not names and r.name.endswith(skip):
             continue
         coll = bpy.data.collections[r.name]
         W = max(o.dimensions.x for o in coll.objects if o.name.startswith("SM_"))
@@ -106,14 +154,14 @@ def render_all(names=None):
         size = max(max(r_dims(coll)), Hh * 0.8)
         e = cv(r, (-0.45 * size, -0.75 * size, 1.25 * size + Hh * 0.5))
         look_at(cam, e, cv(r, (0, 0, -0.5)))
-        p1 = os.path.join(OUT, r.name + "_overview.png")
+        p1 = os.path.join(OUT, PREFIX + r.name + "_overview.png")
         render(p1, 1000, 750)
         # orthographic plan (north up) for the level-designer
         cam.data.type = 'ORTHO'
         cam.data.ortho_scale = max(r_dims(coll)) + 1.0
         look_at(cam, cv(r, (0, 0, 40)), cv(r, (0, 0.0001, 0)))
         cam.rotation_euler = (0, 0, math.pi)
-        p3 = os.path.join(OUT, r.name + "_plan.png")
+        p3 = os.path.join(OUT, PREFIX + r.name + "_plan.png")
         render(p3, 800, 800)
         cam.data.type = 'PERSP'
         out.append(p3)
@@ -123,7 +171,7 @@ def render_all(names=None):
             cam.data.lens = 16
             e, t = EYE[r.name]
             look_at(cam, cv(r, e), cv(r, t))
-            p2 = os.path.join(OUT, r.name + "_interior.png")
+            p2 = os.path.join(OUT, PREFIX + r.name + "_interior.png")
             render(p2, 1000, 750)
             out.append(p2)
         out.append(p1)
@@ -145,11 +193,15 @@ def kit_render():
     xs = [o.location.x for o in roots]; ys = [o.location.y for o in roots]
     cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
     cam.data.type = 'PERSP'
-    cam.data.lens = 34
-    e = Vector((cx + 8, cy + 70, 125))
-    look_at(cam, e, Vector((cx, cy + 6, 0)))
-    path = os.path.join(OUT, "chunks_kit_sheet.png")
+    # orthographic, straight down, north up (Blender -Y), labels under each chunk
+    cy_mid = (min(ys) + max(ys)) / 2 + 2.0
+    cam.data.type = 'ORTHO'
+    cam.data.ortho_scale = max(max(xs) - min(xs) + 26, (max(ys) - min(ys) + 34) * 4 / 3)
+    cam.location = Vector((cx, cy_mid, 80))
+    cam.rotation_euler = (0, 0, math.pi)
+    path = os.path.join(OUT, PREFIX + "chunks_kit_sheet.png")
     render(path, 2400, 1800)
+    cam.data.type = 'PERSP'
     set_ceilings(True)
     return path
 

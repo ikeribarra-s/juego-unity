@@ -26,6 +26,25 @@ public class Torch : MonoBehaviour, IInteractable
              "carries -90° X; anything that overwrites the root rotation must re-apply this.")]
     [SerializeField] private Vector3 _uprightEuler = new(-90f, 0f, 0f);
 
+    [Header("World size")]
+    [Tooltip("Multiplier on the prefab's scale for torches placed in the world (wall mounts, braziers, dropped/thrown). " +
+             "The prefab is ~1.9 m tall; 0.5 gives ~0.95 m. The carried size is independent (TorchCarrier._handHoldScale × the prefab scale).")]
+    [SerializeField] private float _spawnScale = 0.5f;
+    [SerializeField, HideInInspector] private Vector3 _baseScale;   // prefab localScale before any spawn scaling
+
+    /// <summary>The prefab's own localScale (what the carried size is derived from).</summary>
+    public Vector3 BaseScale => _baseScale != Vector3.zero ? _baseScale : transform.localScale;
+    /// <summary>The localScale a torch has lying in the world.</summary>
+    public Vector3 WorldScale => _baseScale != Vector3.zero ? _baseScale * _spawnScale : transform.localScale;
+
+    /// <summary>Call right after instantiating a torch in the world, BEFORE positioning / WallMount.PushOffWall.</summary>
+    public static void ApplySpawnScale(GameObject go)
+    {
+        if (go == null || !go.TryGetComponent(out Torch t)) return;
+        if (t._baseScale == Vector3.zero) t._baseScale = go.transform.localScale;
+        go.transform.localScale = t.WorldScale;
+    }
+
     [Header("Thrown physics")]
     [SerializeField] private float _mass = 1f;
 
@@ -40,6 +59,15 @@ public class Torch : MonoBehaviour, IInteractable
     /// <summary>False while burnt out (see <see cref="TorchStateController"/>).</summary>
     public bool IsLit => State == null || State.IsLit;
     private TorchStateController State => _state != null ? _state : (_state = GetComponent<TorchStateController>());
+
+    // A mounted torch (no Rigidbody yet) must never block a walkway — the chunk balconies are 1.4 m wide and a
+    // solid lantern collider on the wall left too little room for the 0.8 m CharacterController (bell tower).
+    // Its collider is a trigger (the interaction ray still hits triggers); Launch() makes it solid for physics.
+    private void Awake()
+    {
+        if (GetComponent<Rigidbody>() != null) return;
+        foreach (var c in GetComponents<Collider>()) c.isTrigger = true;
+    }
 
     public string GetPrompt()
     {
@@ -99,6 +127,7 @@ public class Torch : MonoBehaviour, IInteractable
             _body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
 
+        foreach (var c in GetComponents<Collider>()) c.isTrigger = false;   // solid once it is a physics prop
         _body.isKinematic     = false;
         _body.useGravity      = true;
         _body.linearVelocity  = velocity;

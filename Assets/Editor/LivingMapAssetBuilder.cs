@@ -39,6 +39,7 @@ public static class LivingMapAssetBuilder
         BuildLandmarks();
         BuildPalettes();
         BuildDirectorAndModifiers();
+        BuildChunkLibrary();
         SetupTorchPrefab();
         WireOpenScene();
         AssetDatabase.SaveAssets();
@@ -561,6 +562,70 @@ public static class LivingMapAssetBuilder
         PrefabUtility.UnloadPrefabContents(root);
     }
 
+
+    // ── authored chunks ──────────────────────────────────────────────────────
+
+    private const string ChunkDir = "Assets/Art/Environment/Chunks";
+    private const string ChunkLibraryPath = DataDir + "/ChunkLibrary.asset";
+
+    [System.Serializable] private class JManifest { public JChunk[] chunks; }
+    [System.Serializable] private class JChunk { public string name; public string role; public int[] size_m; public float wall_height; public JTags tags; public JDoor[] doors; public string[] mask_north_up; public JSocket[] sockets; }
+    [System.Serializable] private class JTags { public string[] themes; public string role; public float weight; public int min; public int max; public int torches_suggested; public string near; }
+    [System.Serializable] private class JDoor { public string label; public string side; public float offset; }
+    [System.Serializable] private class JSocket { public string name; public float[] pos; public float[] forward; }
+
+    // Call-out names for chunks that can stand in as a section landmark (they have a SOCKET_Landmark).
+    private static readonly Dictionary<string, string> ChunkDisplayNames = new()
+    {
+        { "CH_Room_PillarHall", "the Pillar Hall" }, { "CH_Room_Ritual", "the Ritual Altar" }, { "CH_SP_BellTower", "the Bell Tower" },
+        { "CH_SP_ChuchoDen", "the Den" }, { "CH_SP_Ossuary", "the Ossuary" }, { "CH_Room_Chapel", "the Chapel" },
+        { "CH_Room_Library", "the Library" }, { "CH_Room_SpiralHall", "the Spiral Hall" }, { "CH_Room_Mausoleum", "the Mausoleum" },
+        { "CH_Extraction_Gate", "the Gate" }, { "CH_SP_WellRoom", "the Well Room" }, { "CH_SP_PitBridge", "the Pit Bridge" },
+        { "CH_SP_FloodedCrypt", "the Flooded Crypt" }, { "CH_Room_PrisonBlock", "the Prison" }, { "CH_Room_Crypt", "the Crypt" },
+        { "CH_SP_SewerChannel", "the Sewer" }, { "CH_SP_CaveTransition", "the Crystal Cave" }, { "CH_Room_Larder", "the Larder" },
+    };
+
+    [MenuItem("Fluffterror/Living Map/Steps/Build Chunk Library")]
+    public static void BuildChunkLibrary()
+    {
+        string json = File.ReadAllText(ChunkDir + "/chunks_manifest.json");
+        var m = JsonUtility.FromJson<JManifest>(json);
+        var entries = new List<ChunkLibrary.Entry>();
+        foreach (var c in m.chunks)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{ChunkDir}/{c.name}.prefab");
+            if (prefab == null) { Debug.LogWarning($"[LivingMap] Chunk prefab missing: {c.name}"); continue; }
+            var doors = new List<ChunkLibrary.Door>();
+            foreach (var d in c.doors)
+            {
+                JSocket sock = null;
+                foreach (var so in c.sockets) if (so.name == "SOCKET_Door_" + d.label) sock = so;
+                if (sock == null) continue;
+                doors.Add(new ChunkLibrary.Door
+                {
+                    Label = d.label, Side = d.side[0],
+                    LocalPos = new Vector3(sock.pos[0], sock.pos[1], sock.pos[2]),
+                    LocalForward = new Vector3(sock.forward[0], sock.forward[1], sock.forward[2]),
+                });
+            }
+            var t = c.tags ?? new JTags { themes = new[] { "Any" }, weight = 1, max = 1 };
+            entries.Add(new ChunkLibrary.Entry
+            {
+                Name = c.name, Prefab = prefab, Role = string.IsNullOrEmpty(t.role) ? c.role : t.role,
+                Size = new Vector2Int(c.size_m[0], c.size_m[1]), WallHeight = c.wall_height,
+                Themes = t.themes ?? new[] { "Any" }, Weight = t.weight, Min = t.min, Max = t.max,
+                TorchesSuggested = t.torches_suggested, Near = t.near,
+                DisplayName = ChunkDisplayNames.TryGetValue(c.name, out var dn) ? dn : null,
+                Mask = c.mask_north_up, Doors = doors.ToArray(),
+            });
+        }
+        var lib = LoadOrCreate<ChunkLibrary>(ChunkLibraryPath);
+        lib.EditorSetEntries(entries.ToArray());
+        EditorUtility.SetDirty(lib);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[LivingMap] Chunk library: {entries.Count} chunks.");
+    }
+
     // ── scene wiring ─────────────────────────────────────────────────────────
 
     [MenuItem("Fluffterror/Living Map/Steps/Wire Open Scene")]
@@ -588,6 +653,8 @@ public static class LivingMapAssetBuilder
             pool.GetArrayElementAtIndex(i).objectReferenceValue = AssetDatabase.LoadAssetAtPath<RunModifier>($"{ModifierDir}/{mods[i]}.asset");
         rso.FindProperty("_messages").objectReferenceValue = Object.FindAnyObjectByType<MissionMessageUI>();
         rso.ApplyModifiedProperties();
+
+        if (gm.GetComponent<ChunkDistanceCuller>() == null) Undo.AddComponent<ChunkDistanceCuller>(gm);   // chunk-grid maps: fog-range culling
 
         var scape = sm.GetComponent<SoundscapeController>();
         if (scape == null) scape = Undo.AddComponent<SoundscapeController>(sm);
@@ -627,6 +694,7 @@ public static class LivingMapAssetBuilder
         g.FindProperty("KitWallPanels").objectReferenceValue = Pal("PP_Kit_WallPanels");
         g.FindProperty("KitBonePiles").objectReferenceValue = Pal("PP_Kit_BonePiles");
         g.FindProperty("KitCandles").objectReferenceValue = Pal("PP_Kit_Candles");
+        g.FindProperty("Chunks").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ChunkLibrary>(ChunkLibraryPath);
         g.ApplyModifiedProperties();
 
         EditorSceneManager.MarkSceneDirty(gm.scene);

@@ -62,6 +62,8 @@ Live generator = `MultiSectionDungeonGenerator` (SampleScene: 4×4 sections of 5
 | **S7** | **Biomes with distinct palettes** | Each area *feels* different | `BiomeProfile` SO per `SectionType`: wall/floor materials, fog tint, torch colour (amber / sick green / blue candle / red ember), ambient bed, reverb preset, prop palette. A `BiomeZone` trigger per section blends `LightingMoodController` fog/ambient + audio bed on entry. | M | fog/ambient are global: blend, don't stack | level-designer, sound-designer, 3d-artist (2–3 material sets) |
 | **S8** | **Doors** (wood, iron gate, covered gothic arch) at some doorways | Hiding, noise, slams, Bobi gets stuck (plan §2.4) | `Door` : `IInteractable` hinge (kinematic, swing on E, physics-pushable when open), `NarrowPassage` hook later. Generator places at `_doorChance` (0.3) of room entrances using `Doors_GothicArch`/`Doors_RoundArch`/`Arch_Door` kit pieces. NavMesh: `NavMeshObstacle` carve when closed; creature opens doors (noise 0.4). | M | negligible | level-designer, 3d-artist (pivot fix), animator (none: procedural swing) |
 
+> **S2 status (2026-11-24):** superseded by the **chunk grid** — the whole map is now stamped from the 42 authored chunk prefabs (corridors, rooms and set pieces), see `Assets/_Game/Environment/CLAUDE.md` §13. Set pieces = SP_* chunks (Bell Tower, Pit Bridge, Sewer, Well Room, Ossuary, Collapsed/Trap corridor, Chucho's Den), selected by door mask/theme/rarity. Remaining: themed corridor sets for Graveyard/Cavern/Hell, more Cross/T variants.
+
 ## 5. Layer (b) — "Alive" ambience
 
 ### 5.1 Ambient Director (the heart)

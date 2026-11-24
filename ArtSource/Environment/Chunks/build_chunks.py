@@ -21,27 +21,38 @@ UNITY_DIR = os.path.join(REPO, r"Assets\Art\Environment\Chunks")
 UNITY_MODELS = os.path.join(UNITY_DIR, "Models")
 
 R = Matrix.Rotation(math.pi, 4, 'Z')          # natural -> Blender export frame
+JUT_CHANCE = 0.16
+# Meshy hero props (Assets/Art/Environment/Props/Meshy/PROP_Meshy<Name>.prefab): when on, the procedural
+# feature they supersede is not built and a HERO_<Name> empty marks where ChunkPrefabBuilder nests the prop.
+HERO_PROPS = globals().get("HERO_PROPS", True)                               # jutting wall stones per slot (was 0.45 before the PS2 texture pass)
 DOOR_W, DOOR_H = 3.0, 3.0                       # clear opening
 WT = 0.5                                        # wall thickness
 
 # ───────────────────────────── palette atlas ─────────────────────────────
 PAL = [
     # name, sRGB hex           (row-major into an 8x8 grid of 8 px cells)
-    ("wall0", "3E4450"), ("wall1", "4A515E"), ("wall2", "5A6270"), ("wall3", "343944"),
-    ("wall4", "6B7383"), ("wall5", "454B57"), ("mortar", "1A1D23"), ("void", "0D0F14"),
-    ("floor0", "2B2F36"), ("floor1", "33373F"), ("floor2", "3A3F48"), ("floor3", "24272D"),
-    ("floor4", "41464F"), ("dirt0", "3A3128"), ("dirt1", "443A2F"), ("dirt2", "2F2821"),
+    # walls: Modular Dungeon kit Wall_Dark 7A6B57 / Wall_Medium 77634E / Wall_Highlights 90816E (measured in Unity)
+    ("wall0", "7A6B57"), ("wall1", "77634E"), ("wall2", "90816E"), ("wall3", "5E5142"),
+    ("wall4", "A39280"), ("wall5", "6C5C49"), ("mortar", "2B241E"), ("void", "0D0F14"),
+    # floors: kit Grey_Floor 4D4C5A / DarkGrey_Floor 3C3A46 (cool, darker than the walls)
+    ("floor0", "4D4C5A"), ("floor1", "3C3A46"), ("floor2", "45444F"), ("floor3", "35343F"),
+    ("floor4", "57566A"), ("dirt0", "4A3D30"), ("dirt1", "54463A"), ("dirt2", "3B3027"),
     ("wood0", "5A3F2A"), ("wood1", "6E4E33"), ("wood2", "47311F"), ("wood3", "7E5B3C"),
     ("iron0", "2E2F33"), ("iron1", "3C3E44"), ("rust", "5C3A2A"), ("brass", "8A6A2E"),
     ("bone0", "E8E2D0"), ("bone1", "CFC6AE"), ("bone2", "B5AA8E"), ("wax", "D9D0B4"),
     ("straw0", "9C8650"), ("straw1", "B39B5C"), ("straw2", "7E6C3E"), ("rope", "8A7650"),
-    ("red0", "7A1E24"), ("red1", "B3202A"), ("moss", "3E4A3A"), ("green", "3F7F5C"),
+    ("red0", "7A1E24"), ("red1", "B3202A"), ("moss", "4A5A3E"), ("green", "3F7F5C"),
     ("green1", "7CFFB2"), ("amber", "FFB347"), ("ember", "C2502A"), ("cloth", "5E5648"),
-    ("hazard", "A8842E"), ("brass1", "A88440"), ("stone_dk", "2A2E35"), ("slime", "2F3D3A"),
-    ("water", "1E3A40"),
+    ("hazard", "A8842E"), ("brass1", "A88440"), ("stone_dk", "463B30"), ("slime", "3D4A3A"),
+    ("water", "1E3A40"), ("rock0", "5B5248"), ("rock1", "4A433B"), ("rock2", "6A6156"),
+    ("rock3", "3A342E"), ("crystal", "5FB3C0"), ("glass_r", "9A2E2E"), ("glass_b", "35589A"),
+    ("glass_y", "C49A3E"), ("glass_g", "4A8A55"), ("meat0", "8C4A3E"), ("meat1", "B0705A"),
+    # PS2 pass: texture-only keys (a patterned panel replaces per-item geometry)
+    ("skulls", "B5AA8E"), ("books", "6E4E33"),
 ]
 PAL_IDX = {n: i for i, (n, _) in enumerate(PAL)}
 WALL = ["wall0", "wall1", "wall5", "wall3"]
+ROCK = ["rock0", "rock1", "rock2", "rock3"]
 WALL_HI = ["wall2", "wall4", "wall1"]
 FLOOR = ["floor0", "floor1", "floor2", "floor3", "floor4"]
 DIRT = ["dirt0", "dirt1", "dirt2", "floor3"]
@@ -89,11 +100,15 @@ def cell_uv(key, s, t):
     return u, v
 
 
+exec(open(os.path.join(SRC, "ps2_style.py"), encoding="utf-8").read(), globals())
+
+
 # ───────────────────────────── mesh builder ─────────────────────────────
 class MB:
     def __init__(self, rng):
-        self.v, self.f, self.k = [], [], []
+        self.v, self.f, self.k, self.c = [], [], [], []
         self.rng = rng
+        self.cat = "S"
 
     def pick(self, key):
         return self.rng.choice(key) if isinstance(key, (list, tuple)) else key
@@ -103,6 +118,7 @@ class MB:
         self.v += [Vector(p) for p in pts]
         self.f.append(list(range(b, b + len(pts))))
         self.k.append(self.pick(key))
+        self.c.append(self.cat)
 
     def box(self, x0, y0, z0, x1, y1, z1, key, skip=()):
         """axis-aligned box; skip any of 'b','t','n','s','e','w'."""
@@ -182,28 +198,69 @@ class MB:
                        (cx + r1 * math.cos(a1), cy + r1 * math.sin(a1), z),
                        (cx + r0 * math.cos(a1), cy + r0 * math.sin(a1), z)], key)
 
-    def tris(self):
-        return sum(len(f) - 2 for f in self.f)
+    def tris(self, cats=None):
+        return sum(len(f) - 2 for f, c in zip(self.f, self.c) if cats is None or c in cats)
 
-    def to_object(self, name, mat, coll, matrix=R):
-        me = bpy.data.meshes.new(name)
-        me.from_pydata([tuple(matrix @ v) for v in self.v], [], self.f)
-        me.update()
-        # flat shading
-        for p in me.polygons:
-            p.use_smooth = False
-        uvl = me.uv_layers.new(name="UVMap")
-        for pi, p in enumerate(me.polygons):
-            key = self.k[pi]
-            n = p.normal
+    def to_object(self, name, mat, coll, matrix=R, cats=None, origin=(0, 0, 0), bake=None, split=True):
+        """origin = where this MB's local (0,0,0) sits in chunk-natural coords (pivoted parts), used for
+        world-grid UVs and the vertex-colour bake. split=False keeps faces whole (collision boxes)."""
+        origin = Vector(origin)
+        polys = []          # (pts, key)
+        for f, k, c in zip(self.f, self.k, self.c):
+            if cats is not None and c not in cats:
+                continue
+            pts = [self.v[vi].copy() for vi in f]
+            if not split:
+                polys.append((pts, k)); continue
+            n = poly_normal(pts)
             ax = max(range(3), key=lambda a: abs(n[a]))
-            u_ax, v_ax = [(1, 2), (0, 2), (0, 1)][ax]
-            pts = [me.vertices[vi].co for vi in p.vertices]
-            us = [q[u_ax] for q in pts]; vs = [q[v_ax] for q in pts]
-            du = max(us) - min(us) or 1.0; dv = max(vs) - min(vs) or 1.0
-            for li, vi in zip(p.loop_indices, p.vertices):
-                co = me.vertices[vi].co
-                uvl.data[li].uv = cell_uv(key, (co[u_ax] - min(us)) / du, (co[v_ax] - min(vs)) / dv)
+            ua, va = PROJ[ax]
+            axes = (ua,) if k in FIT_V else (ua, va)
+            # small faces (inside one texture period) stay whole: face_uvs gives them a local origin
+            P = family(k)[1]
+            ext = [max(q[a] for q in pts) - min(q[a] for q in pts) for a in (ua, va)]
+            if max(ext) <= P + 1e-6 or min(ext) < 0.2:      # small, or thin (bars, trims): keep whole
+                polys.append((pts, k)); continue
+            # split in world-natural space (shift by origin, cut, shift back)
+            wpts = [p + origin for p in pts]
+            for piece in split_grid(wpts, axes, family(k)[1]):
+                polys.append(([q - origin for q in piece], k))
+        if not polys:
+            return None
+        verts, faces, keys, remap = [], [], [], {}
+        for pts, k in polys:
+            nf = []
+            for p in pts:
+                kk = (round(p.x, 5), round(p.y, 5), round(p.z, 5))
+                if kk not in remap:
+                    remap[kk] = len(verts); verts.append(p)
+                nf.append(remap[kk])
+            # degenerate guard (welding can collapse slivers)
+            if len(set(nf)) < 3:
+                continue
+            faces.append(nf); keys.append(k)
+        me = bpy.data.meshes.new(name)
+        me.from_pydata([tuple(matrix @ v) for v in verts], [], faces)
+        me.update()
+        for p in me.polygons:      # flat shading
+            p.use_smooth = False
+        # create the colour attribute BEFORE the UV layer: adding an attribute reallocates the layers
+        col = me.color_attributes.new("Col", 'FLOAT_COLOR', 'CORNER') if bake else None
+        uvl = me.uv_layers.new(name="UVMap")
+        if col:
+            col = me.color_attributes["Col"]
+        for pi, p in enumerate(me.polygons):
+            key = keys[pi]
+            pts = [verts[vi] for vi in faces[pi]]
+            if split:
+                uvs = face_uvs(pts, key, origin)
+            else:
+                uvs = [cell_uv(key, 0.5, 0.5)] * len(pts)
+            nrm = poly_normal(pts)
+            for li, uv, q in zip(p.loop_indices, uvs, pts):
+                uvl.data[li].uv = uv
+                if col:
+                    col.data[li].color = bake.color(q + origin, nrm)
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
         coll.objects.link(ob)
@@ -216,7 +273,12 @@ SIDES = {'N': (0, 1), 'S': (0, -1), 'E': (1, 0), 'W': (-1, 0)}
 
 class Chunk:
     def __init__(self, name, cw, ch, H=4.0, role="", floor_keys=None, wall_z0=-0.25):
+        if VARIANT.get("H"):
+            H = VARIANT["H"]
+            name = name + VARIANT["suffix"]
         self.name, self.cw, self.ch, self.H, self.role = name, cw, ch, H, role
+        self.wall_visual = None       # optional hook(d, x0, y0, x1, y1, z0, line, span) replacing masonry walls
+        self.slab_jitter = 0.012
         self.W, self.D = 8 * cw, 8 * ch
         self.walk, self.nofloor, self.noceil, self.blocked = set(), set(), set(), set()
         self.doors = []           # (label, side, center_offset)
@@ -227,6 +289,7 @@ class Chunk:
         self.wall_z0 = wall_z0
         self.counters = {}
         self.door_ring = set()
+        self.heroes = []          # (prop, pos, face, scale, part) -> HERO_<prop>[_NN] empties
 
     # tiles ------------------------------------------------------------------
     def t2m(self, i, j):
@@ -273,6 +336,16 @@ class Chunk:
         else:
             name = "SOCKET_" + kind
         self.socks.append((name, Vector(pos), face))
+
+    def hero(self, prop, pos, face=(0, -1), scale=1.0, part=None):
+        """mark a Meshy hero prop: pos/face in chunk-natural coords (prop front = face), uniform scale,
+        part = name suffix of a moving object to parent under ("Bell", "Lid_03")."""
+        self.heroes.append((prop, Vector(pos), face, scale, part))
+
+    def scratch_mb(self):
+        """MB that shares this chunk's RNG but is never exported: build superseded geometry into it so the
+        random sequence (and every later draw) stays identical with HERO_PROPS on or off."""
+        return MB(self.rng)
 
     def torch(self, x, y, face, z=2.0):
         self.sock("Torch", (x, y, z), face)
@@ -330,10 +403,13 @@ class Chunk:
                 x0, x1 = max(x0, -self.W / 2), min(x1, self.W / 2)
                 yl = -self.D / 2 + line + (1 if d == 'N' else 0)
                 y0, y1 = (yl, yl + WT) if d == 'N' else (yl - WT, yl)
-                mb.box(x0, y0, z0, x1, y1, H, WALL)
                 self.col("Wall", x0, y0, z0, x1, y1, H)
-                if decor:
-                    self.wall_decor((x0, x1), yl, d, z0)
+                if self.wall_visual:
+                    self.wall_visual(d, x0, y0, x1, y1, z0, yl, (x0, x1))
+                else:
+                    mb.box(x0, y0, z0, x1, y1, H, WALL, skip=self.hidden(d, ceiling))
+                    if decor:
+                        self.wall_decor((x0, x1), yl, d, z0)
             else:
                 lo, hi = a0, a1 + 1
                 if not self.is_walk(line, a0 - 1) and not self.is_walk(line + dx, a0 - 1):
@@ -344,10 +420,13 @@ class Chunk:
                 y0, y1 = max(y0, -self.D / 2), min(y1, self.D / 2)
                 xl = -self.W / 2 + line + (1 if d == 'E' else 0)
                 x0, x1 = (xl, xl + WT) if d == 'E' else (xl - WT, xl)
-                mb.box(x0, y0, z0, x1, y1, H, WALL)
                 self.col("Wall", x0, y0, z0, x1, y1, H)
-                if decor:
-                    self.wall_decor((y0, y1), xl, d, z0)
+                if self.wall_visual:
+                    self.wall_visual(d, x0, y0, x1, y1, z0, xl, (y0, y1))
+                else:
+                    mb.box(x0, y0, z0, x1, y1, H, WALL, skip=self.hidden(d, ceiling))
+                    if decor:
+                        self.wall_decor((y0, y1), xl, d, z0)
         # --- door frames ---
         for (label, side, c) in self.doors:
             self.door_frame(side, c)
@@ -357,29 +436,40 @@ class Chunk:
             if (i, j) in self.nofloor:
                 continue
             x, y = self.t2m(i, j)
-            self.slab(x, y, 0.0, fk)
-        # floor colliders (greedy rects)
+            self.slab(x, y, 0.0, fk, lod1=False)
+        # floor colliders + merged flat LOD1 floor (greedy rects)
         for (i0, j0, i1, j1) in greedy_rects(self.walk - self.nofloor):
             x0, y0 = self.t2m(i0, j0); x1, y1 = self.t2m(i1 + 1, j1 + 1)
             self.col("Floor", x0, y0, -0.5, x1, y1, 0.0)
+            old = mb.cat; mb.cat = "L1"
+            mb.poly([(x0, y0, 0.0), (x1, y0, 0.0), (x1, y1, 0.0), (x0, y1, 0.0)], fk[0])
+            mb.cat = old
         # --- ceiling ---
         if ceiling:
             for (i0, j0, i1, j1) in greedy_rects(self.walk - self.noceil):
                 x0, y0 = self.t2m(i0, j0); x1, y1 = self.t2m(i1 + 1, j1 + 1)
                 self.ceil.poly([(x0, y0, H), (x0, y1, H), (x1, y1, H), (x1, y0, H)], "stone_dk")
 
-    def slab(self, x, y, z, keys, size=1.0, c=0.06):
-        """chamfered flagstone tile, top at z (+ tiny jitter), chamfers down to z-0.05 at the tile edge."""
+    @staticmethod
+    def hidden(d, ceiling):
+        """faces of a shell wall box nobody can see: the bottom (under the floor), the back (in the rock
+        ring) and the top when a ceiling covers it (open-sky themes get the roof cap instead)."""
+        back = {'N': 'n', 'S': 's', 'E': 'e', 'W': 'w'}[d]
+        return ('b', back, 't') if ceiling else ('b', back)
+
+    def slab(self, x, y, z, keys, size=1.0, c=0.06, lod1=True):
+        """flagstone tile (LOD0, cat F), top at z. PS2 pass: a flat quad; the flagstone seams, chips and
+        wear live in the floor texture, not in chamfer geometry. lod1=True also adds the LOD1 quad."""
         mb = self.mb
         k = mb.pick(keys)
-        zt = z + self.rng.uniform(-0.012, 0.012)
-        zb = z - 0.05
-        a = [(x, y), (x + size, y), (x + size, y + size), (x, y + size)]
-        b = [(x + c, y + c), (x + size - c, y + c), (x + size - c, y + size - c), (x + c, y + size - c)]
-        mb.poly([(p[0], p[1], zt) for p in b], k)
-        for q in range(4):
-            r = (q + 1) % 4
-            mb.poly([(a[q][0], a[q][1], zb), (a[r][0], a[r][1], zb), (b[r][0], b[r][1], zt), (b[q][0], b[q][1], zt)], k)
+        old = mb.cat
+        q = [(x, y, z), (x + size, y, z), (x + size, y + size, z), (x, y + size, z)]
+        if lod1:
+            mb.cat = "L1"
+            mb.poly(q, k)
+        mb.cat = "F"
+        mb.poly(q, k)
+        mb.cat = old
 
     def wall_decor(self, span, line, d, z0):
         """plinth, cornice and jutting stones on the inner face of a wall run."""
@@ -399,15 +489,20 @@ class Chunk:
         bx(a0, a1, H - 0.22, H, 0.1, "wall2")
         # jutting stones in loose courses
         rows = int((H - 0.6) / 0.42)
+        old = mb.cat
+        mb.cat = "D"
         for r in range(rows):
             zz = 0.4 + r * 0.42
             u = a0 + rng.uniform(0.0, 0.8)
             while u < a1 - 0.5:
                 w = rng.uniform(0.45, 1.1)
-                if rng.random() < 0.45:
+                if rng.random() < JUT_CHANCE:
                     u1 = min(u + w, a1 - 0.05)
-                    bx(u, u1, zz, zz + rng.uniform(0.26, 0.38), rng.uniform(0.05, 0.13), WALL_HI + WALL)
+                    pr = rng.uniform(0.09, 0.15)
+                    mb.cat = "S" if pr > 0.085 else "D"   # the boldest stones survive into LOD1
+                    bx(u, u1, zz, zz + rng.uniform(0.26, 0.38), pr, WALL_HI + WALL)
                 u += w + rng.uniform(0.1, 0.9)
+        mb.cat = old
         # pilaster at the run midpoint for long runs
         if L >= 5.5:
             m = (a0 + a1) / 2
@@ -421,7 +516,7 @@ class Chunk:
             ye = self.D / 2 if side == 'N' else -self.D / 2
             r0, r1 = (ye - 1, ye) if side == 'N' else (ye, ye + 1)
             for s0, s1 in ((c - 2, c - DOOR_W / 2), (c + DOOR_W / 2, c + 2)):
-                mb.box(s0, r0, self.wall_z0, s1, r1, DOOR_H, "wall1")
+                mb.box(s0, r0, self.wall_z0, s1, r1, DOOR_H, "wall1", skip=('b', 't'))
                 self.col("Wall", s0, r0, self.wall_z0, s1, r1, DOOR_H)
             mb.box(c - 2, r0, DOOR_H, c + 2, r1, H, "wall0")
             self.col("Wall", c - 2, r0, DOOR_H, c + 2, r1, H)
@@ -440,7 +535,7 @@ class Chunk:
             xe = self.W / 2 if side == 'E' else -self.W / 2
             r0, r1 = (xe - 1, xe) if side == 'E' else (xe, xe + 1)
             for s0, s1 in ((c - 2, c - DOOR_W / 2), (c + DOOR_W / 2, c + 2)):
-                mb.box(r0, s0, self.wall_z0, r1, s1, DOOR_H, "wall1")
+                mb.box(r0, s0, self.wall_z0, r1, s1, DOOR_H, "wall1", skip=('b', 't'))
                 self.col("Wall", r0, s0, self.wall_z0, r1, s1, DOOR_H)
             mb.box(r0, c - 2, DOOR_H, r1, c + 2, H, "wall0")
             self.col("Wall", r0, c - 2, DOOR_H, r1, c + 2, H)
@@ -785,13 +880,16 @@ def ch_room_ritual():
     c.mb.box(-3, cy - 3, 0, 3, cy + 3, 0.25, "wall3", skip=('b',))
     c.mb.box(-2, cy - 2, 0.25, 2, cy + 2, 0.5, "wall1", skip=('b',))
     c.col("Floor", -3, cy - 3, -0.5, 3, cy + 3, 0.25); c.col("Floor", -2, cy - 2, 0.25, 2, cy + 2, 0.5)
-    c.mb.box(-1.1, cy - 0.5, 0.5, 1.1, cy + 0.5, 1.35, "stone_dk", skip=('b',))
-    c.mb.box(-1.25, cy - 0.62, 1.35, 1.25, cy + 0.62, 1.5, "wall4")
+    alt = c.scratch_mb() if HERO_PROPS else c.mb
+    alt.box(-1.1, cy - 0.5, 0.5, 1.1, cy + 0.5, 1.35, "stone_dk", skip=('b',))
+    alt.box(-1.25, cy - 0.62, 1.35, 1.25, cy + 0.62, 1.5, "wall4")
+    if HERO_PROPS:
+        c.hero("Altar", (0.0, cy, 0.5), (0, -1))
     c.col("Block", -1.25, cy - 0.62, 0.5, 1.25, cy + 0.62, 1.5)
     c.mark_blocked(-1.25, cy - 0.62, 1.25, cy + 0.62)
     # blood-red drips on the altar front, painted circle + star on the floor
     for x in (-0.7, -0.1, 0.5):
-        c.mb.poly([(x, cy - 0.51, 1.35), (x + 0.14, cy - 0.51, 1.35), (x + 0.09, cy - 0.51, 0.9), (x + 0.04, cy - 0.51, 0.75)][::-1], "red0")
+        alt.poly([(x, cy - 0.51, 1.35), (x + 0.14, cy - 0.51, 1.35), (x + 0.09, cy - 0.51, 0.9), (x + 0.04, cy - 0.51, 0.75)][::-1], "red0")
     c.mb.ring(0, cy, 0.505, 1.6, 1.8, 16, "red1")
     c.mb.ring(0, cy, 0.01, 4.3, 4.6, 24, "red0")
     pts = [(math.sin(2 * math.pi * k / 5) * 4.3, cy + math.cos(2 * math.pi * k / 5) * 4.3) for k in range(5)]
@@ -902,16 +1000,16 @@ def ch_sp_flooded():
     c.extra["water_vol"] = ((0, 0, (depth + 0.1) / 2), (6.0, 2 * wy, 0.1 - depth))
     # broken columns standing in the water, a toppled one as a bridge-ish log, floating planks
     c.pillar(-1.6, -2.5, c.H, broken_at=1.3 + depth, zb=depth)
-    c.pillar(1.7, 2.0, c.H, zb=depth)
-    c.mb.hcyl((-2.6, 1.2, depth + 0.35), (0.4, 3.6, depth + 0.35), 0.4, 8, "wall0")
-    c.col_o("Block", (-1.1, 2.4, depth + 0.35), (3.9, 0.8, 0.8), (0, 0, math.atan2(2.4, 3.0)))
+    c.pillar(1.9, -0.3, c.H, zb=depth)
+    c.mb.hcyl((-2.6, 1.4, depth + 0.35), (-0.6, 2.8, depth + 0.35), 0.4, 8, "wall0")
+    c.col_o("Block", (-1.6, 2.1, depth + 0.35), (2.45, 0.8, 0.8), (0, 0, math.atan2(1.4, 2.0)))
     for (x, y, a) in ((1.2, -1.0, 0.4), (0.6, -3.6, -0.9), (-0.8, 0.4, 1.4)):
         c.mb.obox((x, y, wl + 0.02), (1.1, 0.25, 0.06), (0, 0, a), WOOD)
     c.skull(-2.3, -4.0, depth, 0.8)
     c.wall_torch(-3.0, -5.5, (1, 0)); c.wall_torch(3.0, 5.5, (-1, 0))
     for p in ((-1.0, -1.0), (1.2, 1.0), (0.2, 3.5)):
         c.sock("Drip", (p[0], p[1], c.H - 0.1), (0, -1))
-    c.sock("Evidence", (2.0, -0.8, depth), (0, 1))      # submerged
+    c.sock("Evidence", (2.0, -2.2, depth), (0, 1))      # submerged
     c.sock("Evidence", (-2.2, 6.4, 0.0), (1, 0))
     c.sock("Prop", (2.2, -6.4, 0), (-1, 0))
     c.extra["flooded"] = {"floor": depth, "water_level": wl, "ramp_slope_deg": round(math.degrees(math.atan2(-depth, 1.5)), 1)}
@@ -988,7 +1086,7 @@ def ch_sp_belltower():
     c = Chunk("CH_SP_BellTower", 1, 1, H=12.0, role="setpiece")
     c.rect(-3, -3, 3, 3); c.door('S'); c.door('W')
     c.build_shell()
-    BZ = 3.0
+    BZ = 2.65
     # balcony along the north wall (y 1.4..3) at 3 m + railing
     c.mb.box(-3, 1.5, BZ - 0.25, 3, 3, BZ, "wood1")
     for x in (-2.6, -1.2, 0.2):
@@ -998,16 +1096,18 @@ def ch_sp_belltower():
         c.mb.box(x, 1.5, BZ, x + 0.12, 1.62, BZ + 1.0, "wood0")
     c.mb.box(-3, 1.48, BZ + 0.95, 1.6, 1.64, BZ + 1.05, "wood3")
     c.col("Rail", -3, 1.48, BZ, 1.6, 1.64, BZ + 1.05)
-    # stairs along the east wall: x 1.6..3, y -3 -> 1.5, rising 3 m (33.7 deg)
-    steps = 12
-    run = 4.5 / steps
+    # stairs along the east wall: x 1.6..3, y -2.4 -> 1.5 (foot 0.6 m off the south wall), rising 2.65 m (34 deg)
+    steps = 11
+    y_foot, run_len = -2.4, 3.9
+    run = run_len / steps
+    rise = BZ / steps
     for s in range(steps):
-        y0 = -3.0 + s * run
-        c.mb.box(1.6, y0, 0.0, 3.0, 1.5, (s + 1) * 0.25, ["wall1", "wall0"], skip=('b',))
-    ang = math.atan2(3.0, 4.5); L = math.hypot(3.0, 4.5)
-    c.col_o("Ramp", (2.3, -0.75 + 0.25 * math.sin(ang), 1.5 - 0.25 * math.cos(ang) + 0.12), (1.4, L + 0.3, 0.5), (ang, 0, 0))
-    c.col("Block", 1.6, -0.5, 0, 3.0, 1.5, 1.3)
-    c.mark_blocked(1.6, -3.0, 3.0, 1.5)
+        y0 = y_foot + s * run
+        c.mb.box(1.6, y0, 0.0, 3.0, 1.5, (s + 1) * rise, ["wall1", "wall0"], skip=('b',))
+    ang = math.atan2(BZ, run_len); L = math.hypot(BZ, run_len)
+    c.col_o("Ramp", (2.3, (y_foot + 1.5) / 2 + 0.25 * math.sin(ang), BZ / 2 - 0.25 * math.cos(ang) + 0.06), (1.4, L + 0.2, 0.5), (ang, 0, 0))
+    c.col("Block", 1.6, 0.0, 0, 3.0, 1.5, 1.2)
+    c.mark_blocked(1.6, y_foot, 3.0, 1.5)
     # tall-tower dressing: string courses, slit windows, wooden floors high up, bell beam
     for z in (4.5, 8.0):
         for (x0, y0, x1, y1) in ((-3, -3, 3, -2.88), (-3, 2.88, 3, 3), (-3, -3, -2.88, 3), (2.88, -3, 3, 3)):
@@ -1024,11 +1124,14 @@ def ch_sp_belltower():
         c.ceil.box(x - 0.15, -3, 11.4, x + 0.15, 3, 11.7, "wood2", skip=('t',))
     # the bell (separate object, pivot at the top) + rope down to the floor
     bell = MB(c.rng)
-    bell.cyl(0, 0, -1.9, -1.7, 0.95, 10, "brass", r_top=0.9, caps=(True, False))
-    bell.cyl(0, 0, -1.7, -0.6, 0.9, 10, "brass1", r_top=0.55)
-    bell.cyl(0, 0, -0.6, -0.25, 0.55, 10, "brass", r_top=0.3)
-    bell.box(-0.12, -0.12, -0.25, 0.12, 0.12, 0.0, "iron0")
-    bell.cyl(0, 0, -1.9, -1.75, 0.16, 6, "iron1", caps=(True, True))   # clapper
+    body = MB(c.rng) if HERO_PROPS else bell      # HERO: the Meshy bell hangs under SM_*_Bell (same pivot / swing)
+    body.cyl(0, 0, -1.9, -1.7, 0.95, 10, "brass", r_top=0.9, caps=(True, False))
+    body.cyl(0, 0, -1.7, -0.6, 0.9, 10, "brass1", r_top=0.55)
+    body.cyl(0, 0, -0.6, -0.25, 0.55, 10, "brass", r_top=0.3)
+    body.box(-0.12, -0.12, -0.25, 0.12, 0.12, 0.0, "iron0")
+    body.cyl(0, 0, -1.9, -1.75, 0.16, 6, "iron1", caps=(True, True))   # clapper
+    if HERO_PROPS:
+        c.hero("Bell", (0.0, 0.0, 10.6), (0, -1), part="Bell")
     bell.hcyl((0.3, 0.0, -1.0), (0.3, 0.0, -9.2), 0.035, 4, "rope")
     c.extra["bell"] = (bell, (0.0, 0.0, 10.6))
     c.wall_torch(-3.0, -1.6, (1, 0)); c.wall_torch(-1.0, 3.0, (0, -1), z=BZ + 1.9)
@@ -1038,7 +1141,7 @@ def ch_sp_belltower():
     c.sock("Prop", (-2.3, -2.3, 0), (1, 1)); c.sock("Prop", (0.8, 2.3, BZ), (0, -1))
     c.sock("Spawn", (-1.0, -1.5, 0), (1, 0))
     c.bones_scatter(-1.5, 0.3, 0.6, 3)
-    c.extra["balcony"] = {"height": BZ, "stairs": "x 1.6..3, y -3 -> 1.5, 33.7 deg"}
+    c.extra["balcony"] = {"height": BZ, "stairs": "x 1.6..3, y -2.4 -> 1.5, 34.2 deg, balcony 2.65 m"}
     return c
 
 
@@ -1049,12 +1152,15 @@ def ch_sp_den():
     c.ribs('y', [-3.5, 1.5], (-3, 3), pil=False)
     # straw nest (low mound, walkable) at the north end
     nx, ny = 0.6, 4.9
-    c.mb.cyl(nx, ny, 0.0, 0.14, 1.9, 9, "straw2", r_top=1.6)
-    c.mb.cyl(nx, ny, 0.14, 0.12, 1.6, 9, "straw0", r_top=1.0)
-    c.mb.cyl(nx, ny, 0.12, 0.2, 1.0, 9, "straw1", r_top=0.0, caps=(False, False))
+    nest = c.scratch_mb() if HERO_PROPS else c.mb
+    if HERO_PROPS:
+        c.hero("Nest", (nx, ny, 0.0), (0, -1))
+    nest.cyl(nx, ny, 0.0, 0.14, 1.9, 9, "straw2", r_top=1.6)
+    nest.cyl(nx, ny, 0.14, 0.12, 1.6, 9, "straw0", r_top=1.0)
+    nest.cyl(nx, ny, 0.12, 0.2, 1.0, 9, "straw1", r_top=0.0, caps=(False, False))
     for _ in range(26):
         a = c.rng.uniform(0, 2 * math.pi); r = c.rng.uniform(0.9, 2.1)
-        c.mb.obox((nx + math.cos(a) * r, ny + math.sin(a) * r, 0.1), (0.6, 0.06, 0.04),
+        nest.obox((nx + math.cos(a) * r, ny + math.sin(a) * r, 0.1), (0.6, 0.06, 0.04),
                   (c.rng.uniform(-0.3, 0.3), 0.2, a + c.rng.uniform(-0.6, 0.6)), STRAW)
     # bone pile mound (landmark) in the NW corner, leaving free floor in front of it
     px, py = -1.9, 5.4
@@ -1204,16 +1310,37 @@ def ch_extraction_gate():
     return c
 
 
-CHUNKS = [ch_corridor_straight, ch_corridor_corner, ch_corridor_t, ch_corridor_cross, ch_corridor_deadend,
+def as_cat(fn, default="D"):
+    def w(self, *a, **k):
+        cat = k.pop("cat", default)
+        old = self.mb.cat
+        self.mb.cat = cat
+        try:
+            return fn(self, *a, **k)
+        finally:
+            self.mb.cat = old
+    w.__name__ = fn.__name__
+    return w
+
+
+for _n in ("bone", "skull", "candle", "torch_bracket", "scratches", "rubble", "bones_scatter"):
+    setattr(Chunk, _n, as_cat(getattr(Chunk, _n)))
+
+VARIANT = {}
+exec(open(os.path.join(SRC, "chunks_extra.py"), encoding="utf-8").read(), globals())
+
+BASE_CHUNKS = [ch_corridor_straight, ch_corridor_corner, ch_corridor_t, ch_corridor_cross, ch_corridor_deadend,
           ch_room_storage, ch_room_pillarhall, ch_room_crypt, ch_room_ritual,
           ch_sp_collapsed, ch_sp_flooded, ch_sp_pitbridge, ch_sp_belltower, ch_sp_den,
           ch_generator_alcove, ch_extraction_gate]
+CHUNKS = BASE_CHUNKS + EXTRA_CHUNKS
 
 
 # ───────────────────────────── scene assembly / export ─────────────────────────────
 def get_mat(name, color, alpha=1.0, tex=None):
     m = bpy.data.materials.get(name) or bpy.data.materials.new(name)
     m.use_nodes = True
+    m.use_backface_culling = alpha >= 1          # like Unity (Cull Back): renders match the game
     nt = m.node_tree
     bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
     bsdf.inputs["Base Color"].default_value = (*color, 1)
@@ -1233,13 +1360,23 @@ def get_mat(name, color, alpha=1.0, tex=None):
             img = bpy.data.images.load(tex)
         tn.image = img
         tn.interpolation = 'Closest'
-        nt.links.new(tn.outputs["Color"], bsdf.inputs["Base Color"])
+        # texture x baked vertex colour (same as Fluffterror/PS2Lit in Unity), for EEVEE renders
+        vc = next((n for n in nt.nodes if n.type == "VERTEX_COLOR"), None) or nt.nodes.new("ShaderNodeVertexColor")
+        vc.layer_name = "Col"
+        mix = next((n for n in nt.nodes if n.type == "MIX" and n.data_type == 'RGBA'), None)
+        if mix is None:
+            mix = nt.nodes.new("ShaderNodeMix"); mix.data_type = 'RGBA'
+        mix.blend_type = 'MULTIPLY'
+        mix.inputs[0].default_value = 1.0
+        nt.links.new(tn.outputs["Color"], mix.inputs[6])
+        nt.links.new(vc.outputs["Color"], mix.inputs[7])
+        nt.links.new(mix.outputs[2], bsdf.inputs["Base Color"])
     return m
 
 
-def clear_chunks():
+def clear_chunks(only=None):
     for coll in list(bpy.data.collections):
-        if coll.name.startswith("CH_"):
+        if coll.name.startswith("CH_") and (not only or coll.name in only):
             for o in list(coll.objects):
                 bpy.data.objects.remove(o, do_unlink=True)
             bpy.data.collections.remove(coll)
@@ -1270,92 +1407,226 @@ def unity_vec(p):
     return [round(p[0], 4), round(p[2], 4), round(p[1], 4)]
 
 
+def collar_mb(c):
+    """Door collars: a 1 m tall slab on the outer edge of every door, local z 0..1 (object pivot at z = H).
+    Scale it (Unity local Y) to (corridor height - H) when a taller generator corridor meets the door, so
+    the corridor's cross-section is closed above the lintel. Off by default."""
+    m = MB(c.rng)
+    for (label, side, cc) in c.doors:
+        if side in "NS":
+            ye = c.D / 2 if side == 'N' else -c.D / 2
+            y0, y1 = (ye - 0.3, ye) if side == 'N' else (ye, ye + 0.3)
+            m.box(cc - 2.5, y0, 0.0, cc + 2.5, y1, 1.0, "wall0")
+        else:
+            xe = c.W / 2 if side == 'E' else -c.W / 2
+            x0, x1 = (xe - 0.3, xe) if side == 'E' else (xe, xe + 0.3)
+            m.box(x0, cc - 2.5, 0.0, x1, cc + 2.5, 1.0, "wall0")
+    return m
+
+
+def roof_mb(c):
+    """Upward-facing cap over the footprint for open-sky themes (Graveyard). Off by default."""
+    m = MB(c.rng)
+    w, d = c.W / 2, c.D / 2
+    m.poly([(-w, -d, 0.0), (w, -d, 0.0), (w, d, 0.0), (-w, d, 0.0)], "wall3")
+    return m
+
+
+def place_obj(o, piv):
+    o.matrix_world = R @ Matrix.Translation(Vector(piv)) @ R.inverted()
+
+
+def build_one(c, coll, mat, wmat, smat):
+    base = "SM_" + c.name[3:]
+    objs = []
+    tris = {}
+
+    bake = Baker([(c.mb, Vector()), (c.ceil, Vector())])
+
+    def add(mb, name, material, cats=None, piv=None):
+        o = mb.to_object(name, material, coll, cats=cats, origin=piv or (0, 0, 0), bake=bake)
+        if o is None:
+            return None
+        if piv is not None:
+            place_obj(o, piv)
+        objs.append(o)
+        return o
+
+    # LOD split: structure (both LODs) / detail + slabs (LOD0) / flat floor (LOD1)
+    add(c.mb, base, mat, cats={"S"})
+    add(c.mb, base + "_Detail", mat, cats={"D", "F"})
+    add(c.mb, base + "_FloorLOD1", mat, cats={"L1"})
+    tris["structure"] = c.mb.tris({"S"})
+    tris["detail"] = c.mb.tris({"D", "F"})
+    tris["floor_lod1"] = c.mb.tris({"L1"})
+    shared = 0
+    if c.ceil.f:
+        add(c.ceil, base + "_Ceiling", mat)
+        tris["ceiling"] = c.ceil.tris(); shared += tris["ceiling"]
+    if "water" in c.extra:
+        add(c.extra["water"], base + "_Water", wmat)
+        tris["water"] = c.extra["water"].tris(); shared += tris["water"]
+    if "shaft" in c.extra:
+        add(c.extra["shaft"], base + "_Shaft", smat)
+        tris["shaft"] = c.extra["shaft"].tris(); shared += tris["shaft"]
+    for part in ("bell", "gate"):
+        if part in c.extra:
+            mbp, piv = c.extra[part]
+            add(mbp, base + "_" + part.capitalize(), mat, piv=piv)
+            tris[part] = mbp.tris(); shared += tris[part]
+    for k, (mbp, piv) in enumerate(c.extra.get("lids", [])):
+        add(mbp, "%s_Lid_%02d" % (base, k + 1), mat, piv=piv)
+        tris["lids"] = tris.get("lids", 0) + mbp.tris(); shared += mbp.tris()
+    add(collar_mb(c), base + "_Collar", mat, piv=(0, 0, c.H))
+    add(roof_mb(c), base + "_Roof", mat, piv=(0, 0, c.H + 0.02))
+    # exported (split) triangle counts per object
+    def otris(suffix):
+        o = next((q for q in objs if q.name.split(".")[0] == base + suffix), None)
+        return sum(len(p.vertices) - 2 for p in o.data.polygons) if o else 0
+    tris = {"structure": otris(""), "detail": otris("_Detail"), "floor_lod1": otris("_FloorLOD1")}
+    shared = 0
+    for suf, k in (("_Ceiling", "ceiling"), ("_Water", "water"), ("_Shaft", "shaft"), ("_Bell", "bell"), ("_Gate", "gate")):
+        if otris(suf):
+            tris[k] = otris(suf); shared += tris[k]
+    lids = sum(sum(len(p.vertices) - 2 for p in q.data.polygons) for q in objs if "_Lid_" in q.name)
+    if lids:
+        tris["lids"] = lids; shared += lids
+    lod0 = tris["structure"] + tris["detail"] + shared
+    lod1 = tris["structure"] + tris["floor_lod1"] + shared
+    # colliders
+    counters = {}
+    cols = list(c.cols)
+    if "gate_collider" in c.extra:
+        gc = c.extra["gate_collider"]; cols.append(("Gate", gc[0], gc[1], (0, 0, 0)))
+    for k, lc in enumerate(c.extra.get("lid_colliders", [])):
+        cols.append(("Lid", lc[0], lc[1], (0, 0, 0)))
+    if "water_vol" in c.extra:
+        wv = c.extra["water_vol"]; cols.append(("VOLWater", wv[0], wv[1], (0, 0, 0)))
+    if "trap_vol" in c.extra:
+        tv = c.extra["trap_vol"]; cols.append(("VOLTrap", tv[0], tv[1], (0, 0, 0)))
+    for (kind, cen, size, rot) in cols:
+        n = counters.get(kind, 0) + 1; counters[kind] = n
+        if kind.startswith("VOL"):
+            name = "VOL_" + kind[3:]
+        else:
+            name = "COL_%s_%02d" % (kind, n)
+        bm = MB(c.rng)
+        sx, sy, sz = (q / 2 for q in size)
+        bm.box(-sx, -sy, -sz, sx, sy, sz, "mortar")
+        o = bm.to_object(name, mat, coll, matrix=Matrix(), split=False)
+        rm = Matrix.Rotation(rot[2], 4, 'Z') @ Matrix.Rotation(rot[1], 4, 'Y') @ Matrix.Rotation(rot[0], 4, 'X')
+        o.matrix_world = Matrix.Translation(R @ Vector(cen)) @ R @ rm @ R.inverted()
+        o.display_type = 'WIRE'; o.hide_render = True
+        objs.append(o)
+    # sockets
+    socks_out = []
+    for (name, pos, face) in c.socks:
+        e = bpy.data.objects.new(name, None)
+        e.empty_display_type = 'SINGLE_ARROW' if not name.startswith("SOCKET_Door") else 'CUBE'
+        e.empty_display_size = 0.5 if name.startswith("SOCKET_Door") else 0.35
+        fx, fy = face
+        ln = math.hypot(fx, fy) or 1
+        fx, fy = fx / ln, fy / ln
+        phi = math.atan2(-fx, fy)
+        # Unity forward = the empty's local -Y (FBX -Z fwd / Y up / bake space transform).
+        # Rotation(phi + pi) maps local -Y to (fx, fy) in natural coords, R takes it to the Blender frame.
+        e.matrix_world = R @ Matrix.Translation(pos) @ Matrix.Rotation(phi + math.pi, 4, 'Z')
+        e.hide_render = True
+        coll.objects.link(e)
+        objs.append(e)
+        socks_out.append({"name": name, "pos": unity_vec(pos), "forward": [round(fx, 3), 0, round(fy, 3)]})
+    # hero prop anchors (Unity forward = prop front, like the sockets)
+    counts = {}
+    for (prop, pos, face, scale, part) in c.heroes:
+        counts[prop] = counts.get(prop, 0) + 1
+    seen = {}
+    for (prop, pos, face, scale, part) in c.heroes:
+        seen[prop] = seen.get(prop, 0) + 1
+        # a moving part is encoded in the name (HERO_<Prop>__<Part>): ChunkPrefabBuilder re-parents it in Unity.
+        # (Parenting an empty under a mesh here breaks the FBX bake_space_transform: it lands Y/Z-swapped.)
+        name = "HERO_" + prop + ("_%02d" % seen[prop] if counts[prop] > 1 else "") + ("__" + part if part else "")
+        e = bpy.data.objects.new(name, None)
+        e.empty_display_type = 'ARROWS'; e.empty_display_size = 0.5
+        fx, fy = face
+        ln = math.hypot(fx, fy) or 1
+        fx, fy = fx / ln, fy / ln
+        phi = math.atan2(-fx, fy)
+        e.matrix_world = R @ Matrix.Translation(pos) @ Matrix.Rotation(phi + math.pi, 4, 'Z') @ Matrix.Scale(scale, 4)
+        e.hide_render = True
+        coll.objects.link(e)
+        objs.append(e)
+        c.extra.setdefault("heroes", []).append({"name": name, "prefab": "PROP_Meshy" + prop, "pos": unity_vec(pos),
+                                                 "forward": [round(fx, 3), 0, round(fy, 3)], "scale": scale, "part": part or ""})
+    return objs, tris, lod0, lod1, socks_out
+
+
+def default_tags(c):
+    torches = sum(1 for s in c.socks if s[0].startswith("SOCKET_Torch"))
+    role = c.role or "room"
+    t = {"themes": ["Any"], "role": role, "weight": 1.0 if role == "corridor" else 0.5,
+         "min": 0, "max": 4 if role == "corridor" else 2,
+         "torches_suggested": min(torches, 1 if role == "corridor" else 3)}
+    base_name = c.name.split("_H")[0] if VARIANT.get("suffix") else c.name
+    t.update(TAGS.get(base_name, {}))
+    if VARIANT.get("suffix") == "_H36":
+        t["themes"] = ["Catacombs"]
+    elif VARIANT.get("suffix") == "_H50":
+        t["themes"] = ["GothicRuins", "Transition", "HellPillars"]
+    return t
+
+
 def build_all(export=True, only=None):
     os.makedirs(UNITY_MODELS, exist_ok=True)
     tex_path = os.path.join(SRC, "T_Chunks_D.png")
-    make_palette_png(tex_path)
+    make_ps2_atlas(tex_path)
     shutil.copyfile(tex_path, os.path.join(UNITY_DIR, "T_Chunks_D.png"))
     mat = get_mat("M_Chunks", (1, 1, 1), tex=tex_path)
     wmat = get_mat("M_ChunksWater", (0.03, 0.09, 0.1), alpha=0.75)
     wmat.diffuse_color = (0.05, 0.16, 0.18, 0.8)
-    clear_chunks()
+    smat = get_mat("M_ChunksShaft", (0.55, 0.62, 0.75), alpha=0.2)
+    smat.diffuse_color = (0.6, 0.68, 0.8, 0.25)
+    clear_chunks(only)
     scene = bpy.context.scene
     manifest = {"cell_m": 8, "tile_m": 1, "door": {"width": DOOR_W, "height": DOOR_H}, "wall_thickness": WT,
-                "pivot": "footprint centre, floor level", "forward": "+Z = North", "chunks": []}
-    idx = 0
+                "pivot": "footprint centre, floor level", "forward": "+Z = North",
+                "theme_wall_heights": THEME_HEIGHTS,
+                "collar": "SM_<Chunk>_Collar: 1 m slab per door above the chunk height, scale Y = corridorHeight - wall_height (AuthoredChunk.FitToTheme)",
+                "chunks": []}
     labels = bpy.data.collections.get("Labels")
     if labels:
         for o in list(labels.objects):
-            bpy.data.objects.remove(o, do_unlink=True)
+            if not only or o.name[4:] in only:
+                bpy.data.objects.remove(o, do_unlink=True)
     else:
         labels = bpy.data.collections.new("Labels")
         scene.collection.children.link(labels)
-    for fn in CHUNKS:
+    jobs = [(fn, None) for fn in CHUNKS]
+    for fn in HEIGHT_VARIANT_FNS:
+        for (h, suf) in ((3.6, "_H36"), (5.0, "_H50")):
+            jobs.append((fn, (h, suf)))
+    idx = 0
+    for fn, var in jobs:
+        VARIANT.clear()
+        if var:
+            VARIANT.update(H=var[0], suffix=var[1])
         c = fn()
         if only and c.name not in only:
+            VARIANT.clear()
+            idx += 1
             continue
         coll = bpy.data.collections.new(c.name)
         scene.collection.children.link(coll)
         root = bpy.data.objects.new(c.name, None)
         root.empty_display_type = 'PLAIN_AXES'
         coll.objects.link(root)
-        objs = []
-        main = c.mb.to_object("SM_" + c.name[3:], mat, coll); objs.append(main)
-        tris = {"main": c.mb.tris()}
-        if c.ceil.f:
-            ce = c.ceil.to_object("SM_" + c.name[3:] + "_Ceiling", mat, coll); objs.append(ce)
-            tris["ceiling"] = c.ceil.tris()
-        if "water" in c.extra:
-            w = c.extra["water"].to_object("SM_" + c.name[3:] + "_Water", wmat, coll); objs.append(w)
-            tris["water"] = c.extra["water"].tris()
-        for part in ("bell", "gate"):
-            if part in c.extra:
-                mbp, piv = c.extra[part]
-                o = mbp.to_object("SM_" + c.name[3:] + "_" + part.capitalize(), mat, coll, matrix=R)
-                o.matrix_world = R @ Matrix.Translation(Vector(piv)) @ R.inverted()
-                objs.append(o)
-                tris[part] = mbp.tris()
-        # colliders
-        counters = {}
-        cols = list(c.cols)
-        if "gate_collider" in c.extra:
-            gc = c.extra["gate_collider"]; cols.append(("Gate", gc[0], gc[1], (0, 0, 0)))
-        if "water_vol" in c.extra:
-            wv = c.extra["water_vol"]; cols.append(("VOLWater", wv[0], wv[1], (0, 0, 0)))
-        for (kind, cen, size, rot) in cols:
-            n = counters.get(kind, 0) + 1; counters[kind] = n
-            name = "VOL_Water" if kind == "VOLWater" else ("COL_%s_%02d" % (kind, n))
-            bm = MB(c.rng)
-            sx, sy, sz = (s / 2 for s in size)
-            bm.box(-sx, -sy, -sz, sx, sy, sz, "mortar")
-            o = bm.to_object(name, mat, coll, matrix=Matrix())
-            rm = Matrix.Rotation(rot[2], 4, 'Z') @ Matrix.Rotation(rot[1], 4, 'Y') @ Matrix.Rotation(rot[0], 4, 'X')
-            o.matrix_world = Matrix.Translation(R @ Vector(cen)) @ R @ rm @ R.inverted()
-            o.display_type = 'WIRE'; o.hide_render = True
-            objs.append(o)
-        # sockets
-        socks_out = []
-        for (name, pos, face) in c.socks:
-            e = bpy.data.objects.new(name, None)
-            e.empty_display_type = 'SINGLE_ARROW' if not name.startswith("SOCKET_Door") else 'CUBE'
-            e.empty_display_size = 0.5 if name.startswith("SOCKET_Door") else 0.35
-            fx, fy = face
-            ln = math.hypot(fx, fy) or 1
-            fx, fy = fx / ln, fy / ln
-            phi = math.atan2(-fx, fy)
-            # local -Y = facing in natural coords; then into Blender frame (R)
-            # Unity forward = the empty's local -Y (FBX -Z fwd / Y up / bake space transform).
-            # Rotation(phi + pi) maps local -Y to (fx, fy) in natural coords, R takes it to the Blender frame.
-            e.matrix_world = R @ Matrix.Translation(pos) @ Matrix.Rotation(phi + math.pi, 4, 'Z')
-            e.hide_render = True
-            coll.objects.link(e)
-            objs.append(e)
-            socks_out.append({"name": name, "pos": unity_vec(pos), "forward": [round(fx, 3), 0, round(fy, 3)]})
+        objs, tris, lod0, lod1, socks_out = build_one(c, coll, mat, wmat, smat)
         for o in objs:
-            o.parent = root
-        home = Vector(((idx % 4) * 24.0, -(idx // 4) * 26.0, 0))
+            if o.parent is None:
+                o.parent = root
+            if o.name.endswith(("_Collar", "_Roof")):
+                o.hide_render = True
+        home = Vector(((idx % 6) * 24.0, -(idx // 6) * 26.0, 0))
         root.location = home
-        # export
         fbx = os.path.join(UNITY_MODELS, c.name + ".fbx")
         if export:
             root.location = (0, 0, 0)
@@ -1366,21 +1637,22 @@ def build_all(export=True, only=None):
             bpy.ops.export_scene.fbx(filepath=fbx, use_selection=True, object_types={'MESH', 'EMPTY'},
                                      apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y',
                                      bake_space_transform=True, mesh_smooth_type='FACE', add_leaf_bones=False,
-                                     use_mesh_modifiers=False, path_mode='STRIP', embed_textures=False)
+                                     use_mesh_modifiers=False, path_mode='STRIP', embed_textures=False,
+                                     colors_type='LINEAR', prioritize_active_color=True)
             root.location = home
-        tri_total = sum(tris.values())
+        tags = default_tags(c)
         manifest["chunks"].append({
-            "name": c.name, "role": c.role, "cells": [c.cw, c.ch], "size_m": [c.W, c.D], "wall_height": c.H,
+            "name": c.name, "role": tags["role"], "cells": [c.cw, c.ch], "size_m": [c.W, c.D], "wall_height": c.H,
+            "tags": tags,
             "doors": [{"label": d[0], "side": d[1], "offset": d[2]} for d in c.doors],
-            "tris": tris, "tris_total": tri_total,
+            "tris": tris, "tris_lod0": lod0, "tris_lod1": lod1,
             "mask_north_up": mask_rows(c),
             "sockets": socks_out,
-            "notes": {k: v for k, v in c.extra.items() if isinstance(v, (dict, str, list))},
+            "notes": {k: v for k, v in c.extra.items() if isinstance(v, (dict, str, list)) and k not in ("lids", "lid_colliders")},
         })
-        print("%-28s %3dx%-3d tris %5d  %s  sockets %d" % (c.name, c.W, c.D, tri_total, tris, len(socks_out)))
-        # label south of the chunk (natural south = Blender +Y)
+        print("%-30s %3dx%-3d H%.1f LOD0 %5d LOD1 %5d (%2d%%) sockets %d" % (c.name, c.W, c.D, c.H, lod0, lod1, 100 * lod1 // max(lod0, 1), len(socks_out)))
         cu = bpy.data.curves.new(c.name + "_label", 'FONT')
-        cu.body = "%s  %dx%d m  %d tris" % (c.name[3:], c.W, c.D, tri_total)
+        cu.body = "%s  %dx%d  %d/%d tris" % (c.name[3:], c.W, c.D, lod0, lod1)
         cu.size = 0.9
         cu.align_x = 'CENTER'
         lab = bpy.data.objects.new("LBL_" + c.name, cu)
@@ -1388,12 +1660,19 @@ def build_all(export=True, only=None):
         lab.rotation_euler = (0, 0, math.pi)
         labels.objects.link(lab)
         idx += 1
+        VARIANT.clear()
     mpath = os.path.join(SRC, "chunks_manifest.json")
+    if only and os.path.exists(mpath):      # partial rebuild: keep every other chunk's entry, in order
+        with open(mpath) as f:
+            prev = json.load(f)
+        new = {e["name"]: e for e in manifest["chunks"]}
+        merged = [new.pop(e["name"], e) for e in prev.get("chunks", [])]
+        manifest["chunks"] = merged + list(new.values())
     with open(mpath, "w") as f:
         json.dump(manifest, f, indent=1)
     shutil.copyfile(mpath, os.path.join(UNITY_DIR, "chunks_manifest.json"))
     return manifest
 
 
-if __name__ == "__main__" or True:
-    build_all(export=True)
+if not globals().get("CHUNKS_NO_AUTORUN"):
+    build_all(export=True, only=globals().get("CHUNKS_ONLY"))

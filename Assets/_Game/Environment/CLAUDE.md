@@ -209,3 +209,33 @@ Code: `MultiSectionDungeonGenerator.LivingMap.cs` (generator side) + `Environmen
 
 **Performance** (SampleScene, seed 30, editor Play mode, same three camera positions; before = old map single frames, after = median of 32 frames): main thread 6.0–7.1 ms → 6.3–6.7 ms, render thread 2.8–3.5 → 2.9–3.1 ms, GPU 3.0–4.2 → 3.0–3.3 ms; draw calls 1.9k–6.2k → 2.5k–4.7k; enabled point lights 29–59 → 29–58 (182 total, Blackout runs ≈ 90 fewer); shadowed ≤ 4. The 30k-tri torch lantern (`Details`) is the biggest triangle cost when several shadowed point lights see many torches (up to 32 M tris/frame at one spot) — a LOD / shadows-off on the lantern mesh is the next optimizer win.
 
+
+
+## 13. Chunk grid — the map built from authored prefabs (2026-11-24)
+
+Goal (user): *"the entire map generated from the prefabs, or at least the corridor zones, so later we can refine the prefabs one by one."* Every walkable cell of the map is now an authored chunk prefab (`Assets/Art/Environment/Chunks/CH_*.prefab`, built by the 3d-artist from `ArtSource/Environment/Chunks/`, README §7/§8). Refining a prefab refines every map that uses it.
+
+**Files:** `MultiSectionDungeonGenerator.ChunkGrid.cs` (grid mode), `MultiSectionDungeonGenerator.Chunks.cs` (stamping, socket wiring, combine — shared; also the older *embed* mode), `Chunks/ChunkLibrary.cs`, `Chunks/ExtractionGateLift.cs`, `Chunks/TrapKillVolume.cs`, `Rendering/ChunkDistanceCuller.cs`. Data: `Data/ChunkLibrary.asset` (rebuild: **Fluffterror › Living Map › Steps › Build Chunk Library**, also part of Build Assets + Wire Scene).
+
+**Pipeline (`ChunkGridMode` on and `Chunks` assigned):**
+1. `LayoutChunkGrid` — 4×4 sections of `SectionCells` (5) × 5 cells, 8 m per cell (= 8 tiles), with 1-cell link lanes → 23×23 cells (184 m). Themes from `BuildThemeBag`.
+2. `LinkSectionsOnGrid` — Kruskal tree + loops (`MinExtraLoops`/`MaxExtraLoops`/`ExtraLoopChance`), one lane cell per link.
+3. `PlaceGridRooms` — required rooms first, each must keep the section's door/link cells connected (`SectionStaysConnected`): Extraction_Gate (weighted section), SP_ChuchoDen far from the gate + Corridor_Chewed glued to its door, 3 Generator_Alcoves spread farthest-first, one landmark room per section (a landmark room may repeat up to Max+2, far apart), `ExtraRoomsPerSection`.
+4. `GrowSectionMaze` — random Prim to `CellFill` (0.68) of each section, BFS joins required cells, `CellLoopChance` loops.
+5. `SelectAndStampCells` — per cell a N/E/S/W door mask (bits `DN/DE/DS/DW`); 1×2 merges of straight cells for 8×16 N/S chunks (`MergeRoomChance`), else 1×1 match with rotation (`RotBits`), theme filter, Min/Max, ≥ 40 tiles between equal non-corridor chunks, **no repeated BaseName next to each other**, theme height variant (`_H36` Catacombs, `_H50` Gothic/Hell/Transition) via `Variant()`. Dead-end leaves (DeadEnd / Storage) become `_deadEndRooms`. A cell with no matching chunk falls back to a procedural 4 m corridor and is logged in `_gridGaps` (0 on the 10 test seeds).
+6. `FitGridCollars` — each chunk's `FitToTheme` height = tallest neighbour across its doors (no gaps at height changes). No open sky in grid mode.
+7. `ValidateChunkGrid` — every chunk reachable from the start (orphans are removed), then the usual 2×2 nav flood (1×1 allowed on chunk tiles) + objective check.
+8. `FinishChunks` — sockets → systems: `SOCKET_Torch*` → kit torch + `TorchStateController` (manifest `torches_suggested`; plain corridors only with `GridCorridorTorchChance` 0.3), `SOCKET_Evidence*` (evidence prefers sockets, one per chunk, never in the gate/alcove), `SOCKET_Landmark` + DisplayName (landmark name for the run card / `DungeonLayout`), `SOCKET_Drip` → drip points, `SOCKET_Hide*` / `VOL_Water` → `DungeonLayout` (for future hide/Flooded mechanics), `VOL_Trap` → `TrapKillVolume`, `SOCKET_Generator_01` → `PowerGenerator`, `SOCKET_Spawn` → player start band, `_Gate` → `ExtractionGateLift`. `MarkStaticDeep`.
+9. `CombineChunksAtRuntime` — `StaticBatchingUtility.Combine` of every chunk renderer (except `_Gate`, `_Bell`, `_Lid_`, `_Water`) in Play mode.
+
+Hierarchy: `_multiSectionRoot/Map/Section_NN_Theme/Cell_x_z_CH_Name` (+ `Map/Links`), prefab links kept (editor `InstantiatePrefab`). Procedural floors/walls/ceilings and the old decorate/kit passes are skipped in grid mode.
+
+**Tunables:** `ChunkGridMode` (true), `SectionCells` 5, `CellFill` 0.68, `CellLoopChance` 0.12, `MergeRoomChance` 0.55, `ExtraRoomsPerSection` (0,1), `GridCorridorTorchChance` 0.3. Embed mode (grid off): `UseChunks`, `ChunksPerSection`, `CorridorChunks`, `CorridorChunkSpacing`, `ChunkCentreKeepOut`, `SameChunkSpacing`.
+
+**Seeds (all 0 fallback cells, 0 unreachable objectives, ~0.9–1.4 s):** 30, 7, 12, 3, 5, 11, 21, 42, 77, 101 → 306–325 chunks, 20–23 distinct rooms/set pieces, landmarks 13–16/16. Scene saved at seed **7**.
+
+**Coverage (authoring to-do):** `gen.ChunkCoverageReport()` lists distinct 1×1 chunks per mask × theme. Thin: Cross in Graveyard/Cavern (1), Cross Hell/Transition (2), Corner/T in Graveyard/Cavern/Hell (2). Graveyard, Cavern and Hell have **no themed corridor set** (they reuse masonry corridors) — the biggest visual gap.
+
+**Perf (seed 30 Play, editor, 5 spots, median):** draws 547–4564 (old procedural map) → 74–937 (grid) → 73–671 with `ChunkDistanceCuller`; GPU 0.9–5.5 ms → 0.9–3.2 ms; main thread 5.4–8.7 → 6.8–10.3 ms (editor IMGUI/SceneView dominates the main-thread sample; profile a player build before acting). Shadowed lights ≤ 4.
+
+**Walk tests (real CharacterController):** spiral stair → balcony, bell tower ramp → balcony (after the torch-trigger fix) + under the balcony, pit escape stairs, sewer side stair down + up, trap plank, library N→S — all REACHED; trap volume kills.

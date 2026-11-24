@@ -173,7 +173,12 @@ public partial class MultiSectionDungeonGenerator
             chosen.Add(skipped[i]); _loopLinks++;
         }
 
-        foreach (var e in chosen) CarveCorridorL(e.a.Center, e.b.Center, reserve: true);
+        foreach (var e in chosen)
+        {
+            // With authored chunks in the sections, route around them (A* treats chunk tiles as rock).
+            if (ChunksOn) CarveCorridorAStar(e.a.Center, e.b.Center, EncapsulateBounds(e.a.Center, e.b.Center, 16), reserve: true);
+            else CarveCorridorL(e.a.Center, e.b.Center, reserve: true);
+        }
     }
 
     private void CarveDeadEndRooms()
@@ -537,6 +542,7 @@ public partial class MultiSectionDungeonGenerator
             _layoutSections.Add(info);
             if (!PlaceLandmarks) continue;
             ThemeDressing d = DressingFor(s.Type);
+            if (TryChunkLandmark(s, info, d)) continue;   // an authored chunk (Bell Tower, Pillar Hall…) is the landmark
             if (d == null || d.Landmarks == null || !d.Landmarks.IsValid) continue;
 
             // Least-used landmark of this theme first, so the run repeats as little as possible.
@@ -675,7 +681,7 @@ public partial class MultiSectionDungeonGenerator
 
     private void CollectDripPoints()
     {
-        _dripPoints.Clear();
+        // (no Clear: chunk SOCKET_Drip points were added by FinishChunks; the list resets in Clear())
         if (DripDensity <= 0f) return;
         foreach (SectionInfo s in _sections)
         {
@@ -826,7 +832,9 @@ public partial class MultiSectionDungeonGenerator
     {
         // Block (x,y) = tiles x..x+1, y..y+1.
         bool Free(int x, int y) => InBounds(x, y) && _floor[x, y] && !_blocked[x, y];
-        bool BlockOk(int x, int y) => Free(x, y) && Free(x + 1, y) && Free(x, y + 1) && Free(x + 1, y + 1);
+        // Inside authored chunks 1 m passages are fine (the chunk authoring verified them with the real 0.4 m capsule),
+        // so there a single free tile is enough; procedural floor still needs the 2×2 clearance.
+        bool BlockOk(int x, int y) => (Free(x, y) && Free(x + 1, y) && Free(x, y + 1) && Free(x + 1, y + 1)) || (Free(x, y) && IsChunkTile(x, y));
 
         // Nearest valid block to the start.
         Vector2Int s0 = new(-1, -1);
@@ -915,5 +923,8 @@ public partial class MultiSectionDungeonGenerator
         var layout = _root.gameObject.AddComponent<DungeonLayout>();
         layout.Set(seed, _layoutSections.ToArray(), _deadEndRooms.ToArray(), _dripPoints.ToArray(),
                    TileWorld(_extTile), TileWorld(_startTile), _startWalk, _treeLinks + _loopLinks, _loopLinks);
+        var chunkNames = new List<string>();
+        foreach (var p in _chunks) if (!p.Removed) chunkNames.Add(p.E.Name);
+        layout.SetChunkData(chunkNames.ToArray(), _hidePoints.ToArray(), _waterPoints.ToArray(), _hasDen, _denPoint);
     }
 }

@@ -101,13 +101,14 @@ public class TorchCarrier : MonoBehaviour
         SetColliders(torch.gameObject, enabled: false);
 
         Transform t = torch.transform;
-        _originalScale = t.localScale;
+        _originalScale = t.localScale;                 // world (spawn) scale, restored on release
+        Vector3 heldBase = torch.BaseScale;            // held size derives from the prefab scale, not the spawn scale
         t.SetParent(ResolveAnchor(), worldPositionStays: false);
         t.localPosition = _holdLocalPosition;
         ApplyHoldPose();
         _scaleChanged = _overrideHoldScale || _hand != null;
         if (_overrideHoldScale) t.localScale = _holdLocalScale;
-        else if (_hand != null) t.localScale = _originalScale * _handHoldScale;
+        else if (_hand != null) t.localScale = heldBase * _handHoldScale;
 
         TorchPickedUp?.Invoke(torch);
         return true;

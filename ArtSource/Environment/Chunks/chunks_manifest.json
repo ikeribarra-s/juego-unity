@@ -8,6 +8,15 @@
  "wall_thickness": 0.5,
  "pivot": "footprint centre, floor level",
  "forward": "+Z = North",
+ "theme_wall_heights": {
+  "GothicRuins": 5.0,
+  "Transition": 5.0,
+  "Graveyard": 1.4,
+  "HellPillars": 6.5,
+  "Catacombs": 3.6,
+  "Cavern": 7.5
+ },
+ "collar": "SM_<Chunk>_Collar: 1 m slab per door above the chunk height, scale Y = corridorHeight - wall_height (AuthoredChunk.FitToTheme)",
  "chunks": [
   {
    "name": "CH_Corridor_Straight",
@@ -21,6 +30,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 12,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "N",
@@ -34,10 +53,13 @@
     }
    ],
    "tris": {
-    "main": 1224,
-    "ceiling": 22
+    "structure": 760,
+    "detail": 172,
+    "floor_lod1": 16,
+    "ceiling": 56
    },
-   "tris_total": 1246,
+   "tris_lod0": 988,
+   "tris_lod1": 832,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -142,6 +164,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 10,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "N",
@@ -155,10 +187,13 @@
     }
    ],
    "tris": {
-    "main": 1316,
-    "ceiling": 24
+    "structure": 852,
+    "detail": 184,
+    "floor_lod1": 16,
+    "ceiling": 48
    },
-   "tris_total": 1340,
+   "tris_lod0": 1084,
+   "tris_lod1": 916,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -250,6 +285,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 0.8,
+    "min": 0,
+    "max": 8,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "N",
@@ -268,10 +313,13 @@
     }
    ],
    "tris": {
-    "main": 1264,
-    "ceiling": 34
+    "structure": 872,
+    "detail": 140,
+    "floor_lod1": 20,
+    "ceiling": 68
    },
-   "tris_total": 1298,
+   "tris_lod0": 1080,
+   "tris_lod1": 960,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -389,6 +437,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 0.5,
+    "min": 0,
+    "max": 4,
+    "torches_suggested": 0
+   },
    "doors": [
     {
      "label": "N",
@@ -412,10 +470,13 @@
     }
    ],
    "tris": {
-    "main": 1582,
-    "ceiling": 46
+    "structure": 1064,
+    "detail": 132,
+    "floor_lod1": 24,
+    "ceiling": 88
    },
-   "tris_total": 1628,
+   "tris_lod0": 1284,
+   "tris_lod1": 1176,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -533,6 +594,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 0.4,
+    "min": 1,
+    "max": 3,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "S",
@@ -541,10 +612,13 @@
     }
    ],
    "tris": {
-    "main": 1342,
-    "ceiling": 12
+    "structure": 702,
+    "detail": 346,
+    "floor_lod1": 12,
+    "ceiling": 28
    },
-   "tris_total": 1354,
+   "tris_lod0": 1076,
+   "tris_lod1": 742,
    "mask_north_up": [
     "########",
     "########",
@@ -662,6 +736,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "room",
+    "weight": 0.6,
+    "min": 0,
+    "max": 3,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "S",
@@ -670,10 +754,13 @@
     }
    ],
    "tris": {
-    "main": 1712,
-    "ceiling": 16
+    "structure": 1292,
+    "detail": 92,
+    "floor_lod1": 32,
+    "ceiling": 68
    },
-   "tris_total": 1728,
+   "tris_lod0": 1452,
+   "tris_lod1": 1392,
    "mask_north_up": [
     "########",
     "#oo...o#",
@@ -817,6 +904,17 @@
     16
    ],
    "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "HellPillars"
+    ],
+    "role": "room",
+    "weight": 0.4,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 3
+   },
    "doors": [
     {
      "label": "N1",
@@ -840,10 +938,13 @@
     }
    ],
    "tris": {
-    "main": 4876,
-    "ceiling": 62
+    "structure": 2724,
+    "detail": 700,
+    "floor_lod1": 140,
+    "ceiling": 416
    },
-   "tris_total": 4938,
+   "tris_lod0": 3840,
+   "tris_lod1": 3280,
    "mask_north_up": [
     "##########DDDD##",
     "#............oo#",
@@ -1138,6 +1239,17 @@
     16
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Catacombs",
+     "Graveyard"
+    ],
+    "role": "room",
+    "weight": 0.5,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S",
@@ -1151,10 +1263,13 @@
     }
    ],
    "tris": {
-    "main": 3026,
-    "ceiling": 36
+    "structure": 2392,
+    "detail": 400,
+    "floor_lod1": 64,
+    "ceiling": 156
    },
-   "tris_total": 3062,
+   "tris_lod0": 2948,
+   "tris_lod1": 2612,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -1358,6 +1473,17 @@
     16
    ],
    "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "HellPillars",
+     "GothicRuins"
+    ],
+    "role": "room",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S0",
@@ -1371,10 +1497,13 @@
     }
    ],
    "tris": {
-    "main": 5292,
-    "ceiling": 8
+    "structure": 2712,
+    "detail": 784,
+    "floor_lod1": 132,
+    "ceiling": 132
    },
-   "tris_total": 5300,
+   "tris_lod0": 3628,
+   "tris_lod1": 2976,
    "mask_north_up": [
     "##########DDDD##",
     "#ooo........ooo#",
@@ -1642,7 +1771,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Altar",
+      "prefab": "PROP_MeshyAltar",
+      "pos": [
+       0.0,
+       0.5,
+       0.5
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_SP_CollapsedCorridor",
@@ -1656,6 +1804,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "setpiece",
+    "weight": 0.3,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "N",
@@ -1669,10 +1827,13 @@
     }
    ],
    "tris": {
-    "main": 2802,
-    "ceiling": 204
+    "structure": 904,
+    "detail": 1672,
+    "floor_lod1": 16,
+    "ceiling": 266
    },
-   "tris_total": 3006,
+   "tris_lod0": 2842,
+   "tris_lod1": 1186,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -1773,6 +1934,17 @@
     16
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Catacombs",
+     "Cavern"
+    ],
+    "role": "setpiece",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S",
@@ -1786,21 +1958,24 @@
     }
    ],
    "tris": {
-    "main": 2232,
-    "ceiling": 26,
-    "water": 2
+    "structure": 1576,
+    "detail": 208,
+    "floor_lod1": 128,
+    "ceiling": 120,
+    "water": 144
    },
-   "tris_total": 2260,
+   "tris_lod0": 2048,
+   "tris_lod1": 1968,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
     "#......#",
     "#......#",
     "#......#",
-    "#....oo#",
-    "#....oo#",
     "#......#",
     "#......#",
+    "#....oo#",
+    "#....oo#",
     "#ooo...#",
     "#ooo...#",
     "#ooo...#",
@@ -1906,7 +2081,7 @@
      "pos": [
       2.0,
       -0.5,
-      -0.8
+      -2.2
      ],
      "forward": [
       0.0,
@@ -1961,6 +2136,18 @@
     16
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Cavern",
+     "HellPillars",
+     "GothicRuins"
+    ],
+    "role": "setpiece",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S",
@@ -1974,10 +2161,13 @@
     }
    ],
    "tris": {
-    "main": 3362,
-    "ceiling": 26
+    "structure": 3194,
+    "detail": 700,
+    "floor_lod1": 132,
+    "ceiling": 120
    },
-   "tris_total": 3388,
+   "tris_lod0": 4014,
+   "tris_lod1": 3446,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -2125,6 +2315,17 @@
     8
    ],
    "wall_height": 12.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Graveyard"
+    ],
+    "role": "setpiece",
+    "weight": 0.2,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S",
@@ -2138,11 +2339,14 @@
     }
    ],
    "tris": {
-    "main": 2686,
-    "ceiling": 40,
-    "bell": 128
+    "structure": 2398,
+    "detail": 220,
+    "floor_lod1": 36,
+    "ceiling": 216,
+    "bell": 12
    },
-   "tris_total": 2854,
+   "tris_lod0": 2846,
+   "tris_lod1": 2662,
    "mask_north_up": [
     "########",
     "#......#",
@@ -2197,7 +2401,7 @@
      "name": "SOCKET_Torch_02",
      "pos": [
       -1.0,
-      4.9,
+      4.55,
       3.0
      ],
      "forward": [
@@ -2236,7 +2440,7 @@
      "name": "SOCKET_Evidence_01",
      "pos": [
       -2.2,
-      3.0,
+      2.65,
       2.3
      ],
      "forward": [
@@ -2262,7 +2466,7 @@
      "name": "SOCKET_Prop_02",
      "pos": [
       0.8,
-      3.0,
+      2.65,
       2.3
      ],
      "forward": [
@@ -2287,9 +2491,27 @@
    ],
    "notes": {
     "balcony": {
-     "height": 3.0,
-     "stairs": "x 1.6..3, y -3 -> 1.5, 33.7 deg"
-    }
+     "height": 2.65,
+     "stairs": "x 1.6..3, y -2.4 -> 1.5, 34.2 deg, balcony 2.65 m"
+    },
+    "heroes": [
+     {
+      "name": "HERO_Bell__Bell",
+      "prefab": "PROP_MeshyBell",
+      "pos": [
+       0.0,
+       10.6,
+       0.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": "Bell"
+     }
+    ]
    }
   },
   {
@@ -2304,6 +2526,16 @@
     16
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "setpiece",
+    "weight": 1.0,
+    "min": 1,
+    "max": 1,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "S",
@@ -2312,10 +2544,13 @@
     }
    ],
    "tris": {
-    "main": 4945,
-    "ceiling": 26
+    "structure": 1800,
+    "detail": 1774,
+    "floor_lod1": 176,
+    "ceiling": 120
    },
-   "tris_total": 4971,
+   "tris_lod0": 3694,
+   "tris_lod1": 2096,
    "mask_north_up": [
     "########",
     "#ooo...#",
@@ -2492,7 +2727,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Nest",
+      "prefab": "PROP_MeshyNest",
+      "pos": [
+       0.6,
+       0.0,
+       4.9
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Generator_Alcove",
@@ -2506,6 +2760,16 @@
     8
    ],
    "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "objective",
+    "weight": 1.0,
+    "min": 3,
+    "max": 3,
+    "torches_suggested": 1
+   },
    "doors": [
     {
      "label": "S",
@@ -2514,10 +2778,13 @@
     }
    ],
    "tris": {
-    "main": 1622,
-    "ceiling": 16
+    "structure": 1360,
+    "detail": 92,
+    "floor_lod1": 32,
+    "ceiling": 60
    },
-   "tris_total": 1638,
+   "tris_lod0": 1512,
+   "tris_lod1": 1452,
    "mask_north_up": [
     "########",
     "#......#",
@@ -2624,6 +2891,16 @@
     16
    ],
    "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "objective",
+    "weight": 1.0,
+    "min": 1,
+    "max": 1,
+    "torches_suggested": 2
+   },
    "doors": [
     {
      "label": "S0",
@@ -2632,11 +2909,14 @@
     }
    ],
    "tris": {
-    "main": 5158,
-    "ceiling": 8,
+    "structure": 2672,
+    "detail": 504,
+    "floor_lod1": 132,
+    "ceiling": 132,
     "gate": 156
    },
-   "tris_total": 5322,
+   "tris_lod0": 3464,
+   "tris_lod1": 3092,
    "mask_north_up": [
     "######....######",
     "#..............#",
@@ -2820,6 +3100,4702 @@
      7.0
     ]
    }
+  },
+  {
+   "name": "CH_Room_Library",
+   "role": "room",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins"
+    ],
+    "role": "room",
+    "weight": 0.3,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 2748,
+    "detail": 718,
+    "floor_lod1": 64,
+    "ceiling": 64
+   },
+   "tris_lod0": 3530,
+   "tris_lod1": 2876,
+   "mask_north_up": [
+    "##DDDD##",
+    "#.....o#",
+    "#.....o#",
+    "#.....o#",
+    "#o.oooo#",
+    "#o.oooo#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#oooo.o#",
+    "#oooo.o#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      3.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      -3.0,
+      2.0,
+      3.85
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      1.2,
+      5.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.25,
+      5.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -0.3,
+      0.0,
+      -2.05
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.3,
+      0.8,
+      -5.1
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_01",
+     "pos": [
+      -1.8,
+      0.0,
+      5.8
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.9,
+      0.0,
+      -6.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.8,
+      0.0,
+      1.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -6.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.5,
+      4.9,
+      0.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "crawl_gap": {
+     "x": [
+      -1.0,
+      0.4
+     ],
+     "y": [
+      -2.3,
+      -1.8
+     ],
+     "height": 1.3
+    },
+    "heroes": [
+     {
+      "name": "HERO_Lectern",
+      "prefab": "PROP_MeshyLectern",
+      "pos": [
+       0.0,
+       0.0,
+       5.3
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Room_Larder",
+   "role": "room",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition"
+    ],
+    "role": "room",
+    "weight": 0.35,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1376,
+    "detail": 248,
+    "floor_lod1": 36,
+    "ceiling": 96
+   },
+   "tris_lod0": 1720,
+   "tris_lod1": 1508,
+   "mask_north_up": [
+    "########",
+    "#......#",
+    "#......D",
+    "#......D",
+    "#.oooo.D",
+    "#.oooo.D",
+    "#oo....#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.5,
+      2.0,
+      -3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_01",
+     "pos": [
+      -1.0,
+      0.0,
+      2.35
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_02",
+     "pos": [
+      0.4,
+      0.0,
+      2.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.6,
+      0.92,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -1.8,
+      0.0,
+      2.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Barrel_01",
+     "pos": [
+      2.3,
+      0.0,
+      2.3
+     ],
+     "forward": [
+      -0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Crate_01",
+     "pos": [
+      2.4,
+      0.0,
+      -2.4
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.8,
+      3.9,
+      0.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Butcher",
+      "prefab": "PROP_MeshyButcher",
+      "pos": [
+       0.0,
+       0.0,
+       -1.1
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_SP_Ossuary",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.5,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "setpiece",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1034,
+    "detail": 820,
+    "floor_lod1": 64,
+    "ceiling": 120
+   },
+   "tris_lod0": 1974,
+   "tris_lod1": 1218,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#..oo..#",
+    "#..oo..#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      3.0,
+      2.0,
+      -4.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      -3.0,
+      2.0,
+      4.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      1.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.5,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      1.6,
+      0.0,
+      5.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -0.25,
+      1.45,
+      0.25
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Bones_01",
+     "pos": [
+      2.2,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      4.4,
+      -3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Skull",
+      "prefab": "PROP_MeshySkull",
+      "pos": [
+       0.0,
+       1.45,
+       0.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Room_Chapel",
+   "role": "room",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 6.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Graveyard"
+    ],
+    "role": "room",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "E0",
+     "side": "E",
+     "offset": -4.0
+    }
+   ],
+   "tris": {
+    "structure": 2242,
+    "detail": 252,
+    "floor_lod1": 68,
+    "ceiling": 68,
+    "shaft": 320
+   },
+   "tris_lod0": 2882,
+   "tris_lod1": 2698,
+   "mask_north_up": [
+    "########",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#oo....D",
+    "#......D",
+    "#oo....D",
+    "#......D",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E0",
+     "pos": [
+      4.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -2.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      3.0,
+      2.0,
+      2.6
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_LightShaft_01",
+     "pos": [
+      0.0,
+      4.3,
+      6.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      1.3,
+      5.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.27,
+      5.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -2.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -0.8,
+      1.25,
+      5.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      0.8,
+      1.25,
+      5.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_01",
+     "pos": [
+      -1.9,
+      0.0,
+      0.9
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_02",
+     "pos": [
+      1.9,
+      0.0,
+      -0.7
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    }
+   ],
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Chandelier",
+      "prefab": "PROP_MeshyChandelier",
+      "pos": [
+       0.0,
+       6.0,
+       -1.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Room_PrisonBlock",
+   "role": "room",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Catacombs"
+    ],
+    "role": "room",
+    "weight": 0.3,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1936,
+    "detail": 1780,
+    "floor_lod1": 64,
+    "ceiling": 64
+   },
+   "tris_lod0": 3780,
+   "tris_lod1": 2064,
+   "mask_north_up": [
+    "##DDDD##",
+    "#oo....#",
+    "#oo....#",
+    "#oo....#",
+    "#oo..oo#",
+    "#....oo#",
+    "#....oo#",
+    "#....oo#",
+    "#....oo#",
+    "#....oo#",
+    "#....oo#",
+    "#oo..oo#",
+    "#oo....#",
+    "#oo....#",
+    "#oo....#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_01",
+     "pos": [
+      -2.1,
+      0.0,
+      -1.75
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_02",
+     "pos": [
+      -2.1,
+      0.0,
+      1.75
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_03",
+     "pos": [
+      2.1,
+      0.0,
+      -5.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Hide_04",
+     "pos": [
+      2.1,
+      0.0,
+      5.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -1.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      1.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.2,
+      0.0,
+      1.8
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      2.2,
+      0.0,
+      -5.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Key_01",
+     "pos": [
+      -0.95,
+      1.6,
+      5.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_SP_WellRoom",
+   "role": "setpiece",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "setpiece",
+    "weight": 0.3,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1240,
+    "detail": 193,
+    "floor_lod1": 46,
+    "ceiling": 96
+   },
+   "tris_lod0": 1529,
+   "tris_lod1": 1382,
+   "mask_north_up": [
+    "########",
+    "#......#",
+    "D.oooo.D",
+    "D.oooo.D",
+    "D.oooo.D",
+    "D.oooo.D",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -1.6,
+      2.0,
+      3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      1.6,
+      2.0,
+      3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      0.8,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.0,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -2.3,
+      0.0,
+      -2.3
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      2.3,
+      0.0,
+      2.3
+     ],
+     "forward": [
+      -0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      2.0,
+      3.9,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      -2.2,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {
+    "well": {
+     "rim_height": 0.8,
+     "shaft_depth": 6.0
+    },
+    "heroes": [
+     {
+      "name": "HERO_Winch",
+      "prefab": "PROP_MeshyWinch",
+      "pos": [
+       0.0,
+       0.8,
+       0.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Room_Mausoleum",
+   "role": "room",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "Graveyard",
+     "Catacombs"
+    ],
+    "role": "room",
+    "weight": 0.3,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1876,
+    "detail": 286,
+    "floor_lod1": 64,
+    "ceiling": 64,
+    "lids": 80
+   },
+   "tris_lod0": 2306,
+   "tris_lod1": 2084,
+   "mask_north_up": [
+    "########",
+    "#..oo..#",
+    "#..oo..#",
+    "#..oo..#",
+    "#..oo..#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "#......#",
+    "#......#",
+    "#oo..oo#",
+    "#oo..oo#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -1.6,
+      0.32,
+      -1.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      1.6,
+      0.32,
+      -1.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_03",
+     "pos": [
+      0.0,
+      0.57,
+      5.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      3.0,
+      2.0,
+      1.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.0,
+      0.25,
+      3.9
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      1.0,
+      0.25,
+      3.9
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      1.4,
+      5.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      4.9,
+      1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "lids_note": "SM_*_Lid_01..03 slide along local X/Z to open (each has its own COL_Lid child)",
+    "heroes": [
+     {
+      "name": "HERO_Effigy__Lid_03",
+      "prefab": "PROP_MeshyEffigy",
+      "pos": [
+       0.0,
+       1.34,
+       5.2
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": "Lid_03"
+     },
+     {
+      "name": "HERO_Angel_01",
+      "prefab": "PROP_MeshyAngel",
+      "pos": [
+       -2.3,
+       0.6,
+       -6.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_Angel_02",
+      "prefab": "PROP_MeshyAngel",
+      "pos": [
+       2.3,
+       0.6,
+       -6.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_SP_SewerChannel",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Catacombs",
+     "Transition"
+    ],
+    "role": "setpiece",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 2
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1550,
+    "detail": 256,
+    "floor_lod1": 112,
+    "ceiling": 120,
+    "water": 56
+   },
+   "tris_lod0": 1982,
+   "tris_lod1": 1838,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -4.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      -3.0,
+      2.0,
+      4.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Grate_01",
+     "pos": [
+      2.95,
+      0.95,
+      1.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      2.6,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      2.0,
+      -1.0,
+      -3.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      1.8,
+      3.9,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      1.8,
+      3.9,
+      2.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_03",
+     "pos": [
+      1.8,
+      3.9,
+      5.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -2.3,
+      0.0,
+      6.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {
+    "sewer": {
+     "channel_x": [
+      1,
+      3
+     ],
+     "channel_floor": -1.0,
+     "water_level": -0.55
+    }
+   }
+  },
+  {
+   "name": "CH_SP_CaveTransition",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "Cavern",
+     "Catacombs"
+    ],
+    "role": "setpiece",
+    "weight": 0.4,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1280,
+    "detail": 1870,
+    "floor_lod1": 64,
+    "ceiling": 392,
+    "water": 15
+   },
+   "tris_lod0": 3557,
+   "tris_lod1": 1751,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#....oo#",
+    "#......#",
+    "#oo....#",
+    "#oo....#",
+    "#..ooo.#",
+    "#..ooo.#",
+    "#..ooo.#",
+    "#....oo#",
+    "#....oo#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -5.8
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.6,
+      1.5,
+      0.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.1,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Rock_01",
+     "pos": [
+      2.0,
+      0.0,
+      3.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      1.6,
+      4.7,
+      -3.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      -1.0,
+      4.7,
+      2.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_03",
+     "pos": [
+      -1.0,
+      4.7,
+      5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "transition": "masonry south of y -4.5 (S door), natural rock north of it (N door)",
+    "heroes": [
+     {
+      "name": "HERO_Stalagnate",
+      "prefab": "PROP_MeshyStalagnate",
+      "pos": [
+       0.6,
+       0.0,
+       0.5
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Room_SpiralHall",
+   "role": "room",
+   "cells": [
+    2,
+    2
+   ],
+   "size_m": [
+    16,
+    16
+   ],
+   "wall_height": 7.0,
+   "tags": {
+    "themes": [
+     "GothicRuins"
+    ],
+    "role": "room",
+    "weight": 0.2,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 3
+   },
+   "doors": [
+    {
+     "label": "S0",
+     "side": "S",
+     "offset": -4.0
+    },
+    {
+     "label": "S1",
+     "side": "S",
+     "offset": 4.0
+    },
+    {
+     "label": "W0",
+     "side": "W",
+     "offset": -4.0
+    }
+   ],
+   "tris": {
+    "structure": 3284,
+    "detail": 716,
+    "floor_lod1": 132,
+    "ceiling": 132
+   },
+   "tris_lod0": 4132,
+   "tris_lod1": 3548,
+   "mask_north_up": [
+    "################",
+    "#..........oooo#",
+    "#..........oooo#",
+    "#..........oooo#",
+    "#..........oooo#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#....oooo......#",
+    "#....oooo......#",
+    "D..............#",
+    "D..............#",
+    "D..............#",
+    "D..............#",
+    "#..............#",
+    "##DDDD####DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S0",
+     "pos": [
+      -4.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S1",
+     "pos": [
+      4.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W0",
+     "pos": [
+      -8.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -7.0,
+      2.0,
+      0.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      7.0,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_03",
+     "pos": [
+      -2.0,
+      5.5,
+      7.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      4.9,
+      3.6,
+      4.9
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -6.2,
+      3.5,
+      6.2
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -1.0,
+      0.9,
+      -0.9
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -6.0,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      6.0,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_03",
+     "pos": [
+      0.0,
+      3.5,
+      6.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      3.0,
+      6.9,
+      -3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "spiral": {
+     "centre": [
+      4.9,
+      4.9
+     ],
+     "steps": 14,
+     "rise": 0.25,
+     "balcony": 3.5
+    },
+    "heroes": [
+     {
+      "name": "HERO_Chandelier",
+      "prefab": "PROP_MeshyChandelier",
+      "pos": [
+       -1.0,
+       7.0,
+       -0.9
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.45,
+      "part": ""
+     }
+    ]
+   }
+  },
+  {
+   "name": "CH_Corridor_Chewed",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 0.3,
+    "min": 0,
+    "max": 3,
+    "torches_suggested": 1,
+    "near": "CH_SP_ChuchoDen"
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 860,
+    "detail": 724,
+    "floor_lod1": 16,
+    "ceiling": 56
+   },
+   "tris_lod0": 1640,
+   "tris_lod1": 932,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      1.4,
+      0.0,
+      -1.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.3,
+      0.0,
+      -3.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.4,
+      3.9,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.0,
+      2.0,
+      1.2
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_SP_TrapCorridor",
+   "role": "setpiece",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "setpiece",
+    "weight": 0.25,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1082,
+    "detail": 320,
+    "floor_lod1": 30,
+    "ceiling": 48
+   },
+   "tris_lod0": 1450,
+   "tris_lod1": 1160,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -3.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Trap_01",
+     "pos": [
+      -0.6,
+      -1.2,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -0.9,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Warning_01",
+     "pos": [
+      1.5,
+      0.0,
+      -3.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.6,
+      3.9,
+      0.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "trap": {
+     "pit_x": [
+      -2,
+      0.8
+     ],
+     "pit_y": [
+      -2,
+      2
+     ],
+     "depth": 1.2,
+     "ledge_width": 1.2,
+     "plank_width": 0.5,
+     "VOL_Trap": "trigger over the spikes (hook a kill / damage)"
+    }
+   }
+  },
+  {
+   "name": "CH_Junction_BrokenFloor",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 0.25,
+    "min": 0,
+    "max": 1,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1360,
+    "detail": 212,
+    "floor_lod1": 30,
+    "ceiling": 88
+   },
+   "tris_lod0": 1660,
+   "tris_lod1": 1478,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.6,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.5,
+      -1.2,
+      1.4
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -1.5,
+      3.9,
+      1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      1.4,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    }
+   ],
+   "notes": {
+    "broken_floor": {
+     "hole": [
+      [
+       -3,
+       0
+      ],
+      [
+       0,
+       2
+      ]
+     ],
+     "cellar_floor": -1.2,
+     "steps": "x -2..0, rises 0.24 m",
+     "grate": "visual hole to the level below, collider holds"
+    }
+   }
+  },
+  {
+   "name": "CH_Corridor_Straight_B",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Any"
+    ],
+    "role": "corridor",
+    "weight": 0.6,
+    "min": 0,
+    "max": 4,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1076,
+    "detail": 190,
+    "floor_lod1": 16,
+    "ceiling": 36
+   },
+   "tris_lod0": 1302,
+   "tris_lod1": 1128,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##...o##",
+    "##...o##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      1.5,
+      0.0,
+      1.4
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Corner_B",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "Catacombs",
+     "Cavern",
+     "Transition"
+    ],
+    "role": "corridor",
+    "weight": 0.5,
+    "min": 0,
+    "max": 3,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 800,
+    "detail": 249,
+    "floor_lod1": 16,
+    "ceiling": 48,
+    "water": 15
+   },
+   "tris_lod0": 1112,
+   "tris_lod1": 879,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      1.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.85,
+      0.9,
+      -1.85
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.4,
+      3.9,
+      0.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      1.3,
+      0.0,
+      1.3
+     ],
+     "forward": [
+      -0.707,
+      0,
+      -0.707
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_T_B",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition"
+    ],
+    "role": "corridor",
+    "weight": 0.4,
+    "min": 0,
+    "max": 2,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1300,
+    "detail": 140,
+    "floor_lod1": 20,
+    "ceiling": 36
+   },
+   "tris_lod0": 1476,
+   "tris_lod1": 1356,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      0.0,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.3,
+      0.0,
+      1.4
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Weapon_01",
+     "pos": [
+      2.6,
+      0.0,
+      -1.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Straight_H36",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 3.6,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 12,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 712,
+    "detail": 172,
+    "floor_lod1": 16,
+    "ceiling": 56
+   },
+   "tris_lod0": 940,
+   "tris_lod1": 784,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -2.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.6,
+      3.5,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Straight_H50",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition",
+     "HellPillars"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 12,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 956,
+    "detail": 172,
+    "floor_lod1": 16,
+    "ceiling": 56
+   },
+   "tris_lod0": 1184,
+   "tris_lod1": 1028,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -2.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.6,
+      4.9,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Corner_H36",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 3.6,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 10,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 708,
+    "detail": 184,
+    "floor_lod1": 16,
+    "ceiling": 48
+   },
+   "tris_lod0": 940,
+   "tris_lod1": 772,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -0.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.3,
+      0.0,
+      -1.3
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.3,
+      3.5,
+      0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Corner_H50",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition",
+     "HellPillars"
+    ],
+    "role": "corridor",
+    "weight": 1.0,
+    "min": 0,
+    "max": 10,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 868,
+    "detail": 184,
+    "floor_lod1": 16,
+    "ceiling": 48
+   },
+   "tris_lod0": 1100,
+   "tris_lod1": 932,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -0.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.3,
+      0.0,
+      -1.3
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.3,
+      4.9,
+      0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_T_H36",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 3.6,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 0.8,
+    "min": 0,
+    "max": 8,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 896,
+    "detail": 140,
+    "floor_lod1": 20,
+    "ceiling": 68
+   },
+   "tris_lod0": 1104,
+   "tris_lod1": 984,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      0.0,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.2,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.3,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.5,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_T_H50",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition",
+     "HellPillars"
+    ],
+    "role": "corridor",
+    "weight": 0.8,
+    "min": 0,
+    "max": 8,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1048,
+    "detail": 140,
+    "floor_lod1": 20,
+    "ceiling": 68
+   },
+   "tris_lod0": 1256,
+   "tris_lod1": 1136,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      0.0,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.2,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.3,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      4.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Cross_H36",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 3.6,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 0.5,
+    "min": 0,
+    "max": 4,
+    "torches_suggested": 0
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1100,
+    "detail": 132,
+    "floor_lod1": 24,
+    "ceiling": 88
+   },
+   "tris_lod0": 1320,
+   "tris_lod1": 1212,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.5,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.4
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Cross_H50",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition",
+     "HellPillars"
+    ],
+    "role": "corridor",
+    "weight": 0.5,
+    "min": 0,
+    "max": 4,
+    "torches_suggested": 0
+   },
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 1344,
+    "detail": 132,
+    "floor_lod1": 24,
+    "ceiling": 88
+   },
+   "tris_lod0": 1564,
+   "tris_lod1": 1456,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      4.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.4
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_DeadEnd_H36",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 3.6,
+   "tags": {
+    "themes": [
+     "Catacombs"
+    ],
+    "role": "corridor",
+    "weight": 0.4,
+    "min": 1,
+    "max": 3,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 750,
+    "detail": 346,
+    "floor_lod1": 12,
+    "ceiling": 28
+   },
+   "tris_lod0": 1124,
+   "tris_lod1": 790,
+   "mask_north_up": [
+    "########",
+    "########",
+    "##oooo##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      1.3,
+      0.0,
+      -2.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.8,
+      3.5,
+      -0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_DeadEnd_H50",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 5.0,
+   "tags": {
+    "themes": [
+     "GothicRuins",
+     "Transition",
+     "HellPillars"
+    ],
+    "role": "corridor",
+    "weight": 0.4,
+    "min": 1,
+    "max": 3,
+    "torches_suggested": 1
+   },
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "structure": 878,
+    "detail": 346,
+    "floor_lod1": 12,
+    "ceiling": 28
+   },
+   "tris_lod0": 1252,
+   "tris_lod1": 918,
+   "mask_north_up": [
+    "########",
+    "########",
+    "##oooo##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      1.3,
+      0.0,
+      -2.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.8,
+      4.9,
+      -0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
   }
  ]
 }

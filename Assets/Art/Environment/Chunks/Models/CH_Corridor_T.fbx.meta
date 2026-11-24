@@ -12,6 +12,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: M_ChunksShaft
+    second: {fileID: 2100000, guid: 51fe9c1cb426297428112be9f8c7ef5a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: M_ChunksWater
     second: {fileID: 2100000, guid: 32ff19cf991b5744f96465c88548d4c1, type: 2}
   materials:
