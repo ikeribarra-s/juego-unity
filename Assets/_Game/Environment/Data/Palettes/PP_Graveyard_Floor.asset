@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6845927a1c532449ac8452a4e83e74d, type: 3}
+  m_Name: PP_Graveyard_Floor
+  m_EditorClassIdentifier: Assembly-CSharp::PropPalette
+  _entries:
+  - Prefab: {fileID: 919132149155446097, guid: 55999cf29322bd84f9e71da121506dd3, type: 3}
+    Weight: 1.2
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 4a9cdbc87bf47b0498731edc0fc377f9, type: 3}
+    Weight: 0.6
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: f42622ffafd0a1f4eaaf6b70f6333b23, type: 3}
+    Weight: 0.6
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: c0cff24bb45d40e489550af483d4ec7d, type: 3}
+    Weight: 0.8
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 0bceafcb90629244297f43c9f0454cf9, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: a930395377d5b5d40966076353dcc739, type: 3}
+    Weight: 0.6
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 70cac159051ac8f488388b0a1dbc7aef, type: 3}
+    Weight: 0.5
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: dee146c2e3cac644b981fabc690bd5d4, type: 3}
+    Weight: 1.2
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 0.8, y: 1.3}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 67fe8a3f11ee818499e2b7b61914e775, type: 3}
+    Weight: 0.5
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 0.7, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 

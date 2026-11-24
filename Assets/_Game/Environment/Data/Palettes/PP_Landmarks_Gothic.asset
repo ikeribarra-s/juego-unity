@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6845927a1c532449ac8452a4e83e74d, type: 3}
+  m_Name: PP_Landmarks_Gothic
+  m_EditorClassIdentifier: Assembly-CSharp::PropPalette
+  _entries:
+  - Prefab: {fileID: 2514898244388651793, guid: 9e088a53885637e4c96fc68a1efa9ba7, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Bell
+  - Prefab: {fileID: 3911515140070945534, guid: 028db3e3eff7bf64fa0f1845f0b86e00, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Fox Statue
+  - Prefab: {fileID: 4853259108340363911, guid: 47e17567485b0b54b8b2746cc1241918, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Shrine
+  - Prefab: {fileID: 5380188217969904329, guid: 24ba65b9501941048a9b73af9459c6ad, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Broken Arch

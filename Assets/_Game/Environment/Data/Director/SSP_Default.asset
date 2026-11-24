@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b237dedbb54fb2243a74264e31c716ed, type: 3}
+  m_Name: SSP_Default
+  m_EditorClassIdentifier: Assembly-CSharp::SoundscapeProfile
+  Beds:
+  - Section: 0
+    Loop: {fileID: 11400000, guid: 11a5cc6a46147fa408eccc5b7fdc64df, type: 2}
+  - Section: 3
+    Loop: {fileID: 11400000, guid: 349da8d275880c742a6eea448c5f8dbf, type: 2}
+  - Section: 4
+    Loop: {fileID: 11400000, guid: 620450556666fc44290c865d018985dd, type: 2}
+  - Section: 1
+    Loop: {fileID: 11400000, guid: 1be71b427fe49ac47aa0ecaa5dc6ca14, type: 2}
+  - Section: 2
+    Loop: {fileID: 11400000, guid: af826935dee9d8d43b63ec7dadec0c85, type: 2}
+  DefaultBed: {fileID: 11400000, guid: 349da8d275880c742a6eea448c5f8dbf, type: 2}
+  BedVolume: 0.45
+  CrossfadeTime: 4
+  AreaCheckInterval: 0.5
+  Drip: {fileID: 11400000, guid: 6922f6a770a7a184382dc5b65e01275e, type: 2}
+  DripRadius: 22
+  DripInterval: {x: 2.5, y: 6}

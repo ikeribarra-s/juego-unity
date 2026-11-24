@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba3bac8b61b5bf489a83b072c2bdc2b, type: 3}
+  m_Name: AE_DistantSound
+  m_EditorClassIdentifier: Assembly-CSharp::AmbientEventDefinition
+  Kind: 3
+  Phases: 11
+  Weight: 2.5
+  Cooldown: 10
+  Distance: {x: 15, y: 35}
+  PreferOccluded: 1
+  Radius: 12
+  Sound: {fileID: 11400000, guid: 06e02df0240973e4981ed9742039639f, type: 2}
+  Cue: 0
+  Duration: {x: 1, y: 1}
+  RelightAfter: {x: 25, y: 60}
+  TensionAdd: 0.015

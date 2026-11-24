@@ -264,6 +264,7 @@ GameObject:
   - component: {fileID: 1597304162322434039}
   - component: {fileID: 5743226989983863994}
   - component: {fileID: 7987306727514988133}
+  - component: {fileID: 774254749835842477}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Untagged
@@ -358,6 +359,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Torch
   _prompt: Press E to take torch
   _displayName: Torch
+  _relightPrompt: Press E to relight
+  _deadPrompt: Burnt out
   _uprightEuler: {x: -90, y: 0, z: 0}
   _mass: 1
 --- !u!65 &7987306727514988133
@@ -381,6 +384,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.00567514, y: 0.0056751412, z: 0.019060662}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &774254749835842477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948640885905876514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d674d9009225abd4e8f108c7c26cb481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TorchStateController
+  _flame: {fileID: 0}
+  _embers: []
+  _gutterRange: {x: 0.12, y: 0.85}
+  _gutterStep: {x: 0.05, y: 0.16}
+  _fadeOutTime: 0.35
+  _relightTime: 0.7
+  _gutterSound: {fileID: 11400000, guid: ab63d11beaebedf44b70a213f3a3b6a2, type: 2}
+  _outSound: {fileID: 11400000, guid: 5bab4453d88e68945b5cc0d24976684b, type: 2}
+  _relightSound: {fileID: 11400000, guid: 4a39a4dc8f3fb8d449963856660f2e68, type: 2}
 --- !u!1 &3829181816665601554
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,6 +42,7 @@ public class DynamicLightBudget : MonoBehaviour
 
     private readonly List<Light> _lights = new();
     private readonly HashSet<Light> _culledByMe = new();
+    private readonly HashSet<Light> _shadowless = new();   // lights marked ShadowlessLight: culled, never shadowed
     private readonly List<(float dist, Light light)> _candidates = new();
     private float _nextRefresh;
     private float _nextRescan;
@@ -85,7 +86,9 @@ public class DynamicLightBudget : MonoBehaviour
             if (l.type != LightType.Point && l.type != LightType.Spot) continue;
             if (!l.enabled && !_culledByMe.Contains(l)) continue; // someone else switched it off
             _lights.Add(l);
+            if (l.TryGetComponent<ShadowlessLight>(out _)) _shadowless.Add(l);
         }
+        _shadowless.RemoveWhere(l => l == null);
         _culledByMe.RemoveWhere(l => l == null);
     }
 
@@ -111,7 +114,8 @@ public class DynamicLightBudget : MonoBehaviour
             {
                 if (_culledByMe.Remove(l)) l.enabled = true;
                 active++;
-                if (dist <= _shadowDistance) _candidates.Add((dist, l));
+                if (_shadowless.Contains(l)) { if (l.shadows != LightShadows.None) l.shadows = LightShadows.None; }
+                else if (dist <= _shadowDistance) _candidates.Add((dist, l));
                 else if (l.shadows != LightShadows.None) l.shadows = LightShadows.None;
             }
             else if (l.enabled)

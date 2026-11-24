@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6845927a1c532449ac8452a4e83e74d, type: 3}
+  m_Name: PP_Landmarks_Hell
+  m_EditorClassIdentifier: Assembly-CSharp::PropPalette
+  _entries:
+  - Prefab: {fileID: 3949474321214411000, guid: eff3cf4c9cc1e6041bb5e455c1aa87ee, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Bonfire
+  - Prefab: {fileID: 8638900091001947738, guid: 971434ebea6d0d8469447b757a6dbd5b, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Spike Pit
+  - Prefab: {fileID: 8158545138498589960, guid: f1908633c11e5fc40a463c2088c49002, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Horse
+  - Prefab: {fileID: 5380188217969904329, guid: 24ba65b9501941048a9b73af9459c6ad, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: the Broken Arch

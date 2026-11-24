@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f48909b3ae3854a926ae72f8c68041, type: 3}
+  m_Name: DP_Default
+  m_EditorClassIdentifier: Assembly-CSharp::DirectorProfile
+  CalmRise: 0.005
+  BuildUpRise: 0.0065
+  RiseJitter: 0.003
+  BuildUpAt: 0.35
+  SpikeAt: 0.8
+  SpikeDuration: {x: 8, y: 14}
+  ReliefDuration: {x: 20, y: 35}
+  ReliefFloor: 0.1
+  GroupComfort: 0.02
+  GroupRadius: 8
+  CreatureInvestigate: 0.15
+  CreaturePoint: 0.3
+  GeneratorFloor: 0.1
+  ExtractionFloor: 0.3
+  EventsPerMinute: {x: 2, y: 5, z: 0, w: 1}
+  MinEventGap: 6
+  StartGrace: 12
+  Events:
+  - {fileID: 11400000, guid: 67eaa97f67e28d049a9352f9dd434fbd, type: 2}
+  - {fileID: 11400000, guid: f4d39f4dbdf1d5346bddb73aad8db3bf, type: 2}
+  - {fileID: 11400000, guid: 74fb38440640507499ef9980e157073e, type: 2}
+  - {fileID: 11400000, guid: 8dd0b679d2cd3b84bb7a48bde23b4e60, type: 2}
+  - {fileID: 11400000, guid: b780ef9c21afe5348a7720310b64bb1b, type: 2}
+  SpikeEntryEvent: {fileID: 11400000, guid: a8b9dcfe52f584b4fb13c3df196df585, type: 2}
+  CalmMood: 0
+  BuildUpMood: 1
+  SpikeMood: 3
+  ReliefMood: 0
+  UnlockedMood: 4
+  BuildUpBlend: 6
+  SpikeBlend: 0.6
+  CalmBlend: 4
+  TickRate: 2

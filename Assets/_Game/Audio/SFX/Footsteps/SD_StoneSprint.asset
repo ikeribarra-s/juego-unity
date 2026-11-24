@@ -21,7 +21,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a5e28a71cc15d3c4ba75d1338c4fd9f4, type: 3}
   - {fileID: 8300000, guid: be3f953285c2e3848b0d52a554b16bea, type: 3}
   - {fileID: 8300000, guid: a33e2e0020ded294782f0f236cc4fe23, type: 3}
-  _volume: 0.6
+  _volume: 0.8
   _pitchRange: {x: 0.94, y: 1.06}
   _spatialBlend: 1
   _mixerGroup: {fileID: 24300002, guid: 94faeffa20711144788afc324065b977, type: 2}
+  _minDistance: 2
+  _maxDistance: 30
+  _maxVoices: 0
+  _minInterval: 0

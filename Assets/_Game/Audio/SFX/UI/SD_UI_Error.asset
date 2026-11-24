@@ -15,7 +15,11 @@ MonoBehaviour:
   _clips:
   - {fileID: 8300000, guid: f3a27f7419e318049828de547c6dcd3c, type: 3}
   - {fileID: 8300000, guid: 44bc15642b1af464bbb0c6e80c74a148, type: 3}
-  _volume: 0.5
+  _volume: 0.7
   _pitchRange: {x: 1, y: 1}
   _spatialBlend: 0
   _mixerGroup: {fileID: 24300002, guid: 5e5213432b9ed224dac55567e2b61ebe, type: 2}
+  _minDistance: 1
+  _maxDistance: 500
+  _maxVoices: 1
+  _minInterval: 0.3

@@ -13,7 +13,7 @@ using UnityEditor;
 /// generated from primitives only (no external models, no Resources.Load).
 /// Deterministic from Seed. Generate / Clear via the component context menu.
 /// </summary>
-public class MultiSectionDungeonGenerator : MonoBehaviour
+public partial class MultiSectionDungeonGenerator : MonoBehaviour
 {
     public enum SectionType { GothicRuins, Graveyard, HellPillars, Catacombs, Cavern, Transition }
 
@@ -269,6 +269,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         Clear();
 
         int seed = Seed != 0 ? Seed : System.Environment.TickCount;
+        _lastSeed = seed;
         _rng = new System.Random(seed);
         _spawnedLights = 0;
         _spawnedHeroShadows = 0;
@@ -280,6 +281,8 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         _reserved = new bool[_width, _height];
         _section = new SectionType[_width, _height];
         _hasSection = new bool[_width, _height];
+        _blocked = new bool[_width, _height];
+        _lane = new bool[_width, _height];
 
         CreateRoots();
         EnsureMaterials();
@@ -298,9 +301,13 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             }
         }
 
-        ConnectSections();
+        // Living Map S5: a spanning tree of sections + a few loops (main routes, far wings, chokepoints)
+        // instead of the full lattice. Old behaviour with UseSpanningTree off.
+        if (UseSpanningTree) ConnectSectionsTree(); else ConnectSections();
         CarveGeneratorRooms();   // dedicated machine chambers + their connecting corridors
+        CarveDeadEndRooms();     // single-entrance side rooms (evidence prefers them)
         PruneFloorIslands();
+        ValidateLayoutConnectivity();
         AssignSectionOwnership();
 
         // Machinery: place a generator in each carved room (reserves its tiles before décor).
@@ -317,12 +324,21 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         BuildWalls();
         BuildCeilingSkirts();   // close the vertical gaps where ceiling heights change
 
-        // Themed dressing.
+        // Living Map S6: one landmark per section first, so it gets the clearest spot.
+        _landmarkRoot = NewChild("Landmarks");
+        PlaceSectionLandmarks();
+
+        // Themed dressing (kit swaps inside the builders when palettes are assigned) + kit dressing.
         DecorateGothic();
         DecorateGraveyard();
         DecorateHell();
         DecorateCatacombs();
         DecorateCavern();
+        DressWithKit();
+
+        CollectDripPoints();
+        ValidateNavigationAndFix();   // props never cut off floor, rooms or objectives
+        WriteLayout(seed);
 
         // Atmosphere & lighting. If a DungeonLightingController owns the scene lighting, defer to
         // it (it applies ambient/fog/moon live) so the two don't fight over RenderSettings.
@@ -357,6 +373,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         _sections.Clear();
         _generatorRooms.Clear();
         _builtMeshes.Clear();
+        ResetLivingMapState();
     }
 
     private void CreateRoots()
@@ -570,14 +587,17 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         // the ruins' corridors merge into existing rooms and read as an organic maze instead of
         // a fan of right-angle Ls. Stays inside the Gothic footprint so it never bleeds into a
         // neighbouring section or the padding between them.
+        // Living Map: these lanes are reserved so kit furniture never blocks a route through the rooms.
+        _markLanes = true;
         for (int i = 0; i < rooms.Count - 1; i++)
-            CarveCorridorAStar(RectCenter(rooms[i]), RectCenter(rooms[i + 1]), s.Bounds);
+            CarveCorridorAStar(RectCenter(rooms[i]), RectCenter(rooms[i + 1]), s.Bounds, reserve: true);
 
         // Guarantee the section entry/exit reach the interior.
         Vector2Int c = s.Center;
-        if (rooms.Count > 0) CarveCorridorAStar(c, RectCenter(rooms[0]), s.Bounds);
-        CarveCorridorAStar(c, s.Entry, s.Bounds);
-        CarveCorridorAStar(c, s.Exit, s.Bounds);
+        if (rooms.Count > 0) CarveCorridorAStar(c, RectCenter(rooms[0]), s.Bounds, reserve: true);
+        CarveCorridorAStar(c, s.Entry, s.Bounds, reserve: true);
+        CarveCorridorAStar(c, s.Exit, s.Bounds, reserve: true);
+        _markLanes = false;
     }
 
     // Deterministic A* between two points, restricted to a bounding rect (no RNG, so output stays
@@ -673,7 +693,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             {
                 int cx = x + dx, cy = y + dy;
                 SetFloor(cx, cy);
-                if (reserve && InBounds(cx, cy)) _reserved[cx, cy] = true;
+                if (reserve && InBounds(cx, cy)) { _reserved[cx, cy] = true; if (_markLanes) _lane[cx, cy] = true; }
             }
     }
 
@@ -1345,6 +1365,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void BuildWindow(WallEdge e)
     {
+        if (KitWallSwap(KitWindows, e)) return;
         var root = new GameObject("Window");
         root.transform.SetParent(_detailsRoot, false);
         root.transform.localPosition = e.Surface + Vector3.up * 2.3f;
@@ -1365,6 +1386,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void BuildCellBars(WallEdge e)
     {
+        if (KitWallSwap(KitCellBars, e)) return;
         var root = new GameObject("CellBars");
         root.transform.SetParent(_detailsRoot, false);
         root.transform.localPosition = e.Surface;
@@ -1381,6 +1403,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void BuildWallPanel(WallEdge e)
     {
+        if (KitWallSwap(KitWallPanels, e)) return;
         var root = new GameObject("WallPanel");
         root.transform.SetParent(_detailsRoot, false);
         root.transform.localPosition = e.Surface;
@@ -1465,6 +1488,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         float h = RandomRange(0.9f, 1.4f);
         CreatePart(PrimitiveType.Cube, root.transform, "Slab", new Vector3(0, h * 0.5f, 0), Vector3.zero, new Vector3(0.7f, h, 0.18f), GraveStoneMat(), collider: true);
         CreatePart(PrimitiveType.Cube, root.transform, "Base", new Vector3(0, 0.08f, 0), Vector3.zero, new Vector3(0.9f, 0.16f, 0.4f), GraveStoneMat());
+        RegisterBlocker(root);
     }
 
     private void BuildCross(Vector3 pos)
@@ -1476,6 +1500,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         float h = RandomRange(1.2f, 1.8f);
         CreatePart(PrimitiveType.Cube, root.transform, "Post", new Vector3(0, h * 0.5f, 0), Vector3.zero, new Vector3(0.14f, h, 0.14f), GraveStoneMat(), collider: true);
         CreatePart(PrimitiveType.Cube, root.transform, "Arm", new Vector3(0, h * 0.72f, 0), Vector3.zero, new Vector3(0.6f, 0.14f, 0.14f), GraveStoneMat());
+        RegisterBlocker(root);
     }
 
     private void BuildTomb(Vector3 pos)
@@ -1486,10 +1511,12 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         root.transform.localRotation = Quaternion.Euler(0, _rng.Next(0, 4) * 90f, 0);
         CreatePart(PrimitiveType.Cube, root.transform, "Base", new Vector3(0, 0.35f, 0), Vector3.zero, new Vector3(1.6f, 0.7f, 1.0f), GraveStoneMat(), collider: true);
         CreatePart(PrimitiveType.Cube, root.transform, "Lid", new Vector3(0, 0.75f, 0), Vector3.zero, new Vector3(1.7f, 0.18f, 1.1f), GraveStoneMat());
+        RegisterBlocker(root);
     }
 
     private void BuildDeadTree(Vector3 pos)
     {
+        if (KitFloorSwap(KitDeadTrees, pos, _rng.Next(0, 360), "DeadTree")) return;
         var root = new GameObject("DeadTree");
         root.transform.SetParent(_decorRoot, false);
         root.transform.localPosition = pos;
@@ -1499,6 +1526,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         int branches = _rng.Next(2, 5);
         for (int i = 0; i < branches; i++)
             CreatePart(PrimitiveType.Cylinder, root.transform, "Branch", new Vector3(0, RandomRange(h * 0.5f, h), 0), new Vector3(RandomRange(20f, 70f), _rng.Next(0, 360), 0), new Vector3(0.08f, RandomRange(0.4f, 0.9f), 0.08f), WoodMat());
+        RegisterBlocker(root);
     }
 
     // ---------------------------------------------------------------------
@@ -1554,13 +1582,17 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
     private void BuildPillar(Vector3 pos)
     {
-        var root = new GameObject("Pillar");
-        root.transform.SetParent(_decorRoot, false);
-        root.transform.localPosition = pos;
         float h = HellWallHeight;
-        CreatePart(PrimitiveType.Cylinder, root.transform, "Shaft", new Vector3(0, h * 0.5f, 0), Vector3.zero, new Vector3(1.1f, h * 0.5f, 1.1f), HellPillarMat(), collider: true);
-        CreatePart(PrimitiveType.Cube, root.transform, "Base", new Vector3(0, 0.25f, 0), Vector3.zero, new Vector3(1.5f, 0.5f, 1.5f), HellPillarMat());
-        CreatePart(PrimitiveType.Cube, root.transform, "Capital", new Vector3(0, h - 0.25f, 0), Vector3.zero, new Vector3(1.5f, 0.5f, 1.5f), HellPillarMat());
+        if (!KitFloorSwap(KitHellPillars, pos, _rng.Next(0, 4) * 90f, "Pillar"))
+        {
+            var root = new GameObject("Pillar");
+            root.transform.SetParent(_decorRoot, false);
+            root.transform.localPosition = pos;
+            CreatePart(PrimitiveType.Cylinder, root.transform, "Shaft", new Vector3(0, h * 0.5f, 0), Vector3.zero, new Vector3(1.1f, h * 0.5f, 1.1f), HellPillarMat(), collider: true);
+            CreatePart(PrimitiveType.Cube, root.transform, "Base", new Vector3(0, 0.25f, 0), Vector3.zero, new Vector3(1.5f, 0.5f, 1.5f), HellPillarMat());
+            CreatePart(PrimitiveType.Cube, root.transform, "Capital", new Vector3(0, h - 0.25f, 0), Vector3.zero, new Vector3(1.5f, 0.5f, 1.5f), HellPillarMat());
+            RegisterBlocker(root);
+        }
         if (Roll(0.4f))
             SpawnLight(pos + Vector3.up * (h - 1f), PickFrom(HellColors), new Vector2(1f, 2f), 6f, flicker: true, heroEligible: false);
     }
@@ -1588,14 +1620,40 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         root.transform.localRotation = WallFacing(e);
 
         CreatePart(PrimitiveType.Cube, root.transform, "Shelf", new Vector3(0, -0.08f, 0.1f), Vector3.zero, new Vector3(0.28f, 0.06f, 0.18f), GraveStoneMat());
-        CreatePart(PrimitiveType.Cylinder, root.transform, "Candle", new Vector3(0, 0.05f, 0.12f), Vector3.zero, new Vector3(0.05f, 0.1f, 0.05f), BoneMat());
         Vector3 flame = new(0, 0.2f, 0.12f);
-        CreatePart(PrimitiveType.Sphere, root.transform, "Flame", flame, Vector3.zero, new Vector3(0.07f, 0.11f, 0.07f), FlameMat());
+        if (UseKitDressing && KitCandles != null && KitCandles.IsValid)
+        {
+            // Kit candle cluster standing on the stone shelf (the light below stays).
+            var ce = KitCandles.Pick(_rng);
+            GameObject c = SpawnKit(ce, root.transform, 0f);
+            c.transform.localRotation = Quaternion.Euler(ce.RotationOffset) * ce.Prefab.transform.localRotation;
+            if (WorldBounds(c, out Bounds cb))
+            {
+                Vector3 shelfTop = root.transform.TransformPoint(new Vector3(0f, -0.05f, 0.12f));
+                c.transform.position += new Vector3(shelfTop.x - cb.center.x, shelfTop.y - cb.min.y, shelfTop.z - cb.center.z);
+                flame = root.transform.InverseTransformPoint(new Vector3(cb.center.x, shelfTop.y + cb.size.y + 0.05f, cb.center.z));
+            }
+        }
+        else
+        {
+            CreatePart(PrimitiveType.Cylinder, root.transform, "Candle", new Vector3(0, 0.05f, 0.12f), Vector3.zero, new Vector3(0.05f, 0.1f, 0.05f), BoneMat());
+            CreatePart(PrimitiveType.Sphere, root.transform, "Flame", flame, Vector3.zero, new Vector3(0.07f, 0.11f, 0.07f), FlameMat());
+        }
         SpawnLight(root.transform.localPosition + WallFacing(e) * flame, new Color(1f, 0.66f, 0.32f), new Vector2(0.8f, 1.4f), 5.5f, flicker: true, heroEligible: false);
     }
 
     private void BuildBonePile(WallEdge e)
     {
+        if (UseKitDressing && KitBonePiles != null && KitBonePiles.IsValid && !_reserved[e.Cx, e.Cy])
+        {
+            var be = KitBonePiles.Pick(_rng);
+            GameObject g = SpawnKit(be, _decorRoot, Quaternion.LookRotation(e.IntoRoom).eulerAngles.y + RandomRange(-30f, 30f));
+            g.name = "BonePile";
+            SnapToFloor(g, e.Surface + e.IntoRoom * 0.4f, be.YOffset);
+            WallMount.PushOffWall(g.transform, _root.TransformPoint(e.Surface), _root.TransformDirection(e.IntoRoom), 0.03f);
+            MarkStaticDeep(g);
+            return;
+        }
         var root = new GameObject("BonePile");
         root.transform.SetParent(_decorRoot, false);
         root.transform.localPosition = e.Surface;
@@ -1686,6 +1744,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
                 new Vector3(RandomRange(-0.3f, 0.3f), RandomRange(0.1f, 0.4f), RandomRange(-0.3f, 0.3f)),
                 new Vector3(RandomRange(-20f, 20f), _rng.Next(0, 360), RandomRange(-20f, 20f)),
                 new Vector3(RandomRange(0.5f, 1.1f), RandomRange(0.35f, 0.7f), RandomRange(0.5f, 1.1f)), CavernRockMat(), collider: i == 0);
+        RegisterBlocker(root);
     }
 
     private void BuildStalagmite(Vector3 pos)
@@ -1703,6 +1762,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
                 new Vector3(RandomRange(-0.05f, 0.05f), h * t, RandomRange(-0.05f, 0.05f)),
                 Vector3.zero, new Vector3(r * 2f, Mathf.Lerp(0.5f, 0.3f, t), r * 2f), CavernRockMat(), collider: i == 0);
         }
+        RegisterBlocker(root);
     }
 
     private void BuildStalactite(Vector3 floorPos, float ceilingY)
@@ -2090,7 +2150,9 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
         // 1. Extraction.
         Vector2Int extTile;
-        if (!TryPickExtractionTile(sum, extraction, rng, out extTile))
+        bool picked = VariedPlacement ? TryPickExtractionVaried(sum, extraction, rng, out extTile)
+                                      : TryPickExtractionTile(sum, extraction, rng, out extTile);
+        if (!picked)
         {
             Debug.LogWarning("[MultiSectionDungeon] No clear floor for the extraction zone — mission objects not placed.", this);
             return;
@@ -2100,13 +2162,18 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
 
         // 2. Player start.
         int[,] fromExt = WalkDistances(extTile);
-        Vector2Int startTile = PickPlayerStartTile(sum, fromExt, extTile, extClear, rng);
+        Vector2Int startTile = VariedPlacement ? PickPlayerStartVaried(sum, fromExt, extTile, extClear, rng)
+                                               : PickPlayerStartTile(sum, fromExt, extTile, extClear, rng);
         ReserveArea(startTile, 1);
+        _extTile = extTile; _startTile = startTile; _startWalk = fromExt[startTile.x, startTile.y];
+        _missionTargets.Add(extTile);
+        _missionTargets.Add(startTile);
+        foreach (GeneratorRoom gr in _generatorRooms) _missionTargets.Add(RectCenter(gr.Rect));
 
         // 3. Evidence.
         int[,] fromStart = WalkDistances(startTile);
         List<Vector2Int> evTiles = PickEvidenceTiles(sum, fromStart, extTile, evidence.Count, rng);
-        foreach (Vector2Int t in evTiles) ReserveArea(t, 1);
+        foreach (Vector2Int t in evTiles) { ReserveArea(t, 1); _missionTargets.Add(t); }
 
         // Move the scene objects.
         if (extraction != null)
@@ -2149,7 +2216,7 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             foreach (EvidencePickup e in Evidence) if (e != null) list.Add(e);
             return list;
         }
-        foreach (EvidencePickup e in FindObjectsByType<EvidencePickup>(FindObjectsSortMode.None))
+        foreach (EvidencePickup e in FindObjectsByType<EvidencePickup>(FindObjectsInactive.Exclude))
             if (!e.transform.IsChildOf(transform)) list.Add(e);   // never grab something the dungeon spawned
         list.Sort((a, b) => string.CompareOrdinal(a.name, b.name)); // stable order → deterministic per seed
         return list;
@@ -2213,7 +2280,8 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
         for (int x = 0; x < _width; x++)
             for (int y = 0; y < _height; y++)
             {
-                if (fromStart[x, y] < 0 || _section[x, y] == SectionType.Transition) continue;
+                bool deadEnd = InDeadEndRoom(x, y);
+                if (fromStart[x, y] < 0 || (_section[x, y] == SectionType.Transition && !deadEnd)) continue;
                 if (_reserved[x, y] || !IsClearSquare(sum, x, y, 1)) continue;   // off corridors / objective tiles
                 if (NearGenerator(x, y, EvidenceGeneratorGap)) continue;
                 if (Mathf.Abs(x - ext.x) + Mathf.Abs(y - ext.y) < 12) continue;
@@ -2235,6 +2303,18 @@ public class MultiSectionDungeonGenerator : MonoBehaviour
             int maxDist = k >= 0.4f ? Mathf.Max(minDist + 1, EvidenceMaxDistance) : int.MaxValue;
             int spacingSqr = Mathf.RoundToInt(EvidenceSpacing * k) * Mathf.RoundToInt(EvidenceSpacing * k);
             var usedTypes = new HashSet<SectionType>();
+
+            // Living Map: reward the far side rooms - up to EvidenceInDeadEnds items go in dead ends first.
+            int inDeadEnds = 0;
+            foreach (Vector2Int c in candidates)
+            {
+                if (inDeadEnds >= EvidenceInDeadEnds || result.Count >= count) break;
+                if (!InDeadEndRoom(c.x, c.y) || fromStart[c.x, c.y] < minDist) continue;
+                bool near = false;
+                foreach (Vector2Int p in result) if ((p - c).sqrMagnitude < Mathf.Max(spacingSqr, 4)) { near = true; break; }
+                if (near) continue;
+                result.Add(c); inDeadEnds++;
+            }
 
             for (int pass = 0; pass < 2 && result.Count < count; pass++)   // pass 0: one per section type
                 foreach (Vector2Int c in candidates)

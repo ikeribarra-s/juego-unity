@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6845927a1c532449ac8452a4e83e74d, type: 3}
+  m_Name: PP_Gothic_Wall
+  m_EditorClassIdentifier: Assembly-CSharp::PropPalette
+  _entries:
+  - Prefab: {fileID: 919132149155446097, guid: 063297deaa98e2c4a97da5156de56328, type: 3}
+    Weight: 1.2
+    Placement: 2
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 1.2
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: b1cf83abe9bd6fd42950ad0054a16a2c, type: 3}
+    Weight: 1
+    Placement: 2
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 1.4
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: d667c7fc685cd5a42b45450d587f0020, type: 3}
+    Weight: 0.6
+    Placement: 2
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 1.6
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 404907cb8414f8b46afe823b80512dcf, type: 3}
+    Weight: 1.2
+    Placement: 3
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: d0fd7b4039c95924c8c06750c014a3c4, type: 3}
+    Weight: 1
+    Placement: 3
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1, y: 1}
+    YOffset: 0
+    Solid: 0
+    RandomYaw: 1
+    CastShadows: 0
+    DisplayName: 

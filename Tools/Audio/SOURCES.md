@@ -48,3 +48,9 @@ Rules (see `Docs/ArtDirection.md` §9 *Audio format spec*):
 | `SFX/_AB/AB_TorchWhoosh_A.wav` | `swoosh_02.flac` (prompt "fast air swoosh of a stick swung through the air, swing whoosh", seed 5101) | Stable Audio Open | Stability AI Community |
 | `SFX/_AB/AB_UIClick_A.wav` | `clickA_04.flac` (prompt "small mechanical button click, soft plastic switch", seed 30203) | Stable Audio Open | Stability AI Community |
 | `SFX/_AB/*_B.wav`, all `SFX/<Category>/SFX_*` | procedural (`Tools/Audio/sfxr.py`) | own | — |
+| `SFX/Ambient/SFX_Ambient_Drip_01-06` | prompt "single water drop falling into a small puddle in a stone cellar", seeds 31000-31005 | Stable Audio Open | Stability AI Community |
+| `SFX/Ambient/SFX_Ambient_Distant_01-06` | "distant heavy iron chain rattling…" 32000/32001, "old wooden door creaking slowly, far away…" 34000-34002, "distant heavy stone block grinding…" 33002 | Stable Audio Open | Stability AI Community |
+| `SFX/Ambient/SFX_Ambient_Bell_01-03` | "small brass bell on a dog collar jingling, a few quick tinkles", seeds 35000/35002/35003 | Stable Audio Open | Stability AI Community |
+| `SFX/Ambient/SFX_Ambient_TorchGutter/Out/Relight_*` | "small torch flame sputtering and hissing" 36000/36001; "small fire blown out…" 37002 (+ pitch/EQ variation); "torch igniting…" 38002, "match striking and a small flame catching…" 38100/38103 | Stable Audio Open | Stability AI Community |
+| `SFX/Ambient/SFX_Ambient_Sting_01-03` | "low soft dark cello swell with a dull distant thud, eerie" 39100/39103, "deep low horror boom with a metallic scrape" 39001 | Stable Audio Open | Stability AI Community |
+| `SFX/Ambient/SFX_Ambient_Bed*_01` | workflow `Tools/ComfyUI/workflows/stable_audio_ambience.json` (22 s), seeds Gothic 41000, Cavern 43000, Graveyard 44000, Hell 45001, Catacomb 42101; made seamless with a 2 s equal-power loop crossfade | Stable Audio Open | Stability AI Community |

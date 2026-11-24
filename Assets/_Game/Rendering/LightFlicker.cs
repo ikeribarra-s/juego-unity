@@ -20,6 +20,10 @@ public class LightFlicker : MonoBehaviour
 
     private LightData[] _lights;
 
+    /// <summary>Multiplier on top of the flicker (1 = authored brightness). Set by
+    /// <see cref="TorchStateController"/> to make a torch gutter / fade out / relight.</summary>
+    public float IntensityScale { get; set; } = 1f;
+
     private void Awake()
     {
         Light[] found = GetComponentsInChildren<Light>(includeInactive: true);
@@ -42,7 +46,7 @@ public class LightFlicker : MonoBehaviour
         {
             ref LightData ld = ref _lights[i];
             float n = FBM(time + ld.noiseOffset);           // [0, 1]
-            ld.light.intensity = ld.initialIntensity
+            ld.light.intensity = ld.initialIntensity * IntensityScale
                 * Mathf.Lerp(1f - _flickerIntensity, 1f + _flickerIntensity, n);
         }
     }

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6845927a1c532449ac8452a4e83e74d, type: 3}
+  m_Name: PP_Kit_HellPillars
+  m_EditorClassIdentifier: Assembly-CSharp::PropPalette
+  _entries:
+  - Prefab: {fileID: 919132149155446097, guid: 53a34e81e34c38145b9a6c927ba9818d, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1.45, y: 1.5}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: 310eb07a1e49c8344bbc5e9e970daf2a, type: 3}
+    Weight: 1
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1.45, y: 1.5}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 
+  - Prefab: {fileID: 919132149155446097, guid: f88cae811c1336b4c8d22957d7769a14, type: 3}
+    Weight: 0.6
+    Placement: 0
+    RotationOffset: {x: 0, y: 0, z: 0}
+    ScaleRange: {x: 1.5, y: 1.55}
+    YOffset: 0
+    Solid: 1
+    RandomYaw: 1
+    CastShadows: 1
+    DisplayName: 

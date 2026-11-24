@@ -202,15 +202,15 @@ Trotín is first because his movement quirk forces the physics system to work co
 - [ ] `LobbyWiggle.cs` (Passive): in lobby scene, applies random small velocity impulses every 0.3–0.8s
 - [ ] `TrotinAudio.cs`: skid sound on slide start, thud sound on collision, victory chirp on arrival
 
-#### 1.5 — Creature (Basic)
-- [ ] `CreatureBase.cs` (NetworkBehaviour)
-- [ ] `CreatureAI.cs` using NavMesh:
-  - States: Patrol → Alert → Chase → Retreat
-  - Patrol: random waypoints in navmesh area
-  - Alert: triggered when player enters detection radius OR makes sound above threshold
-  - Chase: pursue player, end chase after losing sight for 8s
-- [ ] On catch: screen shake + stun player 5s, drop one item
-- [ ] Place one creature in test map
+#### 1.5 — Creature (Basic) — "Chucho", spec: `Docs/Design/Creature_01.md`
+- [ ] `CreatureDefinition` SO + `CreatureBase` / `CreatureSenses` / `CreatureAI` (MonoBehaviour now, `NetworkBehaviour` in Phase 4); `ChuchoAI` subclass
+- [ ] States: Patrol → Investigate → Point (0.8 s telegraph) → Chase → Catch / Search → Patrol, plus Held At Bay (torch), Fetch, Carry (to den), Flinch, Chewing (bone offering)
+- [ ] Senses: motion-weighted sight (still = 0.4×, torch-lit = 1.6×) + hearing via the noise event (below)
+- [ ] **Noise event pulled forward from 2.2** (approved): minimal `GameEventBus` with only `NoiseMadeEvent`; emitters = footsteps, item impacts/breaks, torch landing, generators, extraction unlock
+- [ ] On catch: screen shake + stun 5 s + drop held items; Chucho steals one item to its den; **3rd catch = death** (`IKillable`) (approved)
+- [ ] Bone offering (lose a limb to calm Chucho) — Creature_01.md §15
+- [ ] `CharacterVitals.Stun`, `CameraEffects.Shake`, den placement in the generator
+- [ ] Replace the capsule in `EnemySpawner`; creature count by players 1,1,1,2,2,2,3,3
 
 #### 1.6 — Mission & Win/Lose
 - [ ] `MissionManager.cs`: tracks time (5min countdown), extraction status
@@ -218,7 +218,17 @@ Trotín is first because his movement quirk forces the physics system to work co
 - [ ] Lose: timer expires
 - [ ] End screen shows score (sum of evidence values × quality multipliers)
 
-**Phase 1 exit criteria:** Run into map as Trotín, pick up evidence, survive or avoid the creature, reach extraction, see score. Trotín's slide should cause at least one accidental disaster in every run.
+#### 1.7 — Living Map, Milestone 1 (runs alongside 1.5 / 1.6) — spec: `Docs/Design/LivingMap.md` §11
+Moved up from Phase 6 (approved 2026-11-23). Map size stays 4×4 sections until playtests.
+- [ ] Torches gutter/die + minimal `AmbientDirector` (tension Calm → Build-up → Spike → Relief) driving `LightingMoodController.SetMood`; may fake creature cues (false bell jingles, approved)
+- [ ] Generator dressing uses the three kits via per-theme `PropPalette` SOs (primitives = fallback)
+- [ ] Section links: spanning tree + extra loops + dead ends (no full lattice)
+- [ ] One landmark per section
+- [ ] Soundscape: distant sounds, drips, one ambient bed per biome (`SFX/Environment/`)
+- [ ] Run modifiers, **one per run**: Blackout, Fog, Extra creature + run card
+- [ ] Placement variety: start ↔ extraction distance band, 3 extraction candidates (objective stays 3 generators; Ritual/Key objectives later)
+
+**Phase 1 exit criteria:** Run into map as Trotín, pick up evidence, survive or avoid the creature, reach extraction, see score. Trotín's slide should cause at least one accidental disaster in every run. Two consecutive seeds are distinguishable within 30 s of play.
 
 ---
 
@@ -248,6 +258,8 @@ Trotín is first because his movement quirk forces the physics system to work co
 - `ObjectBroken(Vector3 position)` — Coso's destruction event
 
 Pattern: `GameEventBus.Raise<LoudNoiseMadeEvent>(new LoudNoiseMadeEvent { position = pos, volume = vol });`
+
+> Note: a minimal `GameEventBus` with `NoiseMadeEvent` ships in 1.5 (creature hearing). 2.2 extends it; `LoudNoiseMade` should reuse/alias `NoiseMadeEvent` rather than duplicate it.
 
 #### 2.3 — Detection Framework
 - [ ] `SmellSource.cs`: placed on creatures, traps, key items. Has `SmellIntensity` and `SmellType` enum
@@ -578,7 +590,7 @@ Coso     → tests physics interactions + break system
 | Milestone | Phase End | Deliverable |
 |---|---|---|
 | M0 | End of week 2 | Two players in a room, both moving |
-| M1 | End of week 5 | Completable game loop with Trotín, one creature, evidence |
+| M1 | End of week 5 | Completable game loop with Trotín, Chucho (creature 1), evidence; Living Map Milestone 1 |
 | M2 | End of week 8 | Bobi + Lumi added, ability framework proven |
 | M3 | End of week 13 | All 8 characters implemented, local co-op |
 | M4 | End of week 17 | Online 8-player session works, lobby functional |

@@ -8,8 +8,9 @@
 
 ## 1. Tone in one line
 
-**Cute things in a place that wants them dead.** Soft, round, fluffy characters against cold,
+**Goofy bones in a place that wants them dead.** Clumsy, expressive low-poly skeletons against cold,
 grainy, crumbling dungeons. The horror is real; the characters are comedic. Contrast is the brand.
+(Earlier drafts said "soft, fluffy plush characters": superseded by the skeleton protagonist, 2026-11-23.)
 
 ## 2. Rendering look (already implemented — don't fight it)
 
@@ -36,13 +37,23 @@ big shapes, and readable value contrast over texture detail.
 | Safe / success | Ghost green `#7CFFB2` | Unlocked extraction beacon, objective complete |
 | UI ink | Bone white `#E8E2D0` on translucent black | Text, prompts |
 
-## 4. Characters  **[DECIDE most of this]**
+## 4. Characters
 
-- Body: round, plush/stuffed-toy feel — stitched seams, button eyes? **[DECIDE]**
-- Proportions: big head, short limbs (chibi ~2–2.5 heads tall) **[DECIDE]**
-- Each of the 8 characters needs one **instantly readable silhouette feature** tied to their ability
-  (e.g. Bobi = big nose, Lumi = huge eyes, Pompón = big ears, Fotchi = camera, Mochín = backpack/belly).
-- Poly budget: ≤ 5k tris each; one 512–1024 texture; Mixamo-compatible humanoid rig if bipedal.
+- **Body: a low-poly skeleton** (approved 2026-11-23). Current model: `Assets/Art/Characters/Skeleton/Skeleton.fbx`
+  — 5-finger Mixamo skeleton, 65 bones, Humanoid, 2.39 m in game, separate lower jaw (`Head/JawPivot`),
+  `Fluffterror/ToonOutline` material, bone-white base, one 512² texture (Point, no mips).
+- The skeleton is **funny, not creepy**: big readable skull, loose expressive posing, chattering jaw for talk
+  (Phase 5). Never gore, never rot — clean bones. Body sounds carry the "bone tick" (§9).
+- **Bones are gameplay:** limbs can detach (Chucho's bone offering, `Docs/Design/Creature_01.md` §15), so
+  every limb must read as a separate prop when cut off (upper arm + forearm + hand, thigh + shin + foot).
+- Each of the 8 characters keeps one **instantly readable silhouette feature** tied to their ability, worn
+  on the skeleton as an accessory/prop (e.g. Bobi = big dog-nose snout, Lumi = huge glowing goggles,
+  Pompón = oversized ear-trumpet/ears, Fotchi = camera, Mochín = backpack, Trotín = running shoes,
+  Sabiucho = glasses + notebook, Coso = big gloves/hammer) plus a character colour on that accessory —
+  saturated pastels (pink, mint, butter yellow, lilac…) so they pop against the cold environment. **[DECIDE]**
+  exact accessory per character.
+- Poly budget: ≤ 5k tris each including the accessory; one 512–1024 texture; Mixamo-compatible humanoid rig
+  (reuse the skeleton rig for all eight).
 
 ## 5. Environment
 
@@ -121,9 +132,40 @@ a clean look-ahead peak limiter, gain riding only, ≤ `--limit` 6 dB, helps spi
 | `impact` | **-20** | land, punch/hit | same | `Actions.mixer` | 1.0 |
 | `ui` | **-24** | click, hover, error | Decompress On Load, ADPCM, Preload, mono OK | `SFX.mixer` | 1.0 |
 | `idle` / `ambient` | **-30** | idle creak, beds | one-shots as above; long beds Streaming/Vorbis | `Actions.mixer` / `SFX.mixer` | 1.0 |
-With role targets the **files carry the balance**, so SoundDefinition volumes stay at 1.0 and the mixer does
-the global mix. (The current in-game dark8bit set still uses the older -16 LUFS + per-SD volumes until the
+With role targets the **files carry the balance**; SoundDefinition volumes then stay near 0.6–0.8 and the mixer Masters at -6 dB give
+headroom — see *Mix levels* below for the live values. (The current in-game dark8bit set still uses the older -16 LUFS + per-SD volumes until the
 A/B pick is batched.)
+
+### Mix levels (live game — set 2026-11-24 after "too loud and noisy")
+Every live clip is re-mastered with `Tools/Audio/remaster_live.py` (manifest of every sound → role/LUFS,
+low-pass, max length; re-run after replacing a source). Player/item/UI sounds are re-rendered from the same
+`dark_*` presets + seeds at `--darkness 0.35` through `relaxed` (same character, no 8-bit crunch); ambient
+one-shots go through `relaxed` with darker low-passes; beds get a loop-safe 24 dB/oct low-pass at 3 kHz.
+
+| Layer | File (LUFS) | SD volume | Mixer (Master) | 3D min / max (log) | Anti-spam (`MaxVoices` / `MinInterval`) |
+|---|---|---|---|---|---|
+| Footsteps walk / sprint | -26 (LP 4–4.2 kHz) | 0.8 | FootSteps **-6 dB** | 2 / 30 m | — (0.18 s floor in CharacterAudio) |
+| Footsteps crouch | -30 (LP 3.2 kHz) | 0.8 | FootSteps -6 | 2 / 20 | — |
+| Jump · pickup · drop · torch pickup · whoosh | -22 | 0.7 | Actions **-6** | 2 / 25–30 | 1–2 voices |
+| Land · punch | -20 | 0.7 | Actions -6 | 2 / 30 | 2 |
+| Idle creak · bone clack | -30 / -24 | 0.6 | Actions -6 | 2 / 15–20 | 1–2 |
+| UI click / hover / error · powerup | -24 / -28 / -24 · -24 | 0.7 · 0.6 | SFX **-6** | 2D | 1–2, 0.03–0.5 s |
+| Area beds (loops) | -32 (LP 3 kHz, 24 dB/oct) | 1.0 × `SSP_Default.BedVolume` **0.45** | SFX -6 | 2D; **duck ×0.6** during Spike | crossfade 2 max |
+| Drips | -30 (LP 3.5 kHz, ≤ 0.6 s) | 0.8 | Actions -6 | 1.5 / 25 | 2 voices, 0.8 s; `DripInterval` **2.5–6 s** |
+| Distant sounds · fake bell | -26 (LP 2.5 / 3 kHz) | 0.8 | Actions -6 | 5 / 50 | 1 voice, 4 s |
+| Torch gutter / out / relight | -30 (LP 3.5 kHz, gutter ≤ 1.2 s) | 0.7 | Actions -6 | 1.5 / 20 | 2 voices, 0.3 s (spike stutter can't stack) |
+| Spike sting | -26 (LP 4 kHz) | 0.7 | SFX -6 | 2D | 1, 3 s |
+| Music bed `SuspenseAmbient` (AmbientAudio) | -11 | 0.05 | Music **-6** | 2D | — |
+| Generator run loop / engine start | -27 / -24 (mp3, user's) | 0.35 / 0.45 | Actions -6 (was none) | 2 / 25 | start: 1 |
+
+The four mixers are separate (no shared master), so each mixer's Master at -6 dB **is** the global headroom.
+The user's old definitions (`SFX_Walk` 0.10, `SFX_Sprint` 0.08, `SFX_JumpImpact` 0.10) show how quiet they
+wanted footsteps: about -48 LUFS effective; the dark8bit set was running at about -20.
+
+**Measured at the AudioListener** (`AudioLevelMeter`, 60 s scripted run in SampleScene: idle, walk, sprint,
+crouch, 3 jumps, torch carry + throw, evidence grab/drop, forced Spike): see the table in the 2026-11-24
+mix report in `CLAUDE.md` → SFX library. Targets for future checks: **integrated ≈ -35 LUFS, max
+momentary ≤ -26 LUFS, sample peak ≤ -15 dBFS**, footsteps ≈ 5–8 dB above the bed, ambience well under actions.
 
 **Sources & licences** — CC0 / public domain or Sonniss GDC bundles only (plus our own Stable Audio /
 `sfxr.py` output). Verify the licence on the source page, download each pack into its own folder outside

@@ -34,6 +34,12 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Rebuild the NavMesh at runtime before spawning (needed for procedural dungeons).")]
     [SerializeField] private bool _bakeOnStart = true;
 
+    /// <summary>How many creatures the next wave spawns (run modifiers raise it before the first wave).</summary>
+    public int EnemyCount { get => _enemyCount; set => _enemyCount = Mathf.Max(0, value); }
+
+    /// <summary>Multiplier on spawned creatures' sight range (Fog modifier). Applied at spawn time.</summary>
+    public float SightRangeScale { get; set; } = 1f;
+
     private void Start() => Invoke(nameof(SpawnWave), _spawnDelay);
 
     /// <summary>Bake the NavMesh (if enabled) and spawn the wave. Safe to call again after a regen.</summary>
@@ -97,7 +103,8 @@ public class EnemySpawner : MonoBehaviour
         go.transform.position = pos;
 
         if (!go.TryGetComponent(out NavMeshAgent agent)) agent = go.AddComponent<NavMeshAgent>();
-        if (!go.TryGetComponent<PatrolEnemy>(out _))     go.AddComponent<PatrolEnemy>();
+        if (!go.TryGetComponent(out PatrolEnemy patrol)) patrol = go.AddComponent<PatrolEnemy>();
+        patrol.SightRangeScale = SightRangeScale;
 
         // Warp snaps the agent cleanly onto the mesh (just setting transform can leave it "off mesh").
         if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 4f, NavMesh.AllAreas))

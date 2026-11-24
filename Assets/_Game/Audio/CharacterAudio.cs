@@ -282,6 +282,8 @@ public class CharacterAudio : MonoBehaviour
         _footstepSource.pitch                 = def.GetPitch();
         _footstepSource.spatialBlend          = def.SpatialBlend;
         _footstepSource.outputAudioMixerGroup = def.MixerGroup;
+        _footstepSource.minDistance           = def.MinDistance;
+        _footstepSource.maxDistance           = def.MaxDistance;
         _footstepSource.Play();
         if (_debugLog) Debug.Log($"[CharacterAudio] step {def.name}/{_footstepSource.clip.name}  frame {Time.frameCount} t={Time.time:0.000}", this);
 

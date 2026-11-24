@@ -33,6 +33,7 @@ public class MissionMessageUI : MonoBehaviour
     private string _title, _sub;
     private Color  _titleColor;
     private float  _shownAt = -999f;
+    private float  _holdNow = -1f;   // per-message hold override (run card)
     private bool   _sticky;               // win/loss: stay on screen
     private bool   _subscribed;
     private GUIStyle _titleStyle, _subStyle;
@@ -84,10 +85,14 @@ public class MissionMessageUI : MonoBehaviour
     private void OnLost()     => Show(_lossTitle, null, _lossColor, sticky: true);
 
     /// <summary>Show an arbitrary announcement (usable by other systems).</summary>
-    public void Show(string title, string sub, Color color, bool sticky = false)
+    public void Show(string title, string sub, Color color, bool sticky = false) => Show(title, sub, color, sticky, -1f);
+
+    /// <summary>Same, with a custom hold time in seconds (e.g. the Living Map run card). -1 = default.</summary>
+    public void Show(string title, string sub, Color color, bool sticky, float hold)
     {
         if (_sticky) return;   // don't overwrite the final win/loss screen
         _title = title; _sub = sub; _titleColor = color; _sticky = sticky;
+        _holdNow = hold;
         _shownAt = Time.unscaledTime;
     }
 
@@ -98,8 +103,9 @@ public class MissionMessageUI : MonoBehaviour
         if (t < _fadeIn) return t / _fadeIn;
         if (_sticky) return 1f;
         t -= _fadeIn;
-        if (t < _hold) return 1f;
-        t -= _hold;
+        float hold = _holdNow > 0f ? _holdNow : _hold;
+        if (t < hold) return 1f;
+        t -= hold;
         return t < _fadeOut ? 1f - t / _fadeOut : 0f;
     }
 

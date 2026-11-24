@@ -273,6 +273,9 @@ public class PowerGenerator : MonoBehaviour, IHoldInteractable
             _loopSource.pitch                 = want.GetPitch();
             _loopSource.spatialBlend          = want.SpatialBlend;
             _loopSource.outputAudioMixerGroup = want.MixerGroup;
+            _loopSource.minDistance           = want.MinDistance;
+            _loopSource.maxDistance           = want.MaxDistance;
+            _loopSource.rolloffMode           = AudioRolloffMode.Logarithmic;
             _loopSource.Play();
         }
         else

@@ -146,6 +146,30 @@ public class LightingMoodController : MonoBehaviour
 
     public LightingMood CurrentMood { get; private set; }
 
+    /// <summary>Run-wide multiplier on every mood's fog density (Fog run modifier). 1 = authored.</summary>
+    public float FogScale { get; private set; } = 1f;
+    /// <summary>Run-wide multiplier on every mood's ambient colour (Blackout run modifier). 1 = authored.</summary>
+    public float AmbientScale { get; private set; } = 1f;
+    /// <summary>Run-wide fog colour tint (Fog run modifier: a pale mist instead of near-black fog).</summary>
+    public Color FogTint { get; private set; } = Color.black;
+    public float FogTintAmount { get; private set; }
+
+    /// <summary>Blend every mood's fog colour toward <paramref name="tint"/> by <paramref name="amount"/> (0 = off).</summary>
+    public void SetFogTint(Color tint, float amount)
+    {
+        FogTint = tint;
+        FogTintAmount = Mathf.Clamp01(amount);
+        if (_activeProfile != null && _transitionRoutine == null) ApplyProfile(_activeProfile);
+    }
+
+    /// <summary>Set the run-wide fog/ambient multipliers and re-apply the current look immediately.</summary>
+    public void SetScales(float fogScale, float ambientScale)
+    {
+        FogScale = Mathf.Max(0f, fogScale);
+        AmbientScale = Mathf.Max(0f, ambientScale);
+        if (_activeProfile != null && _transitionRoutine == null) ApplyProfile(_activeProfile);
+    }
+
     private void Reset()
     {
         _mainLight = FindMainLight();
@@ -267,9 +291,9 @@ public class LightingMoodController : MonoBehaviour
         return new LightingMoodProfile
         {
             Mood = CurrentMood,
-            AmbientColor = RenderSettings.ambientLight,
-            FogColor = RenderSettings.fogColor,
-            FogDensity = RenderSettings.fogDensity,
+            AmbientColor = AmbientScale > 0f ? RenderSettings.ambientLight / AmbientScale : RenderSettings.ambientLight,
+            FogColor = post.FogColor,   // untinted colour of the last applied look (the tint is re-applied on top)
+            FogDensity = FogScale > 0f ? RenderSettings.fogDensity / FogScale : RenderSettings.fogDensity,
             MainLightColor = _mainLight != null ? _mainLight.color : Color.white,
             MainLightIntensity = _mainLight != null ? _mainLight.intensity : 0f,
             GrainIntensity = post.GrainIntensity,
@@ -309,11 +333,11 @@ public class LightingMoodController : MonoBehaviour
     private void ApplyProfile(LightingMoodProfile profile)
     {
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = profile.AmbientColor;
+        RenderSettings.ambientLight = profile.AmbientColor * AmbientScale;
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogColor = profile.FogColor;
-        RenderSettings.fogDensity = profile.FogDensity;
+        RenderSettings.fogColor = Color.Lerp(profile.FogColor, FogTint, FogTintAmount);
+        RenderSettings.fogDensity = profile.FogDensity * FogScale;
 
         if (_mainLight != null)
         {

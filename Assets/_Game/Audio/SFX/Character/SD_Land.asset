@@ -21,3 +21,7 @@ MonoBehaviour:
   _pitchRange: {x: 0.94, y: 1.06}
   _spatialBlend: 1
   _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}
+  _minDistance: 2
+  _maxDistance: 30
+  _maxVoices: 2
+  _minInterval: 0

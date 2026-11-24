@@ -37,6 +37,7 @@ Shader "Fluffterror/ToonOutline"
         [Header(Emission)]
         [HDR] _EmissionColor ("Emission Color", Color)         = (0, 0, 0, 0)
         _EmissionIntensity   ("Emission Intensity", Float)     = 0.0
+        _EmissionMap         ("Emission Mask (white = full, default white)", 2D) = "white" {}
     }
 
     HLSLINCLUDE
@@ -148,6 +149,7 @@ Shader "Fluffterror/ToonOutline"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_EmissionMap);   // optional mask (eyes etc.); shares the base map's UVs + sampler
 
             struct Attributes
             {
@@ -259,7 +261,8 @@ Shader "Fluffterror/ToonOutline"
                 half3 rimC = _RimColor.rgb * rim;
 
                 half3 ambient  = SampleSH(N) * _AmbientStrength;
-                half3 emission = _EmissionColor.rgb * _EmissionIntensity;
+                half3 emission = _EmissionColor.rgb * _EmissionIntensity
+                               * SAMPLE_TEXTURE2D(_EmissionMap, sampler_BaseMap, IN.uv).rgb;
 
                 half3 color = albedo.rgb * (lightSum + ambient) + specular + rimC + emission;
                 color = MixFog(color, IN.fogFactor);

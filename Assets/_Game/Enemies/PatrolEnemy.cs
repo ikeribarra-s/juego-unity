@@ -14,7 +14,7 @@ using UnityEngine.AI;
 /// dungeon). All randomness is gameplay-only (<see cref="Random"/>), unrelated to the seeded generator.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
-public class PatrolEnemy : MonoBehaviour
+public class PatrolEnemy : MonoBehaviour, ICreatureTensionSource
 {
     private enum State { Patrol, Chase }
 
@@ -59,8 +59,21 @@ public class PatrolEnemy : MonoBehaviour
         if (_sightBlockers == 0) _sightBlockers = LayerMask.GetMask("Walls");
     }
 
+    /// <summary>Multiplier on <see cref="_sightRange"/> (Fog run modifier).</summary>
+    public float SightRangeScale { get; set; } = 1f;
+
+    // ── ICreatureTensionSource (Living Map director hook) ───────────────────
+    public Vector3 Position => transform.position;
+    public CreatureAlertLevel AlertLevel => _state == State.Chase ? CreatureAlertLevel.Chase : CreatureAlertLevel.Calm;
+    /// <summary>The stand-in makes no sounds, so the director fakes cues; Chucho will play its real bell.</summary>
+    public bool TryPlayCue(CreatureCue cue) => false;
+
+    private void OnEnable()  { if (TensionDirector.Instance != null) TensionDirector.Instance.RegisterCreature(this); }
+    private void OnDisable() { if (TensionDirector.Instance != null) TensionDirector.Instance.UnregisterCreature(this); }
+
     private void Start()
     {
+        if (TensionDirector.Instance != null) TensionDirector.Instance.RegisterCreature(this);
         _agent.speed = _patrolSpeed;
         PickNewPatrolPoint();
     }
@@ -111,6 +124,7 @@ public class PatrolEnemy : MonoBehaviour
     {
         _state = State.Chase;
         _lostTimer = _loseSightTime;
+        if (TensionDirector.Instance != null) TensionDirector.Instance.ReportCreatureAlert(this, CreatureAlertLevel.Chase);
         if (_debug) Debug.Log("[PatrolEnemy] target spotted — chasing.", this);
     }
 
@@ -157,7 +171,7 @@ public class PatrolEnemy : MonoBehaviour
 
     private CharacterBase FindNearestAlivePlayer()
     {
-        var players = FindObjectsByType<CharacterBase>(FindObjectsSortMode.None);
+        var players = FindObjectsByType<CharacterBase>(FindObjectsInactive.Exclude);
         CharacterBase best = null;
         float bestSq = float.MaxValue;
         foreach (CharacterBase p in players)
@@ -176,7 +190,7 @@ public class PatrolEnemy : MonoBehaviour
         Vector3 eye     = transform.position + Vector3.up * _eyeHeight;
         Vector3 toChest = (t.transform.position + Vector3.up * 1.4f) - eye;
 
-        if (toChest.magnitude > _sightRange) return false;
+        if (toChest.magnitude > _sightRange * SightRangeScale) return false;
 
         Vector3 flat = new(toChest.x, 0f, toChest.z);
         if (flat.sqrMagnitude > 0.001f &&

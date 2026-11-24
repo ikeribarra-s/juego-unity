@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba3bac8b61b5bf489a83b072c2bdc2b, type: 3}
+  m_Name: AE_FakeBell
+  m_EditorClassIdentifier: Assembly-CSharp::AmbientEventDefinition
+  Kind: 4
+  Phases: 2
+  Weight: 1
+  Cooldown: 35
+  Distance: {x: 14, y: 28}
+  PreferOccluded: 1
+  Radius: 12
+  Sound: {fileID: 11400000, guid: d9370fbbf71046448bb139aca994e794, type: 2}
+  Cue: 0
+  Duration: {x: 1, y: 1}
+  RelightAfter: {x: 25, y: 60}
+  TensionAdd: 0.05

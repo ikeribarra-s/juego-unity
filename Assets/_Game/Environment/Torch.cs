@@ -17,6 +17,10 @@ public class Torch : MonoBehaviour, IInteractable
 {
     [SerializeField] private string _prompt = "Press E to take torch";
     [SerializeField] private string _displayName = "Torch";
+    [Tooltip("Prompt on a burnt-out torch when the player carries a lit one (E relights it).")]
+    [SerializeField] private string _relightPrompt = "Press E to relight";
+    [Tooltip("Prompt on a burnt-out torch when the player has no flame to relight it with.")]
+    [SerializeField] private string _deadPrompt = "Burnt out";
 
     [Tooltip("Rotation that stands the model upright (flame +Y). The FBX is Z-up, so the prefab root " +
              "carries -90° X; anything that overwrites the root rotation must re-apply this.")]
@@ -26,18 +30,45 @@ public class Torch : MonoBehaviour, IInteractable
     [SerializeField] private float _mass = 1f;
 
     private Rigidbody _body;
+    private TorchStateController _state;
 
     public bool       IsCarried   { get; private set; }
     public string     DisplayName => _displayName;
     /// <summary>Model-space correction that makes the torch stand upright (flame up).</summary>
     public Quaternion UprightRotation => Quaternion.Euler(_uprightEuler);
 
-    public string GetPrompt() => IsCarried ? string.Empty : _prompt;
+    /// <summary>False while burnt out (see <see cref="TorchStateController"/>).</summary>
+    public bool IsLit => State == null || State.IsLit;
+    private TorchStateController State => _state != null ? _state : (_state = GetComponent<TorchStateController>());
+
+    public string GetPrompt()
+    {
+        if (IsCarried) return string.Empty;
+        if (IsLit) return _prompt;
+        return CarriesLitTorch(FindLocalInteractorHint()) ? _relightPrompt : _deadPrompt;
+    }
 
     public void Interact(CharacterBase interactor)
     {
         if (IsCarried || interactor == null) return;
+        if (!IsLit)
+        {
+            // A dead torch can't be taken; a lit carried torch relights it (Living Map E1).
+            if (CarriesLitTorch(interactor)) State.Relight();
+            return;
+        }
         interactor.TorchCarrier?.TryCarry(this);
+    }
+
+    private static bool CarriesLitTorch(CharacterBase who) =>
+        who != null && who.TorchCarrier != null && who.TorchCarrier.Carried != null && who.TorchCarrier.Carried.IsLit;
+
+    // GetPrompt has no interactor; the prompt is only ever read for the local player.
+    private static CharacterBase s_localHint;
+    private static CharacterBase FindLocalInteractorHint()
+    {
+        if (s_localHint == null) s_localHint = FindAnyObjectByType<CharacterBase>();
+        return s_localHint;
     }
 
     /// <summary>Set by <see cref="TorchCarrier"/> when this torch is picked up / put down.</summary>

@@ -17,6 +17,7 @@ numbers, and the user picks by ear from the A/B sets you deliver.
 - **Loudness by role** (`--role`, max-momentary LUFS, true-peak ≤ **-3 dBFS**, clean limiter ≤ 6 dB):
   footstep **-26**, crouch **-30**, action **-22** (pickup/drop/jump/whoosh), impact **-20** (land/punch),
   ui **-24**, idle/ambient **-30**. Files carry the balance → SoundDefinition `_volume` 1.0.
+- **Mix:** every mixer Master -6 dB; SD volumes 0.6–0.8; player sounds 3D min 2 m; anti-spam `MaxVoices`/`MinInterval` on anything that can repeat (drips, distant, torch sputters, stings, UI). Full table: §9 *Mix levels*. The user said "too loud and noisy" — default to quieter and darker.
 - **Files:** WAV 16-bit 44.1 kHz, **mono** for 3D. `SFX_<Category>_<Name>_<NN>.wav` in
   `Assets/_Game/Audio/SFX/<Category>/`; one `SD_<Name>.asset` per group (pitch 0.94–1.06, ≥ 3 clips,
   footsteps ≥ 6). Import: Decompress On Load + ADPCM + Preload, Force To Mono (3D). Mixer: footsteps →
@@ -41,6 +42,8 @@ Raw takes and downloads go in your scratchpad, never in `Assets/`.
 | Inspect ("listen") | `... process_sfx.py inspect <files...> --png <dir>/sheet.png --sheet` |
 | Synth | `%PY% -I Tools/Audio/sfxr.py soft_step --darkness 0.3 --out <tmp> --count 8 --seed N` (`--list`; `soft_*` = B candidates, `dark_*` = legacy/stings) |
 | Stable Audio Open | `python Tools/ComfyUI/gen.py sfx "<subject>" --out <tmp> --seconds 1.5 --count 4 --seed N` (ComfyUI running; Stability AI Community License — fallback/texture only, not "CC0") |
+| Live re-master | `%PY% -I Tools/Audio/remaster_live.py [--only Ambient,...]` — manifest of every live sound → role LUFS / low-pass / max length; re-run after replacing a source (in place, GUIDs kept) |
+| Mix check | `AudioLevelMeter` (add to the AudioListener at runtime) → integrated / momentary LUFS + peak of the real mix. Targets: integrated ≈ -35, max momentary ≤ -26 LUFS, peak ≤ -15 dBFS; footsteps a few dB over the bed |
 | Animation sync | footsteps/jump/land timing comes from `AnimationAudioSync` (re-measure: *Fluffterror › Animation › Analyse Foot Contacts*) |
 
 ## Workflow

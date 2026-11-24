@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
   _clips:
   - {fileID: 8300000, guid: 1935df058816c9e4296b12e2f856a622, type: 3}
-  _volume: 0.628
+  _volume: 0.45
   _pitchRange: {x: 0.9, y: 1.1}
   _spatialBlend: 1
-  _mixerGroup: {fileID: 0}
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}
+  _minDistance: 2
+  _maxDistance: 25
+  _maxVoices: 1
+  _minInterval: 0

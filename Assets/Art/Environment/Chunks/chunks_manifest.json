@@ -1,0 +1,2825 @@
+{
+ "cell_m": 8,
+ "tile_m": 1,
+ "door": {
+  "width": 3.0,
+  "height": 3.0
+ },
+ "wall_thickness": 0.5,
+ "pivot": "footprint centre, floor level",
+ "forward": "+Z = North",
+ "chunks": [
+  {
+   "name": "CH_Corridor_Straight",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1224,
+    "ceiling": 22
+   },
+   "tris_total": 1246,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.0,
+      2.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -2.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.6,
+      3.9,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Corner",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1316,
+    "ceiling": 24
+   },
+   "tris_total": 1340,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "##.....D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -0.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.3,
+      0.0,
+      -1.3
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.3,
+      3.9,
+      0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_T",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1264,
+    "ceiling": 34
+   },
+   "tris_total": 1298,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "########",
+    "########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      0.0,
+      2.0,
+      -2.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.2,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.3,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_Cross",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "E",
+     "side": "E",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1582,
+    "ceiling": 46
+   },
+   "tris_total": 1628,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "D......D",
+    "D......D",
+    "D......D",
+    "D......D",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E",
+     "pos": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.0,
+      3.9,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -1.4,
+      0.0,
+      1.4
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      1.4,
+      0.0,
+      -1.4
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Corridor_DeadEnd",
+   "role": "corridor",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1342,
+    "ceiling": 12
+   },
+   "tris_total": 1354,
+   "mask_north_up": [
+    "########",
+    "########",
+    "##oooo##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      1.15,
+      1.0,
+      1.45
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -1.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      1.3,
+      0.0,
+      -2.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.8,
+      3.9,
+      -0.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Room_Storage",
+   "role": "room",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1712,
+    "ceiling": 16
+   },
+   "tris_total": 1728,
+   "mask_north_up": [
+    "########",
+    "#oo...o#",
+    "#oo...o#",
+    "#.....o#",
+    "#.....o#",
+    "#.....o#",
+    "#.....o#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -0.8
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Barrel_01",
+     "pos": [
+      -2.3,
+      0.0,
+      -2.2
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Crate_01",
+     "pos": [
+      0.0,
+      0.0,
+      2.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -0.8,
+      0.0,
+      0.6
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      2.6,
+      1.22,
+      0.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -1.0,
+      0.0,
+      -1.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.5,
+      0.0,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -1.5,
+      3.9,
+      0.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Room_PillarHall",
+   "role": "room",
+   "cells": [
+    2,
+    2
+   ],
+   "size_m": [
+    16,
+    16
+   ],
+   "wall_height": 5.0,
+   "doors": [
+    {
+     "label": "N1",
+     "side": "N",
+     "offset": 4.0
+    },
+    {
+     "label": "S0",
+     "side": "S",
+     "offset": -4.0
+    },
+    {
+     "label": "E0",
+     "side": "E",
+     "offset": -4.0
+    },
+    {
+     "label": "W1",
+     "side": "W",
+     "offset": 4.0
+    }
+   ],
+   "tris": {
+    "main": 4876,
+    "ceiling": 62
+   },
+   "tris_total": 4938,
+   "mask_north_up": [
+    "##########DDDD##",
+    "#............oo#",
+    "D..ooo....ooooo#",
+    "D..ooo....ooo..#",
+    "D..ooo....ooo..#",
+    "D..............#",
+    "#..............#",
+    "#..ooo....ooo..#",
+    "#..ooo....ooo..#",
+    "#..............#",
+    "#..............D",
+    "#..ooo....ooo..D",
+    "#..ooo....ooo..D",
+    "#..ooo....oooo.D",
+    "#..........ooo.#",
+    "##DDDD##########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N1",
+     "pos": [
+      4.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S0",
+     "pos": [
+      -4.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_E0",
+     "pos": [
+      8.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W1",
+     "pos": [
+      -8.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -7.0,
+      2.0,
+      -4.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      7.0,
+      2.0,
+      4.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_03",
+     "pos": [
+      -1.5,
+      2.0,
+      7.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_04",
+     "pos": [
+      1.5,
+      2.0,
+      -7.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -5.8,
+      0.0,
+      -2.3
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      5.8,
+      0.0,
+      2.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_03",
+     "pos": [
+      -2.0,
+      0.0,
+      5.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_04",
+     "pos": [
+      2.0,
+      0.0,
+      -5.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_05",
+     "pos": [
+      5.8,
+      0.0,
+      5.8
+     ],
+     "forward": [
+      -0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_06",
+     "pos": [
+      -5.8,
+      0.0,
+      -5.8
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -5.5,
+      0.0,
+      2.3
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      5.5,
+      0.0,
+      -2.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -1.8,
+      4.9,
+      2.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      2.0,
+      4.9,
+      -3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Room_Crypt",
+   "role": "room",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 3026,
+    "ceiling": 36
+   },
+   "tris_total": 3062,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#o.oo.o#",
+    "#o.oo.o#",
+    "#o.oo.o#",
+    "#o.oo.o#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#o....o#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      0.3,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -1.6,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      2.2,
+      2.0,
+      -2.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      -2.2,
+      2.0,
+      3.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      -2.3,
+      1.45,
+      -4.25
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      2.3,
+      1.45,
+      1.55
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_03",
+     "pos": [
+      -2.3,
+      0.3,
+      -1.35
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_04",
+     "pos": [
+      2.3,
+      0.3,
+      4.35
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      0.8,
+      3.9,
+      3.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      -0.6,
+      3.9,
+      -3.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.0,
+      0.0,
+      -4.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Room_Ritual",
+   "role": "room",
+   "cells": [
+    2,
+    2
+   ],
+   "size_m": [
+    16,
+    16
+   ],
+   "wall_height": 5.0,
+   "doors": [
+    {
+     "label": "S0",
+     "side": "S",
+     "offset": -4.0
+    },
+    {
+     "label": "N1",
+     "side": "N",
+     "offset": 4.0
+    }
+   ],
+   "tris": {
+    "main": 5292,
+    "ceiling": 8
+   },
+   "tris_total": 5300,
+   "mask_north_up": [
+    "##########DDDD##",
+    "#ooo........ooo#",
+    "#ooo........ooo#",
+    "#ooo........ooo#",
+    "#..............#",
+    "#..............#",
+    "#.....oooo.....#",
+    "#.....oooo.....#",
+    "#.....oooo.....#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#ooo........ooo#",
+    "#ooo........ooo#",
+    "#ooo........ooo#",
+    "##DDDD##########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S0",
+     "pos": [
+      -4.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N1",
+     "pos": [
+      4.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_01",
+     "pos": [
+      3.6955,
+      0.0,
+      2.0307
+     ],
+     "forward": [
+      -0.924,
+      0,
+      -0.383
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_02",
+     "pos": [
+      1.5307,
+      0.0,
+      4.1955
+     ],
+     "forward": [
+      -0.383,
+      0,
+      -0.924
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_03",
+     "pos": [
+      -1.5307,
+      0.0,
+      4.1955
+     ],
+     "forward": [
+      0.383,
+      0,
+      -0.924
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_04",
+     "pos": [
+      -3.6955,
+      0.0,
+      2.0307
+     ],
+     "forward": [
+      0.924,
+      0,
+      -0.383
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_05",
+     "pos": [
+      -3.6955,
+      0.0,
+      -1.0307
+     ],
+     "forward": [
+      0.924,
+      0,
+      0.383
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_06",
+     "pos": [
+      -1.5307,
+      0.0,
+      -3.1955
+     ],
+     "forward": [
+      0.383,
+      0,
+      0.924
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_07",
+     "pos": [
+      1.5307,
+      0.0,
+      -3.1955
+     ],
+     "forward": [
+      -0.383,
+      0,
+      0.924
+     ]
+    },
+    {
+     "name": "SOCKET_Candle_08",
+     "pos": [
+      3.6955,
+      0.0,
+      -1.0307
+     ],
+     "forward": [
+      -0.924,
+      0,
+      0.383
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -7.0,
+      2.0,
+      1.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      7.0,
+      2.0,
+      -1.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      1.5,
+      0.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      0.0,
+      1.5,
+      0.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      5.6,
+      0.0,
+      1.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -6.0,
+      0.0,
+      -2.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      6.0,
+      0.0,
+      3.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_03",
+     "pos": [
+      -2.5,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      -4.0,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_SP_CollapsedCorridor",
+   "role": "setpiece",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    },
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 2802,
+    "ceiling": 204
+   },
+   "tris_total": 3006,
+   "mask_north_up": [
+    "##DDDD##",
+    "##....##",
+    "##ooo.##",
+    "##ooo.##",
+    "##ooo.##",
+    "##ooo.##",
+    "##....##",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -2.0,
+      2.0,
+      -3.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Warning_01",
+     "pos": [
+      1.3,
+      0.0,
+      -2.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.5,
+      3.7,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "crawl_gap": {
+     "x": [
+      0.6,
+      2.0
+     ],
+     "height": 1.3,
+     "length": 3.0
+    }
+   }
+  },
+  {
+   "name": "CH_SP_FloodedCrypt",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 2232,
+    "ceiling": 26,
+    "water": 2
+   },
+   "tris_total": 2260,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#....oo#",
+    "#....oo#",
+    "#......#",
+    "#......#",
+    "#ooo...#",
+    "#ooo...#",
+    "#ooo...#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -5.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      3.0,
+      2.0,
+      5.5
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -1.0,
+      3.9,
+      -1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_02",
+     "pos": [
+      1.2,
+      3.9,
+      1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_03",
+     "pos": [
+      0.2,
+      3.9,
+      3.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      2.0,
+      -0.5,
+      -0.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      -2.2,
+      0.0,
+      6.4
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      2.2,
+      0.0,
+      -6.4
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {
+    "flooded": {
+     "floor": -0.5,
+     "water_level": -0.15,
+     "ramp_slope_deg": 18.4
+    }
+   }
+  },
+  {
+   "name": "CH_SP_PitBridge",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "N",
+     "side": "N",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 3362,
+    "ceiling": 26
+   },
+   "tris_total": 3388,
+   "mask_north_up": [
+    "##DDDD##",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#oooooo#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_N",
+     "pos": [
+      0.0,
+      0.0,
+      8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -5.6
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      3.0,
+      2.0,
+      5.6
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      1.6,
+      -3.0,
+      -1.2
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      2.2,
+      0.0,
+      -5.8
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      -2.2,
+      0.0,
+      6.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      1.8,
+      3.9,
+      0.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {
+    "pit": {
+     "bottom": -3.0,
+     "bridge_x": [
+      -1.0,
+      1.0
+     ],
+     "stairs": "x -3..-1.8, y -1 -> 4, 31 deg"
+    }
+   }
+  },
+  {
+   "name": "CH_SP_BellTower",
+   "role": "setpiece",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 12.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    },
+    {
+     "label": "W",
+     "side": "W",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 2686,
+    "ceiling": 40,
+    "bell": 128
+   },
+   "tris_total": 2854,
+   "mask_north_up": [
+    "########",
+    "#......#",
+    "D....oo#",
+    "D....oo#",
+    "D....oo#",
+    "D....oo#",
+    "#....oo#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Door_W",
+     "pos": [
+      -4.0,
+      0.0,
+      0.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -1.6
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      -1.0,
+      4.9,
+      3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.0,
+      8.7,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_BellRope_01",
+     "pos": [
+      0.3,
+      1.4,
+      0.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.2,
+      3.0,
+      2.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -2.3,
+      0.0,
+      -2.3
+     ],
+     "forward": [
+      0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      0.8,
+      3.0,
+      2.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      -1.0,
+      0.0,
+      -1.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {
+    "balcony": {
+     "height": 3.0,
+     "stairs": "x 1.6..3, y -3 -> 1.5, 33.7 deg"
+    }
+   }
+  },
+  {
+   "name": "CH_SP_ChuchoDen",
+   "role": "setpiece",
+   "cells": [
+    1,
+    2
+   ],
+   "size_m": [
+    8,
+    16
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 4945,
+    "ceiling": 26
+   },
+   "tris_total": 4971,
+   "mask_north_up": [
+    "########",
+    "#ooo...#",
+    "#ooo...#",
+    "#ooo...#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -5.5
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Den_01",
+     "pos": [
+      0.6,
+      0.0,
+      4.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Landmark_01",
+     "pos": [
+      0.09,
+      0.6,
+      5.4
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Limb_01",
+     "pos": [
+      -0.4,
+      0.0,
+      3.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Limb_02",
+     "pos": [
+      1.9,
+      0.0,
+      3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Limb_03",
+     "pos": [
+      -1.9,
+      0.0,
+      3.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Limb_04",
+     "pos": [
+      2.0,
+      0.0,
+      6.3
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -1.4,
+      0.24,
+      -3.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_02",
+     "pos": [
+      1.6,
+      0.2,
+      5.8
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      0.6,
+      0.2,
+      4.9
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Drip_01",
+     "pos": [
+      -0.5,
+      3.9,
+      -0.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    }
+   ],
+   "notes": {}
+  },
+  {
+   "name": "CH_Generator_Alcove",
+   "role": "objective",
+   "cells": [
+    1,
+    1
+   ],
+   "size_m": [
+    8,
+    8
+   ],
+   "wall_height": 4.0,
+   "doors": [
+    {
+     "label": "S",
+     "side": "S",
+     "offset": 0.0
+    }
+   ],
+   "tris": {
+    "main": 1622,
+    "ceiling": 16
+   },
+   "tris_total": 1638,
+   "mask_north_up": [
+    "########",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "##DDDD##"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S",
+     "pos": [
+      0.0,
+      0.0,
+      -4.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Generator_01",
+     "pos": [
+      0.0,
+      0.04,
+      1.4
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.0,
+      2.0,
+      -1.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Crate_01",
+     "pos": [
+      -2.3,
+      0.0,
+      -2.2
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_Barrel_01",
+     "pos": [
+      2.3,
+      0.0,
+      -2.3
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Evidence_01",
+     "pos": [
+      -2.3,
+      0.0,
+      0.8
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    }
+   ],
+   "notes": {
+    "generator_clearance": "3 x 3 m plate area kept free (x -1.4..1.4, y 0..2.8)"
+   }
+  },
+  {
+   "name": "CH_Extraction_Gate",
+   "role": "objective",
+   "cells": [
+    2,
+    2
+   ],
+   "size_m": [
+    16,
+    16
+   ],
+   "wall_height": 5.0,
+   "doors": [
+    {
+     "label": "S0",
+     "side": "S",
+     "offset": -4.0
+    }
+   ],
+   "tris": {
+    "main": 5158,
+    "ceiling": 8,
+    "gate": 156
+   },
+   "tris_total": 5322,
+   "mask_north_up": [
+    "######....######",
+    "#..............#",
+    "#.oooo....oooo.#",
+    "#.oooo....oooo.#",
+    "#.oo........oo.#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#.oo........oo.#",
+    "#.oo........oo.#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "##DDDD##########"
+   ],
+   "sockets": [
+    {
+     "name": "SOCKET_Door_S0",
+     "pos": [
+      -4.0,
+      0.0,
+      -8.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_01",
+     "pos": [
+      -3.3,
+      1.2,
+      5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_02",
+     "pos": [
+      3.3,
+      1.2,
+      5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      -1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_03",
+     "pos": [
+      -7.0,
+      2.0,
+      -3.0
+     ],
+     "forward": [
+      1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Torch_04",
+     "pos": [
+      7.0,
+      2.0,
+      -3.0
+     ],
+     "forward": [
+      -1.0,
+      0,
+      0.0
+     ]
+    },
+    {
+     "name": "SOCKET_Extraction_01",
+     "pos": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Beacon_01",
+     "pos": [
+      0.0,
+      3.6,
+      1.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_ExitGate_01",
+     "pos": [
+      0.0,
+      0.0,
+      7.5
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_01",
+     "pos": [
+      -6.0,
+      0.0,
+      6.0
+     ],
+     "forward": [
+      0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_02",
+     "pos": [
+      6.0,
+      0.0,
+      6.0
+     ],
+     "forward": [
+      -0.707,
+      0,
+      -0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Prop_03",
+     "pos": [
+      6.0,
+      0.0,
+      -6.0
+     ],
+     "forward": [
+      -0.707,
+      0,
+      0.707
+     ]
+    },
+    {
+     "name": "SOCKET_Spawn_01",
+     "pos": [
+      -3.5,
+      0.0,
+      -5.0
+     ],
+     "forward": [
+      0.0,
+      0,
+      1.0
+     ]
+    }
+   ],
+   "notes": {
+    "extraction_zone_size": [
+     9.5,
+     3.3,
+     7.0
+    ]
+   }
+  }
+ ]
+}
