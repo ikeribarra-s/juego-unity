@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_WaterSprint
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 4cfad822d57d0a34bde5f0f2000f7a0a, type: 3}
+  - {fileID: 8300000, guid: 7357c2fe8270ca658b0107fcbf00b3bf, type: 3}
+  - {fileID: 8300000, guid: 6b02a90f5e6cf73a01bffacec2cb9b9d, type: 3}
+  - {fileID: 8300000, guid: f7d6b15203ffc38b74fc6e938492b63e, type: 3}
+  - {fileID: 8300000, guid: 986c30bc7f6ee23a244c5ca80c387cbb, type: 3}
+  - {fileID: 8300000, guid: 8a51c7fa80e04a53132f703542e429cf, type: 3}
+  - {fileID: 8300000, guid: d47259e7dc05c9070d8f164258e88cc6, type: 3}
+  _volume: 0.8
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 94faeffa20711144788afc324065b977, type: 2}
+  _minDistance: 2
+  _maxDistance: 30
+  _maxVoices: 0
+  _minInterval: 0

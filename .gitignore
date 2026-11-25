@@ -45,3 +45,4 @@ __pycache__/
 
 # Blender backups
 *.blend1
+*.txt~

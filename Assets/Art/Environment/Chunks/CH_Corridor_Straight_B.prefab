@@ -950,6 +950,7 @@ GameObject:
   - component: {fileID: 3956253091168920040}
   - component: {fileID: 5193821442672422630}
   - component: {fileID: 637479049706345027}
+  - component: {fileID: 5880273645757387237}
   m_Layer: 0
   m_Name: CH_Corridor_Straight_B
   m_TagString: Untagged
@@ -1042,6 +1043,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 2372833350379691806}
   _roof: {fileID: 6794822462181403029}
+--- !u!114 &5880273645757387237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6424314155367605309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 8}
 --- !u!1 &6794822462181403029
 GameObject:
   m_ObjectHideFlags: 0

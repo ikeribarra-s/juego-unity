@@ -1663,6 +1663,7 @@ GameObject:
   - component: {fileID: 1300127960930424913}
   - component: {fileID: 462463110306986903}
   - component: {fileID: 1724642491586199057}
+  - component: {fileID: 1641747393192690229}
   m_Layer: 0
   m_Name: CH_Room_Crypt
   m_TagString: Untagged
@@ -1774,6 +1775,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 3624450849229351493}
   _roof: {fileID: 8567350080960275297}
+--- !u!114 &1641747393192690229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7996008005411471353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 3
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 16}
 --- !u!1 &8090506418263496044
 GameObject:
   m_ObjectHideFlags: 0

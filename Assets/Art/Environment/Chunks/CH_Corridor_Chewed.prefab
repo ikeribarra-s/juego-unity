@@ -1236,6 +1236,7 @@ GameObject:
   - component: {fileID: 8759584398051602689}
   - component: {fileID: 5539772905944772783}
   - component: {fileID: 1737461263445637803}
+  - component: {fileID: 2604165471409745462}
   m_Layer: 0
   m_Name: CH_Corridor_Chewed
   m_TagString: Untagged
@@ -1328,6 +1329,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 211015004021879188}
   _roof: {fileID: 2791256763030423889}
+--- !u!114 &2604165471409745462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171365024331286174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 8}
 --- !u!1 &9171475366522460407
 GameObject:
   m_ObjectHideFlags: 0

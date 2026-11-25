@@ -617,6 +617,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2774214566060381903}
   - component: {fileID: 6725623273874255762}
+  - component: {fileID: 4023303572228849904}
   m_Layer: 0
   m_Name: VOL_Water
   m_TagString: Untagged
@@ -633,7 +634,7 @@ Transform:
   m_GameObject: {fileID: 3836082525933062721}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.2, z: 0}
+  m_LocalPosition: {x: -0, y: -0.325, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -658,8 +659,20 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 0.6, z: 11.1}
+  m_Size: {x: 6, y: 0.35, z: 11.1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4023303572228849904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3836082525933062721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e10ac53421874204ba6d06e837700890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterVolume
 --- !u!1 &3844785417818335019
 GameObject:
   m_ObjectHideFlags: 0
@@ -1427,6 +1440,7 @@ GameObject:
   - component: {fileID: 8002609849521587269}
   - component: {fileID: 7161268720141160003}
   - component: {fileID: 5333225619275792822}
+  - component: {fileID: 2230634875766270742}
   m_Layer: 0
   m_Name: CH_SP_FloodedCrypt
   m_TagString: Untagged
@@ -1544,6 +1558,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 4863902967983771807}
   _roof: {fileID: 6736192228778155157}
+--- !u!114 &2230634875766270742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5182632156657043866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 3
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 16}
 --- !u!1 &5365746847677658838
 GameObject:
   m_ObjectHideFlags: 0

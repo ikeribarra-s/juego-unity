@@ -1353,6 +1353,7 @@ GameObject:
   - component: {fileID: 8387647975890797659}
   - component: {fileID: 2600948781987552523}
   - component: {fileID: 7816461201528617022}
+  - component: {fileID: 8854369086864497819}
   m_Layer: 0
   m_Name: CH_Room_Ritual
   m_TagString: Untagged
@@ -1478,6 +1479,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 4803767259896989572}
   _roof: {fileID: 6335569776004333193}
+--- !u!114 &8854369086864497819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6054219907573905884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 1
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 16, y: 6, z: 16}
 --- !u!1 &6264519499047649103
 GameObject:
   m_ObjectHideFlags: 0

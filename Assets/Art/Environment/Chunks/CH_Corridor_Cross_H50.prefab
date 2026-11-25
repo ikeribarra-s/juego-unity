@@ -481,6 +481,7 @@ GameObject:
   - component: {fileID: 7317764751956365301}
   - component: {fileID: 1444197184415666518}
   - component: {fileID: 599606028677814297}
+  - component: {fileID: 6435339188947464455}
   m_Layer: 0
   m_Name: CH_Corridor_Cross_H50
   m_TagString: Untagged
@@ -587,6 +588,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 7958914069078846060}
   _roof: {fileID: 6461567534393527179}
+--- !u!114 &6435339188947464455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4471103552863017230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 8, y: 6, z: 8}
 --- !u!1 &4707859402511463003
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,14 @@ public class CharacterAudio : MonoBehaviour
     [SerializeField] private SoundDefinition _sprintSteps;
     [SerializeField] private SoundDefinition _crouchSteps;
 
+    [Header("Shallow water (WaterVolume)")]
+    [SerializeField] private SoundDefinition _waterWalk;
+    [SerializeField] private SoundDefinition _waterSprint;
+    [Tooltip("Optional; falls back to the water walk set.")]
+    [SerializeField] private SoundDefinition _waterCrouch;
+    [Tooltip("One-shot when the feet enter the water.")]
+    [SerializeField] private SoundDefinition _waterEnter;
+
     [SerializeField] private float _walkStepDistance   = 2.0f;
     [SerializeField] private float _sprintStepDistance = 2.8f;
     [SerializeField] private float _crouchStepDistance = 1.5f;
@@ -118,11 +126,23 @@ public class CharacterAudio : MonoBehaviour
     {
         _stepCooldown = Mathf.Max(0f, _stepCooldown - Time.deltaTime);
         HandlePendingSync();
+        HandleWater();
         HandleLanding();
         HandleFootsteps();
         HandleSprintFadeOut();
         HandleIdleCreak();
         _wasGrounded = _controller.isGrounded;
+    }
+
+    // ── Water ─────────────────────────────────────────────────────────────────
+
+    private bool _inWater;
+
+    private void HandleWater()
+    {
+        bool now = WaterVolume.TryFind(transform.position) != null;
+        if (now && !_inWater) PlayOneShot(_waterEnter, "water enter");
+        _inWater = now;
     }
 
     // ── Landing ───────────────────────────────────────────────────────────────
@@ -267,6 +287,14 @@ public class CharacterAudio : MonoBehaviour
         // When sprinting with no sprint clip assigned, stay silent rather than falling back to walk
         if (def == null && !(m != null && m.IsSprinting && _muteWalkWhileSprinting))
             def = _walkSteps;
+
+        if (_inWater)
+        {
+            SoundDefinition w = m != null && m.IsSprinting ? _waterSprint
+                              : m != null && m.IsCrouching ? (_waterCrouch != null ? _waterCrouch : _waterWalk)
+                              : _waterWalk;
+            if (w != null && w.IsValid) def = w;
+        }
 
         if (def == null || !def.IsValid) return;
 

@@ -41,7 +41,7 @@ for k in ("straw0", "straw1", "straw2"):
     FAMILY[k] = ("straw", 1.0)
 for k in ("rope", "cloth"):
     FAMILY[k] = ("weave", 1.0)
-for k in ("moss", "slime", "meat0", "meat1"):
+for k in ("moss", "slime", "meat0", "meat1", "blood0", "blood1"):
     FAMILY[k] = ("organic", 1.0)
 for k in ("rock0", "rock1", "rock2", "rock3"):
     FAMILY[k] = ("rock", 2.0)

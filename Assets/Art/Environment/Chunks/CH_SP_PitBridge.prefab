@@ -830,6 +830,7 @@ GameObject:
   - component: {fileID: 2975937735730171708}
   - component: {fileID: 4566353228943518475}
   - component: {fileID: 2137690574901406315}
+  - component: {fileID: 7687820205353958575}
   m_Layer: 0
   m_Name: CH_SP_PitBridge
   m_TagString: Untagged
@@ -943,6 +944,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 3797750093984796344}
   _roof: {fileID: 4909488425873332775}
+--- !u!114 &7687820205353958575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2299985245939920757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 16}
 --- !u!1 &2388930375658134579
 GameObject:
   m_ObjectHideFlags: 0

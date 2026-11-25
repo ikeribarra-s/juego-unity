@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_Amb_WaterDrip
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 70eb879ee2b9077151e27c1db5036e61, type: 3}
+  - {fileID: 8300000, guid: 885dcb98bf2669daf90e20766008e656, type: 3}
+  - {fileID: 8300000, guid: 669aa71c3f78d259a8f95ff498c50870, type: 3}
+  - {fileID: 8300000, guid: d48640a3bad9110471ccbe5682d8926f, type: 3}
+  - {fileID: 8300000, guid: 2b9f68ccad686af4670417ea98cc748b, type: 3}
+  - {fileID: 8300000, guid: e4d34774d60deda34f3e619c08500a57, type: 3}
+  _volume: 0.8
+  _pitchRange: {x: 0.9, y: 1.1}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}
+  _minDistance: 1.5
+  _maxDistance: 25
+  _maxVoices: 2
+  _minInterval: 0.8

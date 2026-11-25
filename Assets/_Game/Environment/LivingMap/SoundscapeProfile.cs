@@ -33,6 +33,14 @@ public class SoundscapeProfile : ScriptableObject
     [Tooltip("Seconds between drips (random in range) — one at a time, never a rain.")]
     public Vector2 DripInterval = new(1.2f, 4f);
 
+    [Header("Water (flooded crypt / sewer, WaterVolume)")]
+    [Tooltip("Quiet 3D loop placed at the closest point of the nearest water volume.")]
+    public SoundDefinition WaterLoop;
+    public SoundDefinition WaterDrip;
+    [Tooltip("Water loop / drips are audible only within this distance of a water volume.")]
+    public float WaterRadius = 16f;
+    public Vector2 WaterDripInterval = new(1.5f, 4f);
+
     public SoundDefinition BedFor(MultiSectionDungeonGenerator.SectionType type)
     {
         foreach (var b in Beds) if (b != null && b.Section == type && b.Loop != null) return b.Loop;

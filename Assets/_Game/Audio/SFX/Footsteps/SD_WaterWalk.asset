@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_WaterWalk
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: c4ab5aeb67d9962d7768b9b77d78f644, type: 3}
+  - {fileID: 8300000, guid: 7f31315bf0943cc77f88d402a48b331e, type: 3}
+  - {fileID: 8300000, guid: cc45be63cebd0e0a51d51ba32493a409, type: 3}
+  - {fileID: 8300000, guid: e5ea9f69adb61b2ba15a2833dc55911f, type: 3}
+  - {fileID: 8300000, guid: 948baa4e9ac36fcc0e43d6cdcf436a3e, type: 3}
+  - {fileID: 8300000, guid: 7852da04d1942b75f4dbadff1f475560, type: 3}
+  - {fileID: 8300000, guid: 1990370f43ec49000c8546e69de335d9, type: 3}
+  _volume: 0.8
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 94faeffa20711144788afc324065b977, type: 2}
+  _minDistance: 2
+  _maxDistance: 30
+  _maxVoices: 0
+  _minInterval: 0

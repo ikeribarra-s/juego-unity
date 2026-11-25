@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 475281473844227341}
   - component: {fileID: 6650223550852606376}
   - component: {fileID: 798322624654656792}
+  - component: {fileID: 786913453930317784}
   m_Layer: 0
   m_Name: CH_Corridor_Straight_H50
   m_TagString: Untagged
@@ -217,6 +218,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 3735408139679568495}
   _roof: {fileID: 2848938150139319727}
+--- !u!114 &786913453930317784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2253907395069760415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 8, y: 6, z: 8}
 --- !u!1 &2569162691913477442
 GameObject:
   m_ObjectHideFlags: 0

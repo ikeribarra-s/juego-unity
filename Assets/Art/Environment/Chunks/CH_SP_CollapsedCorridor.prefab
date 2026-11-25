@@ -705,6 +705,7 @@ GameObject:
   - component: {fileID: 3871792774963801834}
   - component: {fileID: 5196251952971756944}
   - component: {fileID: 3450469174630439683}
+  - component: {fileID: 232775671160588634}
   m_Layer: 0
   m_Name: CH_SP_CollapsedCorridor
   m_TagString: Untagged
@@ -797,6 +798,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 8657671583314539470}
   _roof: {fileID: 8321131275950478351}
+--- !u!114 &232775671160588634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4595459536207417303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 8}
 --- !u!1 &4659634335523580464
 GameObject:
   m_ObjectHideFlags: 0

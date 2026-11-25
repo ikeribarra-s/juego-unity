@@ -163,6 +163,10 @@ one-shots go through `relaxed` with darker low-passes; beds get a loop-safe 24 d
 | UI click / hover / error · powerup | -24 / -28 / -24 · -24 | 0.7 · 0.6 | SFX **-6** | 2D | 1–2, 0.03–0.5 s |
 | Area beds (loops) | -32 (LP 3 kHz, 24 dB/oct) | 1.0 × `SSP_Default.BedVolume` **0.45** | SFX -6 | 2D; **duck ×0.6** during Spike | crossfade 2 max |
 | Drips | -30 (LP 3.5 kHz, ≤ 0.6 s) | 0.8 | Actions -6 | 1.5 / 25 | 2 voices, 0.8 s; `DripInterval` **2.5–6 s** |
+| Water footsteps (walk / sprint) | -26 (LP 4.5 kHz, ≤ 0.45 s, 7 takes each) | 0.8 | FootSteps | 2 / 30 | only inside a `WaterVolume` |
+| Water splash (enter) | -22 (≤ 0.9 s, 3 takes) | 0.7 | Actions -6 | 2 / 25 | once when the feet enter the water |
+| Water drips | -30 (LP 3.5 kHz, ≤ 0.6 s, 6 takes) | 0.8 | Actions -6 | 1.5 / 25 | 2 voices, 0.8 s; `WaterDripInterval` 1.5–4 s, only near water |
+| Water bed (3D loop) | -32 (LP 3 kHz, 18 s loop) | 1.0 × `BedVolume` | SFX -6 | 3 / 18 | at the nearest `WaterVolume`, fades out by `WaterRadius` 16 m |
 | Distant sounds · fake bell | -26 (LP 2.5 / 3 kHz) | 0.8 | Actions -6 | 5 / 50 | 1 voice, 4 s |
 | Torch gutter / out / relight | -30 (LP 3.5 kHz, gutter ≤ 1.2 s) | 0.7 | Actions -6 | 1.5 / 20 | 2 voices, 0.3 s (spike stutter can't stack) |
 | Spike sting | -26 (LP 4 kHz) | 0.7 | SFX -6 | 2D | 1, 3 s |

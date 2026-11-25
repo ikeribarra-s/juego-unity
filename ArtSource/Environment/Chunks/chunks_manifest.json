@@ -1497,13 +1497,13 @@
     }
    ],
    "tris": {
-    "structure": 2712,
-    "detail": 784,
+    "structure": 2520,
+    "detail": 1110,
     "floor_lod1": 132,
     "ceiling": 132
    },
-   "tris_lod0": 3628,
-   "tris_lod1": 2976,
+   "tris_lod0": 3762,
+   "tris_lod1": 2784,
    "mask_north_up": [
     "##########DDDD##",
     "#ooo........ooo#",

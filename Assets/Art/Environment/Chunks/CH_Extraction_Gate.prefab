@@ -2240,6 +2240,7 @@ GameObject:
   - component: {fileID: 8979352676461330326}
   - component: {fileID: 5560129706820116064}
   - component: {fileID: 1980168025771159252}
+  - component: {fileID: 3751322795129457682}
   m_Layer: 0
   m_Name: CH_Extraction_Gate
   m_TagString: Untagged
@@ -2357,6 +2358,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 8818576660239359629}
   _roof: {fileID: 6105792257219811094}
+--- !u!114 &3751322795129457682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7745572291804054968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 1
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 16, y: 6, z: 16}
 --- !u!1 &8205214262745649210
 GameObject:
   m_ObjectHideFlags: 0

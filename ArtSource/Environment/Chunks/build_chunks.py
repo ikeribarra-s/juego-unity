@@ -49,6 +49,8 @@ PAL = [
     ("glass_y", "C49A3E"), ("glass_g", "4A8A55"), ("meat0", "8C4A3E"), ("meat1", "B0705A"),
     # PS2 pass: texture-only keys (a patterned panel replaces per-item geometry)
     ("skulls", "B5AA8E"), ("books", "6E4E33"),
+    # ritual-room blood pool (appended: palette index seeds rng 1000+i)
+    ("blood0", "3A0A0E"), ("blood1", "5C1217"),
 ]
 PAL_IDX = {n: i for i, (n, _) in enumerate(PAL)}
 WALL = ["wall0", "wall1", "wall5", "wall3"]
@@ -871,6 +873,46 @@ def ch_room_crypt():
     return c
 
 
+def ritual_blood(c, cy):
+    """Dark blood pool + smears toward the south door, baked flat on the floor (detail category, LOD0 only).
+    Own RNG so the chunk's other random draws are unchanged."""
+    rg = random.Random(7741)
+    prev = c.mb.cat
+    c.mb.cat = "D"
+    Z = 0.012
+    cx0, cy0, R0 = 0.0, -4.6, 2.2
+    def ok(x, y):                      # keep off the dais and the candle ring
+        if abs(x) < 3.2 and abs(y - cy) < 3.2:
+            return False
+        return math.hypot(x, y - cy) > 4.45
+    def cell(x, y, s, key):
+        if ok(x - s / 2, y - s / 2) and ok(x + s / 2, y + s / 2) and ok(x - s / 2, y + s / 2) and ok(x + s / 2, y - s / 2):
+            c.mb.poly([(x - s / 2, y - s / 2, Z), (x + s / 2, y - s / 2, Z), (x + s / 2, y + s / 2, Z), (x - s / 2, y + s / 2, Z)], key)
+    g = 0.25
+    n = int(R0 / g) + 2
+    for i in range(-n, n + 1):
+        for j in range(-n, n + 1):
+            x, y = cx0 + i * g, cy0 + j * g
+            d = math.hypot(x - cx0, (y - cy0) * 1.1)
+            edge = R0 * (0.78 + 0.3 * rg.random())
+            if d < edge:
+                cell(x, y, g, "blood0" if d < R0 * 0.55 or rg.random() < 0.35 else "blood1")
+    # smears toward the south door (y = -7): thin chunky streaks
+    for k in range(4):
+        x = cx0 + rg.uniform(-1.4, 1.4); y = cy0 - R0 * 0.5
+        w = rg.choice((0.25, 0.25, 0.5)); L = rg.uniform(1.0, 2.2)
+        steps = int(L / g)
+        for t in range(steps):
+            cell(x + rg.uniform(-0.03, 0.03), y - t * g, w if t < steps - 1 else g, "blood1" if t % 3 else "blood0")
+            if y - t * g < -6.7:
+                break
+    # a couple of drips
+    for k in range(2):
+        x = cx0 + rg.uniform(-2.2, 2.2); y = cy0 + rg.uniform(-2.4, 1.6)
+        cell(x, y, 0.25, "blood0"); cell(x, y - g, 0.25, "blood1")
+    c.mb.cat = prev
+
+
 def ch_room_ritual():
     c = Chunk("CH_Room_Ritual", 2, 2, H=5.0, role="room")
     c.rect(-7, -7, 7, 7); c.door('S', 0); c.door('N', 1)
@@ -887,20 +929,11 @@ def ch_room_ritual():
         c.hero("Altar", (0.0, cy, 0.5), (0, -1))
     c.col("Block", -1.25, cy - 0.62, 0.5, 1.25, cy + 0.62, 1.5)
     c.mark_blocked(-1.25, cy - 0.62, 1.25, cy + 0.62)
-    # blood-red drips on the altar front, painted circle + star on the floor
+    # blood-red drips on the altar front, painted inner ring; a blood pool replaces the old star
     for x in (-0.7, -0.1, 0.5):
         alt.poly([(x, cy - 0.51, 1.35), (x + 0.14, cy - 0.51, 1.35), (x + 0.09, cy - 0.51, 0.9), (x + 0.04, cy - 0.51, 0.75)][::-1], "red0")
     c.mb.ring(0, cy, 0.505, 1.6, 1.8, 16, "red1")
-    c.mb.ring(0, cy, 0.01, 4.3, 4.6, 24, "red0")
-    pts = [(math.sin(2 * math.pi * k / 5) * 4.3, cy + math.cos(2 * math.pi * k / 5) * 4.3) for k in range(5)]
-    for k in range(5):
-        a, b = Vector(pts[k]), Vector(pts[(k + 2) % 5])
-        d = (b - a).normalized(); n = Vector((-d.y, d.x)) * 0.08
-        # only the parts outside the dais (z=0.01) to avoid floating
-        for t0, t1 in ((0.0, 0.18), (0.82, 1.0)):
-            p0, p1 = a + (b - a) * t0, a + (b - a) * t1
-            c.mb.poly([(p0.x - n.x, p0.y - n.y, 0.012), (p1.x - n.x, p1.y - n.y, 0.012),
-                       (p1.x + n.x, p1.y + n.y, 0.012), (p0.x + n.x, p0.y + n.y, 0.012)], "red1")
+    ritual_blood(c, cy)
     # 8 candle spots around the circle, some candles already modelled
     for k in range(8):
         a = 2 * math.pi * k / 8 + math.pi / 8
@@ -997,7 +1030,7 @@ def ch_sp_flooded():
     water = MB(c.rng)
     water.poly([(-3, -wy, wl), (3, -wy, wl), (3, wy, wl), (-3, wy, wl)], "water")
     c.extra["water"] = water
-    c.extra["water_vol"] = ((0, 0, (depth + 0.1) / 2), (6.0, 2 * wy, 0.1 - depth))
+    c.extra["water_vol"] = ((0, 0, (depth + wl) / 2), (6.0, 2 * wy, wl - depth))   # top = water surface
     # broken columns standing in the water, a toppled one as a bridge-ish log, floating planks
     c.pillar(-1.6, -2.5, c.H, broken_at=1.3 + depth, zb=depth)
     c.pillar(1.9, -0.3, c.H, zb=depth)

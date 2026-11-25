@@ -1679,6 +1679,7 @@ GameObject:
   - component: {fileID: 5634688375844616399}
   - component: {fileID: 907643168210318712}
   - component: {fileID: 5974755092722264395}
+  - component: {fileID: 7488823704843170545}
   m_Layer: 0
   m_Name: CH_SP_Ossuary
   m_TagString: Untagged
@@ -1788,6 +1789,21 @@ MonoBehaviour:
   _wallHeight: 4.5
   _collar: {fileID: 2230522846312100068}
   _roof: {fileID: 6261513150207375096}
+--- !u!114 &7488823704843170545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6796079148352512855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 3
+  _localCenter: {x: 0, y: 2.75, z: 0}
+  _size: {x: 8, y: 5.5, z: 16}
 --- !u!1 &7253906017868737196
 GameObject:
   m_ObjectHideFlags: 0

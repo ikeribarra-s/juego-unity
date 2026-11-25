@@ -1386,6 +1386,7 @@ GameObject:
   - component: {fileID: 3174622133180868191}
   - component: {fileID: 2240047264403479570}
   - component: {fileID: 4232390641206510987}
+  - component: {fileID: 588123974258099168}
   m_Layer: 0
   m_Name: CH_Corridor_T_B
   m_TagString: Untagged
@@ -1487,6 +1488,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 967480123398113342}
   _roof: {fileID: 281925833221527496}
+--- !u!114 &588123974258099168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5345414564277955007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 8}
 --- !u!1 &6455660696559285696
 GameObject:
   m_ObjectHideFlags: 0

@@ -890,6 +890,7 @@ GameObject:
   - component: {fileID: 7748249821896168239}
   - component: {fileID: 9130732606816365791}
   - component: {fileID: 7850471126096600336}
+  - component: {fileID: 8166604853736606324}
   m_Layer: 0
   m_Name: CH_SP_BellTower
   m_TagString: Untagged
@@ -1005,6 +1006,21 @@ MonoBehaviour:
   _wallHeight: 12
   _collar: {fileID: 1083938950424072913}
   _roof: {fileID: 164074071009970006}
+--- !u!114 &8166604853736606324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3321418830519666443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 5
+  _localCenter: {x: 0, y: 6.5, z: 0}
+  _size: {x: 8, y: 13, z: 8}
 --- !u!1 &3604633704642269160
 GameObject:
   m_ObjectHideFlags: 0

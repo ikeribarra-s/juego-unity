@@ -1483,6 +1483,7 @@ GameObject:
   - component: {fileID: 5569564049789628120}
   - component: {fileID: 7975195869978996994}
   - component: {fileID: 4151061654378805393}
+  - component: {fileID: 7504270577584206672}
   m_Layer: 0
   m_Name: CH_Room_Library
   m_TagString: Untagged
@@ -1604,6 +1605,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 1869926509936460122}
   _roof: {fileID: 5765375056322828472}
+--- !u!114 &7504270577584206672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5977749601318379443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 1
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 8, y: 6, z: 16}
 --- !u!1 &6237379704418530914
 GameObject:
   m_ObjectHideFlags: 0

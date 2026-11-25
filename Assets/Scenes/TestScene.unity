@@ -7831,13 +7831,13 @@ MonoBehaviour:
   _defaultTransitionDuration: 1.25
   _profiles:
   - Mood: 0
-    AmbientColor: {r: 0.045, g: 0.05, b: 0.065, a: 1}
-    FogColor: {r: 0.035, g: 0.04, b: 0.05, a: 1}
+    AmbientColor: {r: 0.0424, g: 0.0471, b: 0.0613, a: 1}
+    FogColor: {r: 0.025, g: 0.028, b: 0.036, a: 1}
     FogDensity: 0.02
     MainLightColor: {r: 0.75, g: 0.82, b: 1, a: 1}
     MainLightIntensity: 0.2
     GrainIntensity: 0.42
-    VignetteIntensity: 0.42
+    VignetteIntensity: 0.5
     Saturation: -18
     PostExposure: -0.25
     ColorFilter: {r: 0.82, g: 0.88, b: 1, a: 1}
@@ -7845,7 +7845,7 @@ MonoBehaviour:
     ChromaticIntensity: 0.14
     PixelSize: 1
   - Mood: 1
-    AmbientColor: {r: 0.035, g: 0.04, b: 0.05, a: 1}
+    AmbientColor: {r: 0.03, g: 0.035, b: 0.045, a: 1}
     FogColor: {r: 0.03, g: 0.038, b: 0.038, a: 1}
     FogDensity: 0.035
     MainLightColor: {r: 0.62, g: 0.78, b: 0.65, a: 1}
@@ -9764,6 +9764,10 @@ MonoBehaviour:
   _walkSteps: {fileID: 11400000, guid: 18d7cedd115e0074694b6e8942dbc9c4, type: 2}
   _sprintSteps: {fileID: 11400000, guid: e571684f0e78bc84cbd2ddc6a3686191, type: 2}
   _crouchSteps: {fileID: 11400000, guid: 494a6791ef4442747915f05cd4267eb5, type: 2}
+  _waterWalk: {fileID: 11400000, guid: 304297801c04c7d1f01464e57f69e0b4, type: 2}
+  _waterSprint: {fileID: 11400000, guid: 61d98af7665b72feaa7040f213953e2a, type: 2}
+  _waterCrouch: {fileID: 0}
+  _waterEnter: {fileID: 11400000, guid: 0df6adab04f5de19fc6d789e0d74006a, type: 2}
   _walkStepDistance: 1.04
   _sprintStepDistance: 2.8
   _crouchStepDistance: 1.5
@@ -12255,8 +12259,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _maxRayDistance: 12.4
-  _updateInterval: 0.4
-  _smoothSpeed: 3
+  _updateInterval: 0.2
+  _smoothSpeed: 1.2
   _openDecayTime: 2.05
   _openReverb: 2000
   _openReflections: 400

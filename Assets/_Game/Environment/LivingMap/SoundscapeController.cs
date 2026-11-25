@@ -77,9 +77,48 @@ public class SoundscapeController : MonoBehaviour
         if (_fade >= 1f && _b.isPlaying) _b.Stop();
 
         if (Time.time >= _nextDrip) PlayDrip();
+        UpdateWater();
     }
 
     private float _bStartVolume;
+
+    // ── Water (3D loop at the nearest WaterVolume + its own drip timer) ──────
+    private AudioSource _water;
+    private float _nextWaterDrip;
+
+    private void UpdateWater()
+    {
+        if (_profile.WaterLoop == null || !_profile.WaterLoop.IsValid) return;
+        var vol = WaterVolume.Nearest(_listener.position, _profile.WaterRadius, out Vector3 closest);
+        if (_water == null)
+        {
+            var go = new GameObject("Water Loop");
+            go.transform.SetParent(transform, false);
+            _water = go.AddComponent<AudioSource>();
+            _water.loop = true; _water.playOnAwake = false; _water.spatialBlend = 1f; _water.volume = 0f;
+            _water.rolloffMode = AudioRolloffMode.Logarithmic;
+            var d = _profile.WaterLoop;
+            _water.minDistance = d.MinDistance; _water.maxDistance = d.MaxDistance;
+            _water.outputAudioMixerGroup = d.MixerGroup;
+            _water.clip = d.GetClip();
+        }
+        float target = 0f;
+        if (vol != null)
+        {
+            _water.transform.position = closest;
+            float dist = Vector3.Distance(_listener.position, closest);
+            target = _profile.WaterLoop.Volume * _profile.BedVolume * Mathf.Clamp01(1f - dist / _profile.WaterRadius) * _duck;
+            if (!_water.isPlaying) _water.Play();
+        }
+        _water.volume = Mathf.MoveTowards(_water.volume, target, Time.deltaTime * 0.5f);
+        if (vol == null && _water.isPlaying && _water.volume <= 0.001f) _water.Pause();
+
+        if (vol != null && _profile.WaterDrip != null && SoundManager.Instance != null && Time.time >= _nextWaterDrip)
+        {
+            _nextWaterDrip = Time.time + Random.Range(_profile.WaterDripInterval.x, _profile.WaterDripInterval.y);
+            SoundManager.Instance.Play(_profile.WaterDrip, vol.RandomSurfacePoint());
+        }
+    }
 
     private void UpdateArea()
     {

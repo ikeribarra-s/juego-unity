@@ -1,18 +1,23 @@
 using UnityEngine;
 
 /// Place on the Camera GameObject (same one with the AudioListener).
-/// Casts 4 horizontal rays on the Walls layer and smoothly drives
-/// AudioReverbFilter so the reverb changes as the player moves through spaces.
+/// Drives AudioReverbFilter smoothly as the player moves through spaces.
+/// 1) Inside an <see cref="AcousticZone"/> (authored chunks, tagged by ChunkPrefabBuilder) the zone's preset is the
+///    target, faded in over <c>_zoneBlendDistance</c> metres from the zone edge.
+/// 2) Everywhere else (and under that blend) 8 horizontal rays on the Walls layer (triggers ignored) estimate
+///    how enclosed the space is: small room → hall → open.
 [RequireComponent(typeof(AudioReverbFilter))]
 public class EnvironmentReverb : MonoBehaviour
 {
     [Header("Detection")]
     [SerializeField] private LayerMask _wallLayer;
     [SerializeField] private float     _maxRayDistance = 10f;
-    [SerializeField] private float     _updateInterval = 0.1f;   // seconds between probes
+    [SerializeField] private float     _updateInterval = 0.2f;   // seconds between probes
+    [Tooltip("Metres from a zone's edge over which its preset fades in (the ray estimate fades out).")]
+    [SerializeField] private float     _zoneBlendDistance = 1.5f;
 
     [Header("Smoothing")]
-    [SerializeField] private float _smoothSpeed = 2.5f;          // lerp speed (per second)
+    [SerializeField] private float _smoothSpeed = 1.2f;          // lerp speed (per second); ~1-1.5 s to settle
 
     // AudioReverbFilter value ranges (Unity mB):
     //   room / roomHF        : -10000 … 0
@@ -42,18 +47,46 @@ public class EnvironmentReverb : MonoBehaviour
     [SerializeField] private float _smallDiffusion   =  100f;
     [SerializeField] private float _smallDensity     =  60f;
 
+    [System.Serializable]
+    public struct Preset
+    {
+        public float DecayTime, Reverb, Reflections, Diffusion, Density;
+        public Preset(float decay, float reverb, float refl, float diff, float dens)
+        { DecayTime = decay; Reverb = reverb; Reflections = refl; Diffusion = diff; Density = dens; }
+    }
+
+    [Header("Acoustic zone presets (index = Acoustic enum). Reverb level must stay POSITIVE to be audible; Open mirrors the tuned open ray values.")]
+    [SerializeField] private Preset[] _zonePresets;
+
+    private static Preset[] DefaultPresets() => new[]
+    {
+        new Preset(0.74f, 1000f, -300f, 100f,  60f),   // Small (matches the tuned scene values)
+        new Preset(1.3f,  1429f,  189f, 100f,  92f),   // Hall
+        new Preset(3.0f,  1500f,  150f,  40f,  70f),   // Cave: long, uneven
+        new Preset(2.0f,  1300f,  100f, 100f,  85f),   // Crypt: stone, close
+        new Preset(2.6f,  1400f,   50f,  35f,  60f),   // Sewer: pipe-like, low diffusion
+        new Preset(4.5f,  1500f,  300f,  90f, 100f),   // Tower: very long tail
+        new Preset(2.05f, 2000f,  400f,   0f,   0f),   // Open (matches the tuned scene values)
+    };
+
     private AudioReverbFilter _filter;
     private float             _probeTimer;
 
     private float _tDecay, _tReverb, _tReflections, _tDiffusion, _tDensity;
 
     private static readonly Vector3[] Dirs =
-        { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
+    {
+        Vector3.forward, Vector3.back, Vector3.left, Vector3.right,
+        new Vector3(1, 0, 1).normalized, new Vector3(1, 0, -1).normalized,
+        new Vector3(-1, 0, 1).normalized, new Vector3(-1, 0, -1).normalized,
+    };
 
     private void Awake()
     {
         _filter              = GetComponent<AudioReverbFilter>();
         _filter.reverbPreset = AudioReverbPreset.User;
+        int n = System.Enum.GetValues(typeof(Acoustic)).Length;
+        if (_zonePresets == null || _zonePresets.Length != n) _zonePresets = DefaultPresets();
         SetTargets(_openDecayTime, _openReverb, _openReflections, _openDiffusion, _openDensity);
         ApplyImmediate();
     }
@@ -82,7 +115,7 @@ public class EnvironmentReverb : MonoBehaviour
 
         foreach (var dir in Dirs)
         {
-            if (Physics.Raycast(origin, dir, out RaycastHit hit, _maxRayDistance, _wallLayer))
+            if (Physics.Raycast(origin, dir, out RaycastHit hit, _maxRayDistance, _wallLayer, QueryTriggerInteraction.Ignore))
             {
                 total += hit.distance;
                 Debug.DrawRay(origin, dir * hit.distance, Color.cyan,  _updateInterval);
@@ -98,6 +131,26 @@ public class EnvironmentReverb : MonoBehaviour
         float t = Mathf.Clamp01((total / Dirs.Length) / _maxRayDistance);
 
         // [0..0.5] small room → hall;  [0.5..1] hall → open
+        SetRayTargets(t);
+
+        // Inside an authored zone: blend toward its preset (full weight past _zoneBlendDistance from the edge).
+        var zone = AcousticZone.TryFind(origin, out float edge);
+        if (zone != null)
+        {
+            int i = Mathf.Clamp((int)zone.Type, 0, _zonePresets.Length - 1);
+            var p = _zonePresets[i];
+            float w = Mathf.Clamp01(edge / Mathf.Max(0.01f, _zoneBlendDistance));
+            SetTargets(
+                Mathf.Lerp(_tDecay,       p.DecayTime,    w),
+                Mathf.Lerp(_tReverb,      p.Reverb,       w),
+                Mathf.Lerp(_tReflections, p.Reflections,  w),
+                Mathf.Lerp(_tDiffusion,   p.Diffusion,    w),
+                Mathf.Lerp(_tDensity,     p.Density,      w));
+        }
+    }
+
+    private void SetRayTargets(float t)
+    {
         if (t <= 0.5f)
         {
             float b = t * 2f;

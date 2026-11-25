@@ -453,6 +453,7 @@ GameObject:
   - component: {fileID: 2193574949515123766}
   - component: {fileID: 6008197716126600088}
   - component: {fileID: 967647111930300422}
+  - component: {fileID: 614564792718004914}
   m_Layer: 0
   m_Name: CH_Room_PillarHall
   m_TagString: Untagged
@@ -591,6 +592,21 @@ MonoBehaviour:
   _wallHeight: 5
   _collar: {fileID: 4471799161707798327}
   _roof: {fileID: 4592926535967353903}
+--- !u!114 &614564792718004914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134797258101322770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 1
+  _localCenter: {x: 0, y: 3, z: 0}
+  _size: {x: 16, y: 6, z: 16}
 --- !u!1 &1172003504238466648
 GameObject:
   m_ObjectHideFlags: 0

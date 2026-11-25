@@ -322,6 +322,7 @@ GameObject:
   - component: {fileID: 6522038787650410272}
   - component: {fileID: 7829681162858316592}
   - component: {fileID: 940702225235463398}
+  - component: {fileID: 2630882478108047385}
   m_Layer: 0
   m_Name: CH_Corridor_DeadEnd_H36
   m_TagString: Untagged
@@ -413,6 +414,21 @@ MonoBehaviour:
   _wallHeight: 3.6
   _collar: {fileID: 1719991749654017627}
   _roof: {fileID: 5786729867862414342}
+--- !u!114 &2630882478108047385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2693865608753634246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.3, z: 0}
+  _size: {x: 8, y: 4.6, z: 8}
 --- !u!1 &3832942617116519807
 GameObject:
   m_ObjectHideFlags: 0

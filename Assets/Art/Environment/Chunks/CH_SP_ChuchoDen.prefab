@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 525471367395292734}
   - component: {fileID: 5138176645546932245}
   - component: {fileID: 1147722558392104233}
+  - component: {fileID: 4666275272807918184}
   m_Layer: 0
   m_Name: CH_SP_ChuchoDen
   m_TagString: Untagged
@@ -262,6 +263,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 3859717317609682436}
   _roof: {fileID: 9223055301777829994}
+--- !u!114 &4666275272807918184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794266819482838448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 2
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 16}
 --- !u!1 &1181049776895738806
 GameObject:
   m_ObjectHideFlags: 0

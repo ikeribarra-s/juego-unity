@@ -607,7 +607,7 @@ def ch_sp_sewer():
     w = MB(c.rng)
     w.poly([(1.0, -6.75, WL), (3.0, -6.75, WL), (3.0, 6.75, WL), (1.0, 6.75, WL)], "water")
     c.extra["water"] = w
-    c.extra["water_vol"] = ((2.0, 0.3, (CZ + 0.0) / 2), (2.0, 12.8, -CZ))
+    c.extra["water_vol"] = ((2.0, 0.3, (CZ + WL) / 2), (2.0, 12.8, WL - CZ))   # top = water surface
     c.mb.cat = "D"
     for (y, a) in ((-3.0, 0.3), (4.2, -0.5)):
         c.mb.obox((2.0, y, WL + 0.03), (0.9, 0.2, 0.05), (0, 0, a), WOOD)

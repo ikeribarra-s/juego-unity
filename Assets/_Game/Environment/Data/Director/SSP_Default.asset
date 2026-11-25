@@ -30,3 +30,7 @@ MonoBehaviour:
   Drip: {fileID: 11400000, guid: 6922f6a770a7a184382dc5b65e01275e, type: 2}
   DripRadius: 22
   DripInterval: {x: 2.5, y: 6}
+  WaterLoop: {fileID: 11400000, guid: 8c83e00058d9343aaf31f291b6be98ed, type: 2}
+  WaterDrip: {fileID: 11400000, guid: fb95eb6ae4c13508713d8318f4b4dcca, type: 2}
+  WaterRadius: 16
+  WaterDripInterval: {x: 1.5, y: 4}

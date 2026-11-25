@@ -209,6 +209,7 @@ public static class ChunkPrefabBuilder
                 bool sightBlocker = n.StartsWith("COL_Wall") || n.StartsWith("COL_Block");
                 go.layer = sightBlocker && wallsLayer >= 0 ? wallsLayer : 0;
                 if (n.StartsWith("VOL_")) bc.isTrigger = true;
+                if (n.StartsWith("VOL_Water")) go.AddComponent<WaterVolume>();
                 Transform mover = null;
                 if (n.StartsWith("COL_Gate")) mover = Find(sm + "_Gate");
                 else if (n.StartsWith("COL_Lid_")) mover = Find(sm + "_Lid_" + n.Substring("COL_Lid_".Length));
@@ -257,8 +258,30 @@ public static class ChunkPrefabBuilder
         var ac = inst.AddComponent<AuthoredChunk>();
         ac.Configure(fp, wallH, collar ? collar.gameObject : null, roof ? roof.gameObject : null);
 
+        // Acoustic zone (no collider: tested mathematically, so it can't touch physics/NavMesh/interaction)
+        var zone = inst.AddComponent<AcousticZone>();
+        zone.Configure(AcousticFor(name, fp), new Vector3(0f, wallH * 0.5f + 0.5f, 0f), new Vector3(fp.x, wallH + 1f, fp.y));
+
         PrefabUtility.SaveAsPrefabAsset(inst, $"{Root}/{name}.prefab");
         Object.DestroyImmediate(inst);
+    }
+
+    private static Acoustic AcousticFor(string name, Vector2Int fp)
+    {
+        if (name.StartsWith("CH_Corridor_")) return Acoustic.Small;
+        switch (name)
+        {
+            case "CH_Room_PillarHall": case "CH_Room_Library": case "CH_Room_Chapel":
+            case "CH_Room_SpiralHall": case "CH_Room_Ritual": case "CH_SP_WellRoom":
+                return Acoustic.Hall;
+            case "CH_Room_Crypt": case "CH_Room_Mausoleum": case "CH_SP_Ossuary": case "CH_SP_FloodedCrypt":
+            case "CH_Room_Larder": case "CH_Room_PrisonBlock":
+                return Acoustic.Crypt;
+            case "CH_SP_CaveTransition": case "CH_SP_ChuchoDen": return Acoustic.Cave;
+            case "CH_SP_SewerChannel": return Acoustic.Sewer;
+            case "CH_SP_BellTower": return Acoustic.Tower;
+        }
+        return fp.x * fp.y >= 144 ? Acoustic.Hall : Acoustic.Small;
     }
 
     private static void Flags(GameObject go, StaticEditorFlags f) => GameObjectUtility.SetStaticEditorFlags(go, f);

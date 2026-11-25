@@ -239,3 +239,8 @@ Hierarchy: `_multiSectionRoot/Map/Section_NN_Theme/Cell_x_z_CH_Name` (+ `Map/Lin
 **Perf (seed 30 Play, editor, 5 spots, median):** draws 547–4564 (old procedural map) → 74–937 (grid) → 73–671 with `ChunkDistanceCuller`; GPU 0.9–5.5 ms → 0.9–3.2 ms; main thread 5.4–8.7 → 6.8–10.3 ms (editor IMGUI/SceneView dominates the main-thread sample; profile a player build before acting). Shadowed lights ≤ 4.
 
 **Walk tests (real CharacterController):** spiral stair → balcony, bell tower ramp → balcony (after the torch-trigger fix) + under the balcony, pit escape stairs, sewer side stair down + up, trap plank, library N→S — all REACHED; trap volume kills.
+
+## Acoustic zones + water (2026-11)
+- `Audio/AcousticZone.cs`: every authored chunk prefab carries one (local box, no collider, by `ChunkPrefabBuilder.AcousticFor`); `EnvironmentReverb` blends to its preset, else 8 wall rays.
+- `Chunks/WaterVolume.cs` on `VOL_Water*` (FloodedCrypt, SewerChannel; box top = water surface). Drives water footsteps/splash (`CharacterAudio`) and the water loop + drips (`SoundscapeController`).
+- Ritual room: star + outer ring removed; baked dark blood pool (`ritual_blood` in build_chunks.py, palette `blood0/1` appended).

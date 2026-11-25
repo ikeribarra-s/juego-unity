@@ -1221,6 +1221,7 @@ GameObject:
   - component: {fileID: 6143390059867991659}
   - component: {fileID: 317713829807168000}
   - component: {fileID: 2692709565134910563}
+  - component: {fileID: 8424363303138088074}
   m_Layer: 0
   m_Name: CH_SP_TrapCorridor
   m_TagString: Untagged
@@ -1319,6 +1320,21 @@ MonoBehaviour:
   _wallHeight: 4
   _collar: {fileID: 2904300634193556848}
   _roof: {fileID: 2368271241217874196}
+--- !u!114 &8424363303138088074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6413361055128442448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ba849305ef44a45aebd466f01c3a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AcousticZone
+  _type: 0
+  _localCenter: {x: 0, y: 2.5, z: 0}
+  _size: {x: 8, y: 5, z: 8}
 --- !u!1 &6656404664736825706
 GameObject:
   m_ObjectHideFlags: 0
