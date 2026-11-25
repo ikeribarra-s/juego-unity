@@ -70,7 +70,7 @@ big shapes, and readable value contrast over texture detail.
   detail is **texture**: tileable 64 px cells per material at ~32 px/m (walls, floors) / 64 px/m (props), Point
   filtered, 6–7 shades per material with ordered dither, mean on the §3 palette colour. Lighting depth comes from
   **baked vertex-colour AO + floor grime** (1 m vertex grid), multiplied in by `PS2Lit`. No bevels or chamfers
-  smaller than ~0.3 m; no normal maps; no mips. New environment pieces follow `ArtSource/Environment/Chunks/ps2_style.py`.
+  smaller than ~0.3 m; no mips. Normal maps only for the chunk atlas `T_Chunks_N` (same 64 px cell grid, Point, no mips, generated from the same height fields as the albedo; Meshy props stay flat). Architectural wood (door frames, wainscot, planks) is now 32 px/m like the stone. New environment pieces follow `ArtSource/Environment/Chunks/ps2_style.py`.
 - Prop budget: ≤ 1.5k tris for small props, ≤ 3k for furniture.
 
 ## 6. UI

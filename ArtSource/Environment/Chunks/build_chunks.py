@@ -22,6 +22,8 @@ UNITY_MODELS = os.path.join(UNITY_DIR, "Models")
 
 R = Matrix.Rotation(math.pi, 4, 'Z')          # natural -> Blender export frame
 JUT_CHANCE = 0.16
+CONSISTENT_STONE = True      # one floor / wall palette key per material (was a per-tile / per-box random pick)
+WOOD_FRAMES = os.environ.get("CHUNKS_WOOD_FRAMES", "1") != "0"   # wood door frames + wainscot band
 # Meshy hero props (Assets/Art/Environment/Props/Meshy/PROP_Meshy<Name>.prefab): when on, the procedural
 # feature they supersede is not built and a HERO_<Name> empty marks where ChunkPrefabBuilder nests the prop.
 HERO_PROPS = globals().get("HERO_PROPS", True)                               # jutting wall stones per slot (was 0.45 before the PS2 texture pass)
@@ -51,6 +53,8 @@ PAL = [
     ("skulls", "B5AA8E"), ("books", "6E4E33"),
     # ritual-room blood pool (appended: palette index seeds rng 1000+i)
     ("blood0", "3A0A0E"), ("blood1", "5C1217"),
+    # vertical planks for door jambs (appended: index seeds the pattern)
+    ("wood_v", "5A3F2A"),
 ]
 PAL_IDX = {n: i for i, (n, _) in enumerate(PAL)}
 WALL = ["wall0", "wall1", "wall5", "wall3"]
@@ -113,7 +117,21 @@ class MB:
         self.cat = "S"
 
     def pick(self, key):
-        return self.rng.choice(key) if isinstance(key, (list, tuple)) else key
+        """random choice from a list (the rng draw is KEPT so colliders/rocks/jut placement stay put), but
+        stone families resolve to one canonical key so floors/walls read as one material."""
+        if not isinstance(key, (list, tuple)):
+            return key
+        k = self.rng.choice(key)
+        if not CONSISTENT_STONE:
+            return k
+        ks = set(key)
+        if ks <= set(FLOOR):
+            return "floor0"
+        if ks <= set(WALL):
+            return "wall0"
+        if ks <= set(WALL) | set(WALL_HI):
+            return "wall2"
+        return k
 
     def poly(self, pts, key):
         b = len(self.v)
@@ -444,7 +462,7 @@ class Chunk:
             x0, y0 = self.t2m(i0, j0); x1, y1 = self.t2m(i1 + 1, j1 + 1)
             self.col("Floor", x0, y0, -0.5, x1, y1, 0.0)
             old = mb.cat; mb.cat = "L1"
-            mb.poly([(x0, y0, 0.0), (x1, y0, 0.0), (x1, y1, 0.0), (x0, y1, 0.0)], fk[0])
+            mb.poly([(x0, y0, 0.0), (x1, y0, 0.0), (x1, y1, 0.0), (x0, y1, 0.0)], "floor0" if (CONSISTENT_STONE and fk[0] in FLOOR) else fk[0])
             mb.cat = old
         # --- ceiling ---
         if ceiling:
@@ -464,6 +482,17 @@ class Chunk:
         wear live in the floor texture, not in chamfer geometry. lod1=True also adds the LOD1 quad."""
         mb = self.mb
         k = mb.pick(keys)
+        if CONSISTENT_STONE and isinstance(keys, (list, tuple)) and not set(keys) <= set(FLOOR):
+            # intentionally mixed list (dirt patches, moss on rock...): the draw above is kept for rng parity;
+            # the choice itself is a coherent 2 m blob mask on the tile coordinates
+            uniq = []
+            for kk in keys:
+                kk = "floor0" if kk in FLOOR else ("rock0" if kk in ROCK else kk)
+                if kk not in uniq:
+                    uniq.append(kk)
+            ix, iy = int(math.floor(x / 2.0)), int(math.floor(y / 2.0))
+            h = (ix * 73856093 ^ iy * 19349663 ^ 0x5bd1e995) & 0xffffff
+            k = uniq[(h >> 5) % len(uniq)]
         old = mb.cat
         q = [(x, y, z), (x + size, y, z), (x + size, y + size, z), (x, y + size, z)]
         if lod1:
@@ -489,6 +518,8 @@ class Chunk:
                 mb.box(line, u0, zz0, line + n * p, u1, zz1, key, skip)
         bx(a0, a1, 0.0, 0.28, 0.07, "wall3", skip=('b',))
         bx(a0, a1, H - 0.22, H, 0.1, "wall2")
+        if WOOD_FRAMES and H >= 2.0:
+            bx(a0, a1, 0.28, 1.1, 0.03, "wood0")      # wainscot band above the plinth
         # jutting stones in loose courses
         rows = int((H - 0.6) / 0.42)
         old = mb.cat
@@ -513,14 +544,15 @@ class Chunk:
     def door_frame(self, side, c):
         """jambs + lintel + chamfered top corners inside the 1-tile ring of a door socket."""
         mb, H = self.mb, self.H
+        JAMB, LINTEL = ("wood_v", "wood0") if WOOD_FRAMES else ("wall1", "wall0")
         dx, dy = SIDES[side]
         if side in "NS":
             ye = self.D / 2 if side == 'N' else -self.D / 2
             r0, r1 = (ye - 1, ye) if side == 'N' else (ye, ye + 1)
             for s0, s1 in ((c - 2, c - DOOR_W / 2), (c + DOOR_W / 2, c + 2)):
-                mb.box(s0, r0, self.wall_z0, s1, r1, DOOR_H, "wall1", skip=('b', 't'))
+                mb.box(s0, r0, self.wall_z0, s1, r1, DOOR_H, JAMB, skip=('b', 't'))
                 self.col("Wall", s0, r0, self.wall_z0, s1, r1, DOOR_H)
-            mb.box(c - 2, r0, DOOR_H, c + 2, r1, H, "wall0")
+            mb.box(c - 2, r0, DOOR_H, c + 2, r1, H, LINTEL)
             self.col("Wall", c - 2, r0, DOOR_H, c + 2, r1, H)
             # chamfer wedges
             for sx in (-1, 1):
@@ -537,9 +569,9 @@ class Chunk:
             xe = self.W / 2 if side == 'E' else -self.W / 2
             r0, r1 = (xe - 1, xe) if side == 'E' else (xe, xe + 1)
             for s0, s1 in ((c - 2, c - DOOR_W / 2), (c + DOOR_W / 2, c + 2)):
-                mb.box(r0, s0, self.wall_z0, r1, s1, DOOR_H, "wall1", skip=('b', 't'))
+                mb.box(r0, s0, self.wall_z0, r1, s1, DOOR_H, JAMB, skip=('b', 't'))
                 self.col("Wall", r0, s0, self.wall_z0, r1, s1, DOOR_H)
-            mb.box(r0, c - 2, DOOR_H, r1, c + 2, H, "wall0")
+            mb.box(r0, c - 2, DOOR_H, r1, c + 2, H, LINTEL)
             self.col("Wall", r0, c - 2, DOOR_H, r1, c + 2, H)
             for sy in (-1, 1):
                 ya = c + sy * DOOR_W / 2
@@ -1613,6 +1645,9 @@ def build_all(export=True, only=None):
     tex_path = os.path.join(SRC, "T_Chunks_D.png")
     make_ps2_atlas(tex_path)
     shutil.copyfile(tex_path, os.path.join(UNITY_DIR, "T_Chunks_D.png"))
+    ntex_path = os.path.join(SRC, "T_Chunks_N.png")
+    make_ps2_normal_atlas(ntex_path)
+    shutil.copyfile(ntex_path, os.path.join(UNITY_DIR, "T_Chunks_N.png"))
     mat = get_mat("M_Chunks", (1, 1, 1), tex=tex_path)
     wmat = get_mat("M_ChunksWater", (0.03, 0.09, 0.1), alpha=0.75)
     wmat.diffuse_color = (0.05, 0.16, 0.18, 0.8)

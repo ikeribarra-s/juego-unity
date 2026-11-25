@@ -31,7 +31,8 @@ for k in ("floor0", "floor1", "floor2", "floor3", "floor4"):
 for k in ("dirt0", "dirt1", "dirt2"):
     FAMILY[k] = ("dirt", 1.0)
 for k in ("wood0", "wood1", "wood2", "wood3"):
-    FAMILY[k] = ("wood", 1.0)
+    FAMILY[k] = ("wood", 2.0)                # 8 px planks (0.25 m) at 32 px/m, same density as the stone
+FAMILY["wood_v"] = ("wood_v", 2.0)           # vertical planks (door jambs, posts)
 for k in ("iron0", "iron1", "brass", "brass1"):
     FAMILY[k] = ("metal", 1.0)
 FAMILY["rust"] = ("rust", 1.0)
@@ -151,17 +152,19 @@ def pattern(kind, rng):
         v = f * 1.6 + (rng.random((CELL, CELL)) < 0.06) * 0.5 - (rng.random((CELL, CELL)) < 0.08) * 0.5
     elif kind == "speckle":
         v = f + (rng.random((CELL, CELL)) - 0.5) * 0.4
-    elif kind == "wood":             # planks 16 px (0.25 m) along u, grain streaks, nails
+    elif kind in ("wood", "wood_v"):  # planks 8 px (0.25 m at 32 px/m) along u, grain streaks, nails
         g = np.repeat(_vnoise(rng, 16)[:, :1], CELL, axis=1)
         streak = (_vnoise(rng, 32) * 0.4 + np.sin(np.arange(CELL)[:, None] * 1.7 + _vnoise(rng, 4) * 6) * 0.25)
         v = streak + g * 0.3 + f * 0.5
-        for y0 in range(0, CELL, 16):
+        for y0 in range(0, CELL, 8):
             v[y0, :] = -1.2
             v[y0 + 1, :] += 0.2
             off = int(rng.integers(0, CELL))
-            v[y0:y0 + 16, off] = -1.0            # plank butt joint
+            v[y0:y0 + 8, off] = -1.0             # plank butt joint
             for nx in (off + 3, off - 4):
-                v[y0 + 4, nx % CELL] += 0.9; v[y0 + 11, nx % CELL] += 0.9
+                v[y0 + 2, nx % CELL] += 0.9; v[y0 + 5, nx % CELL] += 0.9
+        if kind == "wood_v":
+            v = np.ascontiguousarray(v.T)
     elif kind == "metal":            # 32 px plates with rivets
         v = f * 0.6
         for y0 in (0, 32):
@@ -284,8 +287,12 @@ def _books_rgb(rng):
     return np.clip(col, 0, 1)
 
 
+HEIGHTS = np.zeros((ATLAS, ATLAS))     # per-cell height field of the last atlas build (feeds the normal atlas)
+
+
 def make_ps2_atlas(path):
     img = np.zeros((ATLAS, ATLAS, 3))
+    HEIGHTS[:] = 0.0
     for i, (key, hx) in enumerate(PAL):
         base = np.array([int(hx[k:k + 2], 16) / 255.0 for k in (0, 2, 4)])
         kind, _ = family(key)
@@ -293,28 +300,71 @@ def make_ps2_atlas(path):
         if kind == "flat":
             col = np.tile(base, (CELL, CELL, 1))
             if key not in ("void", "amber", "ember", "green1", "crystal"):
-                col = _ramp(base, pattern(kind, rng)[0], levels=3, spread=0.06)
+                hv = pattern(kind, rng)[0]
+                col = _ramp(base, hv, levels=3, spread=0.06)
+                HEIGHTS[(i // 8) * CELL:(i // 8 + 1) * CELL, (i % 8) * CELL:(i % 8 + 1) * CELL] = hv
         else:
             v, books = pattern(kind, rng)
             spread = {"masonry": 0.36, "ashlar": 0.3, "ceiling": 0.3, "flagstone": 0.4, "rock": 0.4,
-                      "metal": 0.36, "bone": 0.18, "skulls": 0.55, "books": 0.5, "wood": 0.34}.get(kind, 0.3)
+                      "metal": 0.36, "bone": 0.18, "skulls": 0.55, "books": 0.5, "wood": 0.34, "wood_v": 0.34}.get(kind, 0.3)
             col = _ramp(base, v, levels=7 if kind not in ("skulls", "books") else 6, spread=spread, books=books)
+            HEIGHTS[(i // 8) * CELL:(i // 8 + 1) * CELL, (i % 8) * CELL:(i % 8 + 1) * CELL] = v
         if key == "books":
             col = _books_rgb(np.random.default_rng(1000 + i))
         cx, cy = i % 8, i // 8
         img[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = col
-    # PNG writer (top row first), 8-bit RGB
+    _write_png(path, img)
+
+
+def _write_png(path, img):
+    """8-bit RGB PNG (top row first)."""
     import struct, zlib as _z
+    n = img.shape[0]
     px = (np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8)
-    raw = b"".join(b"\x00" + px[y].tobytes() for y in range(ATLAS))
+    raw = b"".join(b"\x00" + px[y].tobytes() for y in range(n))
 
     def chunk(t, data):
         c = struct.pack(">I", len(data)) + t + data
         return c + struct.pack(">I", _z.crc32(t + data) & 0xffffffff)
-    png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", ATLAS, ATLAS, 8, 2, 0, 0, 0))
+    png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", n, n, 8, 2, 0, 0, 0))
     png += chunk(b"IDAT", _z.compress(raw, 9)) + chunk(b"IEND", b"")
     with open(path, "wb") as f:
         f.write(png)
+
+
+NORMAL_STRENGTH = 1.0
+NORMAL_QUANT = 0            # >0: quantise the gradient to that many steps per side (PS2-ish chunkiness)
+
+
+def make_ps2_normal_atlas(path):
+    """tangent-space normal atlas from the height fields captured by make_ps2_atlas. Per 64 px cell: slight blur,
+    wrapped central-difference gradients inside the cell (tiles seamlessly), n = (-gx, +gy, 1) * strength.
+    Atlas rows are top-first, so +image-down = -V: dh/dV = -(dh/drow) -> green = +gy(row) flipped by the sign below
+    (mortar/joints read RECESSED under a side light; flip GREEN_SIGN if it looks inverted)."""
+    out = np.zeros((ATLAS, ATLAS, 3)); out[..., 2] = 1.0
+    for i in range(64):
+        cy, cx = i // 8, i % 8
+        h = HEIGHTS[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL]
+        if not h.any():
+            out[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = (0.5, 0.5, 1.0)
+            continue
+        b = h.copy()
+        for ax in (0, 1):
+            b = 0.25 * np.roll(b, 1, ax) + 0.5 * b + 0.25 * np.roll(b, -1, ax)
+        gx = (np.roll(b, -1, 1) - np.roll(b, 1, 1)) * 0.5
+        gy = (np.roll(b, -1, 0) - np.roll(b, 1, 0)) * 0.5      # per row, rows go down the image
+        if NORMAL_QUANT:
+            q = NORMAL_QUANT
+            gx = np.round(gx * q) / q; gy = np.round(gy * q) / q
+        nx = -gx * NORMAL_STRENGTH
+        ny = GREEN_SIGN * gy * NORMAL_STRENGTH
+        n = np.stack([nx, ny, np.ones_like(nx)], -1)
+        n /= np.linalg.norm(n, axis=-1, keepdims=True)
+        out[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = n * 0.5 + 0.5
+    _write_png(path, out)
+
+
+GREEN_SIGN = 1.0
 
 
 def atlas_uv(key, s, t):

@@ -27,6 +27,7 @@ public static class ChunkPrefabBuilder
     private const string Root = "Assets/Art/Environment/Chunks";
     private const string Models = Root + "/Models";
     private const string TexPath = Root + "/T_Chunks_D.png";
+    private const string NormTexPath = Root + "/T_Chunks_N.png";
     private const string MatPath = Root + "/M_Chunks.mat";
     private const string WaterMatPath = Root + "/M_ChunksWater.mat";
     private const string ShaftMatPath = Root + "/M_ChunksShaft.mat";
@@ -42,6 +43,7 @@ public static class ChunkPrefabBuilder
     public static void BuildAll()
     {
         ConfigureTexture();
+        ConfigureNormalTexture();
         var mat = EnsureMaterial();
         var water = EnsureWaterMaterial();
         var shaft = EnsureShaftMaterial();
@@ -60,6 +62,19 @@ public static class ChunkPrefabBuilder
         }
         AssetDatabase.SaveAssets();
         Debug.Log($"[ChunkPrefabBuilder] Built {built} chunk prefabs in {Root}.");
+    }
+
+    private static void ConfigureNormalTexture()
+    {
+        var ti = AssetImporter.GetAtPath(NormTexPath) as TextureImporter;
+        if (ti == null) { Debug.LogWarning("[ChunkPrefabBuilder] Missing " + NormTexPath); return; }
+        ti.textureType = TextureImporterType.NormalMap;
+        ti.filterMode = FilterMode.Point;
+        ti.mipmapEnabled = false;
+        ti.wrapMode = TextureWrapMode.Clamp;
+        ti.textureCompression = TextureImporterCompression.Uncompressed;
+        ti.npotScale = TextureImporterNPOTScale.None;
+        ti.SaveAndReimport();
     }
 
     private static void ConfigureTexture()
@@ -94,6 +109,8 @@ public static class ChunkPrefabBuilder
         var ps2 = Shader.Find(PS2Shader);
         if (ps2 != null && m.shader != ps2) m.shader = ps2;
         m.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(TexPath));
+        m.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(NormTexPath));
+        m.SetFloat("_BumpScale", 1f);
         m.SetColor("_BaseColor", Color.white);
         m.enableInstancing = true;     // SRP Batcher handles the merged meshes; instancing helps any repeated detail
         EditorUtility.SetDirty(m);
@@ -153,6 +170,7 @@ public static class ChunkPrefabBuilder
         Set(() => mi.importLights, v => mi.importLights = v, false);
         Set(() => mi.addCollider, v => mi.addCollider = v, false);
         Set(() => mi.isReadable, v => mi.isReadable = v, false);
+        Set(() => mi.importTangents, v => mi.importTangents = v, ModelImporterTangents.CalculateMikk);
         Set(() => mi.animationType, v => mi.animationType = v, ModelImporterAnimationType.None);
         Set(() => mi.materialImportMode, v => mi.materialImportMode = v, ModelImporterMaterialImportMode.ImportViaMaterialDescription);
         var map = mi.GetExternalObjectMap();

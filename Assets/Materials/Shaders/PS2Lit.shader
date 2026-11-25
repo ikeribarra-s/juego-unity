@@ -16,6 +16,10 @@ Shader "Fluffterror/PS2Lit"
         [MainColor] _BaseColor ("Tint", Color)                            = (1, 1, 1, 1)
         _VertexColorStrength ("Baked Vertex AO Strength", Range(0, 1.5)) = 1
         _AmbientStrength("Ambient Strength", Range(0, 2))         = 1
+        [Normal] _BumpMap ("Normal Atlas (Point, no mips)", 2D) = "bump" {}
+        _BumpScale      ("Normal Strength", Range(0, 2)) = 1
+        _NormalFadeNear ("Normal Fade Start (m)", Float) = 12
+        _NormalFadeFar  ("Normal Fade End (m)", Float) = 28
         _ColorDepth     ("Colour Levels per Channel (0 = off)", Range(0, 64)) = 32
     }
 
@@ -28,6 +32,9 @@ Shader "Fluffterror/PS2Lit"
             half   _VertexColorStrength;
             half   _AmbientStrength;
             half   _ColorDepth;
+            half   _BumpScale;
+            float  _NormalFadeNear;
+            float  _NormalFadeFar;
         CBUFFER_END
     ENDHLSL
 
@@ -58,11 +65,13 @@ Shader "Fluffterror/PS2Lit"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_BumpMap); SAMPLER(sampler_BumpMap);
 
             struct Attributes
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
+                float4 tangentOS  : TANGENT;
                 float2 uv         : TEXCOORD0;
                 half4  color      : COLOR;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -76,6 +85,7 @@ Shader "Fluffterror/PS2Lit"
                 float3 normalWS   : TEXCOORD2;
                 half4  color      : TEXCOORD3;
                 half   fogFactor  : TEXCOORD4;
+                float4 tangentWS  : TEXCOORD5;   // xyz tangent, w bitangent sign
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -87,7 +97,10 @@ Shader "Fluffterror/PS2Lit"
                 VertexPositionInputs p = GetVertexPositionInputs(IN.positionOS.xyz);
                 OUT.positionCS = p.positionCS;
                 OUT.positionWS = p.positionWS;
-                OUT.normalWS   = TransformObjectToWorldNormal(IN.normalOS);
+                float4 tOS = dot(IN.tangentOS.xyz, IN.tangentOS.xyz) < 1e-8 ? float4(1, 0, 0, 1) : IN.tangentOS;   // Meshy meshes have none
+                VertexNormalInputs ni = GetVertexNormalInputs(IN.normalOS, tOS);
+                OUT.normalWS   = ni.normalWS;
+                OUT.tangentWS  = float4(ni.tangentWS, tOS.w * GetOddNegativeScale());
                 OUT.uv         = TRANSFORM_TEX(IN.uv, _BaseMap);
                 OUT.color      = lerp(half4(1, 1, 1, 1), IN.color, _VertexColorStrength);
                 OUT.fogFactor  = ComputeFogFactor(p.positionCS.z);
@@ -105,7 +118,14 @@ Shader "Fluffterror/PS2Lit"
             half4 frag(Varyings IN) : SV_Target
             {
                 half4  albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv) * _BaseColor * IN.color;
-                float3 N = normalize(IN.normalWS);
+                float3 Ng = normalize(IN.normalWS);
+                float3 T  = IN.tangentWS.xyz;
+                T = normalize(T - Ng * dot(T, Ng));
+                float3 B  = cross(Ng, T) * IN.tangentWS.w;
+                half3 nTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, IN.uv), _BumpScale);
+                float fade = 1.0 - saturate((distance(IN.positionWS, _WorldSpaceCameraPos) - _NormalFadeNear) / max(_NormalFadeFar - _NormalFadeNear, 0.01));
+                nTS.xy *= fade;
+                float3 N = normalize(mul(nTS, float3x3(T, B, Ng)));
 
                 InputData inputData = (InputData)0;
                 inputData.positionWS = IN.positionWS;

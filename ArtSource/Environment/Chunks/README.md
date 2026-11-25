@@ -100,7 +100,7 @@ Tri counts / sockets per chunk: see `chunks_manifest.json` (and the final table 
   jutting stones, chamfered arches, ribbed vaults), flat floors, and the small-scale detail in **low-res
   point-filtered textures + baked vertex-colour AO/grime**. (Round 1–2 were flat-colour PS1-ish; superseded.)
 - **One shared atlas** `T_Chunks_D.png` (512 × 512, 8 × 8 cells of 64 px, one tileable pattern per
-  palette entry) on **one material** `M_Chunks` (`Fluffterror/PS2Lit`, Point filter, no mips). Palette = ArtDirection §3 (blue-grey stone,
+  palette entry) + tangent-space normal atlas `T_Chunks_N.png` (same cells, from the same height fields via `make_ps2_normal_atlas`; `PS2Lit._BumpMap`, fades out 12-28 m); one floor key (`floor0`) and one wall key (`wall0`) per material, wood frames/wainscot behind `WOOD_FRAMES` (env `CHUNKS_WOOD_FRAMES=0` disables) on **one material** `M_Chunks` (`Fluffterror/PS2Lit`, Point filter, no mips). Palette = ArtDirection §3 (blue-grey stone,
   near-black shadow, amber/ember accents, sick red ritual, ghost green exit, bone white) + wood, iron,
   straw, dirt, brass. The kits are flat-colour URP Lit too, so kit props sit in the chunks naturally.
 - No baked lighting; light comes from the torch sockets (≤ 4 per set piece, landmark lights unshadowed).
@@ -178,7 +178,7 @@ blocks a standing one; stair ramps 31° / 34°, flooded ramps 18°, balcony at 3
    NavMeshLink if Chucho must not pass.
 9. **Perf**: ≤ 5.4k tris per chunk, one material, static-batching flags set on everything except the
    bell, gate and water. No lights are baked into the prefabs — every light comes from the sockets.
-10. **Rebuild**: edit `build_chunks.py` → run it in Blender (re-exports FBX + manifest) → Unity
+10. **Rebuild** (also writes `T_Chunks_N.png`; `MB.pick()` must keep its rng draw or colliders/rocks move; palette keys are APPEND-only): edit `build_chunks.py` → run it in Blender (re-exports FBX + manifest) → Unity
     **Fluffterror › Chunks › Build Authored Chunk Prefabs**. Renders: `render_chunks.py`
     (`render_all()`, `kit_render()`).
 

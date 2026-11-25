@@ -53,13 +53,13 @@
     }
    ],
    "tris": {
-    "structure": 760,
+    "structure": 840,
     "detail": 172,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 988,
-   "tris_lod1": 832,
+   "tris_lod0": 1068,
+   "tris_lod1": 912,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -187,13 +187,13 @@
     }
    ],
    "tris": {
-    "structure": 852,
+    "structure": 956,
     "detail": 184,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 1084,
-   "tris_lod1": 916,
+   "tris_lod0": 1188,
+   "tris_lod1": 1020,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -313,13 +313,13 @@
     }
    ],
    "tris": {
-    "structure": 872,
+    "structure": 960,
     "detail": 140,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1080,
-   "tris_lod1": 960,
+   "tris_lod0": 1168,
+   "tris_lod1": 1048,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -470,13 +470,13 @@
     }
    ],
    "tris": {
-    "structure": 1064,
+    "structure": 1160,
     "detail": 132,
     "floor_lod1": 24,
     "ceiling": 88
    },
-   "tris_lod0": 1284,
-   "tris_lod1": 1176,
+   "tris_lod0": 1380,
+   "tris_lod1": 1272,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -612,13 +612,13 @@
     }
    ],
    "tris": {
-    "structure": 702,
+    "structure": 822,
     "detail": 346,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1076,
-   "tris_lod1": 742,
+   "tris_lod0": 1196,
+   "tris_lod1": 862,
    "mask_north_up": [
     "########",
     "########",
@@ -754,13 +754,13 @@
     }
    ],
    "tris": {
-    "structure": 1292,
+    "structure": 1388,
     "detail": 92,
     "floor_lod1": 32,
     "ceiling": 68
    },
-   "tris_lod0": 1452,
-   "tris_lod1": 1392,
+   "tris_lod0": 1548,
+   "tris_lod1": 1488,
    "mask_north_up": [
     "########",
     "#oo...o#",
@@ -938,13 +938,13 @@
     }
    ],
    "tris": {
-    "structure": 2724,
+    "structure": 2916,
     "detail": 700,
     "floor_lod1": 140,
     "ceiling": 416
    },
-   "tris_lod0": 3840,
-   "tris_lod1": 3280,
+   "tris_lod0": 4032,
+   "tris_lod1": 3472,
    "mask_north_up": [
     "##########DDDD##",
     "#............oo#",
@@ -1263,13 +1263,13 @@
     }
    ],
    "tris": {
-    "structure": 2392,
+    "structure": 2536,
     "detail": 400,
     "floor_lod1": 64,
     "ceiling": 156
    },
-   "tris_lod0": 2948,
-   "tris_lod1": 2612,
+   "tris_lod0": 3092,
+   "tris_lod1": 2756,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -1497,13 +1497,13 @@
     }
    ],
    "tris": {
-    "structure": 2520,
+    "structure": 2760,
     "detail": 1110,
     "floor_lod1": 132,
     "ceiling": 132
    },
-   "tris_lod0": 3762,
-   "tris_lod1": 2784,
+   "tris_lod0": 4002,
+   "tris_lod1": 3024,
    "mask_north_up": [
     "##########DDDD##",
     "#ooo........ooo#",
@@ -1827,13 +1827,13 @@
     }
    ],
    "tris": {
-    "structure": 904,
+    "structure": 944,
     "detail": 1672,
     "floor_lod1": 16,
     "ceiling": 266
    },
-   "tris_lod0": 2842,
-   "tris_lod1": 1186,
+   "tris_lod0": 2882,
+   "tris_lod1": 1226,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -1958,14 +1958,14 @@
     }
    ],
    "tris": {
-    "structure": 1576,
+    "structure": 1692,
     "detail": 208,
     "floor_lod1": 128,
     "ceiling": 120,
     "water": 144
    },
-   "tris_lod0": 2048,
-   "tris_lod1": 1968,
+   "tris_lod0": 2164,
+   "tris_lod1": 2084,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -2161,13 +2161,13 @@
     }
    ],
    "tris": {
-    "structure": 3194,
+    "structure": 2972,
     "detail": 700,
     "floor_lod1": 132,
     "ceiling": 120
    },
-   "tris_lod0": 4014,
-   "tris_lod1": 3446,
+   "tris_lod0": 3792,
+   "tris_lod1": 3224,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -2339,14 +2339,14 @@
     }
    ],
    "tris": {
-    "structure": 2398,
+    "structure": 2426,
     "detail": 220,
     "floor_lod1": 36,
-    "ceiling": 216,
+    "ceiling": 160,
     "bell": 12
    },
-   "tris_lod0": 2846,
-   "tris_lod1": 2662,
+   "tris_lod0": 2818,
+   "tris_lod1": 2634,
    "mask_north_up": [
     "########",
     "#......#",
@@ -2544,13 +2544,13 @@
     }
    ],
    "tris": {
-    "structure": 1800,
+    "structure": 1944,
     "detail": 1774,
     "floor_lod1": 176,
     "ceiling": 120
    },
-   "tris_lod0": 3694,
-   "tris_lod1": 2096,
+   "tris_lod0": 3838,
+   "tris_lod1": 2240,
    "mask_north_up": [
     "########",
     "#ooo...#",
@@ -2778,13 +2778,13 @@
     }
    ],
    "tris": {
-    "structure": 1360,
+    "structure": 1480,
     "detail": 92,
     "floor_lod1": 32,
     "ceiling": 60
    },
-   "tris_lod0": 1512,
-   "tris_lod1": 1452,
+   "tris_lod0": 1632,
+   "tris_lod1": 1572,
    "mask_north_up": [
     "########",
     "#......#",
@@ -2909,14 +2909,14 @@
     }
    ],
    "tris": {
-    "structure": 2672,
+    "structure": 2928,
     "detail": 504,
     "floor_lod1": 132,
     "ceiling": 132,
     "gate": 156
    },
-   "tris_lod0": 3464,
-   "tris_lod1": 3092,
+   "tris_lod0": 3720,
+   "tris_lod1": 3348,
    "mask_north_up": [
     "######....######",
     "#..............#",
@@ -3136,13 +3136,13 @@
     }
    ],
    "tris": {
-    "structure": 2748,
+    "structure": 2526,
     "detail": 718,
     "floor_lod1": 64,
     "ceiling": 64
    },
-   "tris_lod0": 3530,
-   "tris_lod1": 2876,
+   "tris_lod0": 3308,
+   "tris_lod1": 2654,
    "mask_north_up": [
     "##DDDD##",
     "#.....o#",
@@ -3400,13 +3400,13 @@
     }
    ],
    "tris": {
-    "structure": 1376,
+    "structure": 1444,
     "detail": 248,
     "floor_lod1": 36,
     "ceiling": 96
    },
-   "tris_lod0": 1720,
-   "tris_lod1": 1508,
+   "tris_lod0": 1788,
+   "tris_lod1": 1576,
    "mask_north_up": [
     "########",
     "#......#",
@@ -3605,13 +3605,13 @@
     }
    ],
    "tris": {
-    "structure": 1034,
+    "structure": 1022,
     "detail": 820,
     "floor_lod1": 64,
     "ceiling": 120
    },
-   "tris_lod0": 1974,
-   "tris_lod1": 1218,
+   "tris_lod0": 1962,
+   "tris_lod1": 1206,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -3819,14 +3819,14 @@
     }
    ],
    "tris": {
-    "structure": 2242,
+    "structure": 2234,
     "detail": 252,
     "floor_lod1": 68,
     "ceiling": 68,
     "shaft": 320
    },
-   "tris_lod0": 2882,
-   "tris_lod1": 2698,
+   "tris_lod0": 2874,
+   "tris_lod1": 2690,
    "mask_north_up": [
     "########",
     "#......#",
@@ -4073,13 +4073,13 @@
     }
    ],
    "tris": {
-    "structure": 1936,
+    "structure": 2024,
     "detail": 1780,
     "floor_lod1": 64,
     "ceiling": 64
    },
-   "tris_lod0": 3780,
-   "tris_lod1": 2064,
+   "tris_lod0": 3868,
+   "tris_lod1": 2152,
    "mask_north_up": [
     "##DDDD##",
     "#oo....#",
@@ -4311,13 +4311,13 @@
     }
    ],
    "tris": {
-    "structure": 1240,
+    "structure": 1280,
     "detail": 193,
     "floor_lod1": 46,
     "ceiling": 96
    },
-   "tris_lod0": 1529,
-   "tris_lod1": 1382,
+   "tris_lod0": 1569,
+   "tris_lod1": 1422,
    "mask_north_up": [
     "########",
     "#......#",
@@ -4542,14 +4542,14 @@
     }
    ],
    "tris": {
-    "structure": 1876,
+    "structure": 2060,
     "detail": 286,
     "floor_lod1": 64,
     "ceiling": 64,
     "lids": 80
    },
-   "tris_lod0": 2306,
-   "tris_lod1": 2084,
+   "tris_lod0": 2490,
+   "tris_lod1": 2268,
    "mask_north_up": [
     "########",
     "#..oo..#",
@@ -4803,14 +4803,14 @@
     }
    ],
    "tris": {
-    "structure": 1550,
+    "structure": 1666,
     "detail": 256,
     "floor_lod1": 112,
     "ceiling": 120,
     "water": 56
    },
-   "tris_lod0": 1982,
-   "tris_lod1": 1838,
+   "tris_lod0": 2098,
+   "tris_lod1": 1954,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -5021,14 +5021,14 @@
     }
    ],
    "tris": {
-    "structure": 1280,
+    "structure": 1328,
     "detail": 1870,
     "floor_lod1": 64,
     "ceiling": 392,
     "water": 15
    },
-   "tris_lod0": 3557,
-   "tris_lod1": 1751,
+   "tris_lod0": 3605,
+   "tris_lod1": 1799,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -5228,13 +5228,13 @@
     }
    ],
    "tris": {
-    "structure": 3284,
+    "structure": 3280,
     "detail": 716,
     "floor_lod1": 132,
     "ceiling": 132
    },
-   "tris_lod0": 4132,
-   "tris_lod1": 3548,
+   "tris_lod0": 4128,
+   "tris_lod1": 3544,
    "mask_north_up": [
     "################",
     "#..........oooo#",
@@ -5503,13 +5503,13 @@
     }
    ],
    "tris": {
-    "structure": 860,
-    "detail": 724,
+    "structure": 928,
+    "detail": 716,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 1640,
-   "tris_lod1": 932,
+   "tris_lod0": 1700,
+   "tris_lod1": 1000,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -5637,13 +5637,13 @@
     }
    ],
    "tris": {
-    "structure": 1082,
+    "structure": 1142,
     "detail": 320,
     "floor_lod1": 30,
     "ceiling": 48
    },
-   "tris_lod0": 1450,
-   "tris_lod1": 1160,
+   "tris_lod0": 1510,
+   "tris_lod1": 1220,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -5810,13 +5810,13 @@
     }
    ],
    "tris": {
-    "structure": 1360,
+    "structure": 1456,
     "detail": 212,
     "floor_lod1": 30,
     "ceiling": 88
    },
-   "tris_lod0": 1660,
-   "tris_lod1": 1478,
+   "tris_lod0": 1756,
+   "tris_lod1": 1574,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -5986,13 +5986,13 @@
     }
    ],
    "tris": {
-    "structure": 1076,
+    "structure": 1156,
     "detail": 190,
     "floor_lod1": 16,
     "ceiling": 36
    },
-   "tris_lod0": 1302,
-   "tris_lod1": 1128,
+   "tris_lod0": 1382,
+   "tris_lod1": 1208,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6122,14 +6122,14 @@
     }
    ],
    "tris": {
-    "structure": 800,
+    "structure": 904,
     "detail": 249,
     "floor_lod1": 16,
     "ceiling": 48,
     "water": 15
    },
-   "tris_lod0": 1112,
-   "tris_lod1": 879,
+   "tris_lod0": 1216,
+   "tris_lod1": 983,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6263,13 +6263,13 @@
     }
    ],
    "tris": {
-    "structure": 1300,
+    "structure": 1356,
     "detail": 140,
     "floor_lod1": 20,
     "ceiling": 36
    },
-   "tris_lod0": 1476,
-   "tris_lod1": 1356,
+   "tris_lod0": 1532,
+   "tris_lod1": 1412,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6410,13 +6410,13 @@
     }
    ],
    "tris": {
-    "structure": 712,
+    "structure": 792,
     "detail": 172,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 940,
-   "tris_lod1": 784,
+   "tris_lod0": 1020,
+   "tris_lod1": 864,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6546,13 +6546,13 @@
     }
    ],
    "tris": {
-    "structure": 956,
+    "structure": 1036,
     "detail": 172,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 1184,
-   "tris_lod1": 1028,
+   "tris_lod0": 1264,
+   "tris_lod1": 1108,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6680,13 +6680,13 @@
     }
    ],
    "tris": {
-    "structure": 708,
+    "structure": 812,
     "detail": 184,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 940,
-   "tris_lod1": 772,
+   "tris_lod0": 1044,
+   "tris_lod1": 876,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6803,13 +6803,13 @@
     }
    ],
    "tris": {
-    "structure": 868,
+    "structure": 972,
     "detail": 184,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 1100,
-   "tris_lod1": 932,
+   "tris_lod0": 1204,
+   "tris_lod1": 1036,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6929,13 +6929,13 @@
     }
    ],
    "tris": {
-    "structure": 896,
+    "structure": 984,
     "detail": 140,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1104,
-   "tris_lod1": 984,
+   "tris_lod0": 1192,
+   "tris_lod1": 1072,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -7083,13 +7083,13 @@
     }
    ],
    "tris": {
-    "structure": 1048,
+    "structure": 1136,
     "detail": 140,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1256,
-   "tris_lod1": 1136,
+   "tris_lod0": 1344,
+   "tris_lod1": 1224,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -7240,13 +7240,13 @@
     }
    ],
    "tris": {
-    "structure": 1100,
+    "structure": 1196,
     "detail": 132,
     "floor_lod1": 24,
     "ceiling": 88
    },
-   "tris_lod0": 1320,
-   "tris_lod1": 1212,
+   "tris_lod0": 1416,
+   "tris_lod1": 1308,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -7399,13 +7399,13 @@
     }
    ],
    "tris": {
-    "structure": 1344,
+    "structure": 1440,
     "detail": 132,
     "floor_lod1": 24,
     "ceiling": 88
    },
-   "tris_lod0": 1564,
-   "tris_lod1": 1456,
+   "tris_lod0": 1660,
+   "tris_lod1": 1552,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -7541,13 +7541,13 @@
     }
    ],
    "tris": {
-    "structure": 750,
+    "structure": 870,
     "detail": 346,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1124,
-   "tris_lod1": 790,
+   "tris_lod0": 1244,
+   "tris_lod1": 910,
    "mask_north_up": [
     "########",
     "########",
@@ -7685,13 +7685,13 @@
     }
    ],
    "tris": {
-    "structure": 878,
+    "structure": 998,
     "detail": 346,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1252,
-   "tris_lod1": 918,
+   "tris_lod0": 1372,
+   "tris_lod1": 1038,
    "mask_north_up": [
     "########",
     "########",

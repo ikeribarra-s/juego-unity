@@ -162,6 +162,7 @@ GameObject
 ### Shaders — `Assets/Materials/Shaders/`
 - **`BlinnPhong_Textured.shader`** — URP HLSL. Inputs: `_k_d_tex` (diffuse), `_k_s_tex` (specular/roughness), `_N_tex` (normal), `_n` (shininess), `[HDR] _EmissionColor`, `_EmissionIntensity`. Roughness conversion: `pow(IsRoughness + (-2*IsRoughness+1)*k_s, 2)`. Three passes: ForwardLit (`Blend One Zero`), ShadowCaster, DepthOnly. LIGHT_LOOP_BEGIN/END for Forward+ additional lights. SRP Batcher compatible (identical CBUFFER across all passes).
 - **`PS2Lit.shader`** (`Fluffterror/PS2Lit`) — map-chunk material `M_Chunks`: point-sampled 512² atlas (`T_Chunks_D`, 64 px tileable cells) × baked **vertex colour** (AO + grime from `ArtSource/Environment/Chunks/ps2_style.py`, `_VertexColorStrength`), Lambert from main + all additional lights (Forward+ `_CLUSTER_LIGHT_LOOP`, `_LIGHT_LAYERS`), shadows, SH ambient, SSAO, fog, optional `_ColorDepth` (32 levels + 4×4 dither, 0 = off). Passes: ForwardLit, ShadowCaster, DepthOnly, DepthNormals. Applied by `ChunkPrefabBuilder.EnsureMaterial`.
+- **`PS2Lit.shader`** — chunk shader (Lambert, Forward+ loop, Light Layers); samples tangent-space `_BumpMap` (`T_Chunks_N`, fades 12-28 m; Meshy props have no tangents -> fallback + flat default texture).
 - **`BlinnPhong.shader`** — Simpler variant at `Assets/_Game/Rendering/` with Albedo, Normal, Specular, Shininess, Emission.
 
 ### Audio — `Assets/_Game/Audio/`
