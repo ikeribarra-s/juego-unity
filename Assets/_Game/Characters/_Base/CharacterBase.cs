@@ -43,6 +43,8 @@ public class CharacterBase : MonoBehaviour
             Vitals = gameObject.AddComponent<CharacterVitals>();
         if (TorchCarrier == null)
             TorchCarrier = gameObject.AddComponent<TorchCarrier>();
+        if (GetComponent<WaterSplashEmitter>() == null)
+            gameObject.AddComponent<WaterSplashEmitter>();
 
         if (Movement == null)
             Debug.LogError($"[CharacterBase] No CharacterMovement on '{name}'. Set a Definition and let the editor sync the component.", this);

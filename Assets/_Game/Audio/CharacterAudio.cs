@@ -139,6 +139,9 @@ public class CharacterAudio : MonoBehaviour
 
     private bool _inWater;
 
+    /// <summary>Raised on every foot contact (animation contact frame, or the distance-based fallback step). Used by WaterSplashEmitter.</summary>
+    public event System.Action FootContact;
+
     private void HandleWater()
     {
         bool now = WaterVolume.TryFind(transform.position) != null;
@@ -273,6 +276,7 @@ public class CharacterAudio : MonoBehaviour
 
     private void TriggerStep()
     {
+        if (_animDriver == null) FootContact?.Invoke();   // animation-driven contacts raise it in AnimationFootstep
         if (_stepCooldown > 0f) return;
 
         var m   = _character.Movement;
@@ -391,6 +395,7 @@ public class CharacterAudio : MonoBehaviour
     /// <summary>Foot-contact frame of the locomotion animation. Picks walk/sprint/crouch from the movement state.</summary>
     public void AnimationFootstep()
     {
+        FootContact?.Invoke();
         if (!_controller.isGrounded) return;
         Vector3 hVel = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
         if (hVel.magnitude < MinMoveSpeed) return;

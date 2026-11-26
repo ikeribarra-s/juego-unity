@@ -82,6 +82,9 @@ public class TorchArmAnimator : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _pitchTiltFollow = 0.5f;
     [Tooltip("Pitch (deg) beyond which the hand stops following the camera, so it never chases an unreachable target.")]
     [SerializeField] private float _pitchFollowLimit = 30f;
+    [Tooltip("Max degrees the lantern follows the view when looking UP. The arm is already at its comfortable reach looking level; " +
+             "following further up made the IK fall short and the lantern clip into the camera.")]
+    [SerializeField] private float _pitchUpFollowLimit = 0f;
     [Tooltip("Soft IK reach limit as a fraction of the arm length. The target is eased in before full extension so " +
              "the elbow never snaps straight (the straight-arm singularity makes the elbow wave).")]
     [SerializeField, Range(0.8f, 1f)] private float _maxReach = 0.99f;
@@ -260,7 +263,10 @@ public class TorchArmAnimator : MonoBehaviour
         // follows part of the pitch (_pitchTiltFollow) so the torch stays nearly upright.
         Vector3 fwd   = Quaternion.Inverse(level) * cam.forward;
         float   pitch = -Mathf.Atan2(fwd.y, new Vector2(fwd.x, fwd.z).magnitude) * Mathf.Rad2Deg; // + = looking down
-        pitch = Mathf.Clamp(pitch, -_pitchFollowLimit, _pitchFollowLimit) * _pitchFollow;
+        // Looking UP is clamped much harder than down: the shoulder swings behind the eye (0.39 m at 30 deg up) and the short
+        // arm can't hold the lantern out there, so the IK fell short and drove the lantern into the camera. Kept at the level
+        // pose, the lantern drops off the bottom of the screen instead.
+        pitch = Mathf.Clamp(pitch, -_pitchUpFollowLimit, _pitchFollowLimit) * _pitchFollow;
         Quaternion view = level * Quaternion.Euler(pitch, 0f, 0f);
 
         // Glide the shoulder joint: smooth it in the view frame and turn the collarbone toward the smoothed point.

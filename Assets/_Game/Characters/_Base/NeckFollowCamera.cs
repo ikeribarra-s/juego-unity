@@ -29,6 +29,9 @@ public class NeckFollowCamera : MonoBehaviour
              "stepped 24fps motion). ~0.04-0.06 hides the step without feeling heavy. Lower = snappier.")]
     [SerializeField] private float _smoothTime = 0.05f;
 
+    [Tooltip("First-person near clip plane (m). Unity's default 0.3 sliced the lantern held ~0.4 m from the eye.")]
+    [SerializeField] private float _nearClip = 0.05f;
+
     /// <summary>Eye offset currently applied (stand/crouch blend), in the character's axes. Used by TorchArmAnimator.</summary>
     public Vector3 CurrentEyeOffset { get; private set; }
     /// <summary>The standing eye offset (what the lantern framing is calibrated against).</summary>
@@ -53,6 +56,9 @@ public class NeckFollowCamera : MonoBehaviour
 
         var character = GetComponentInParent<CharacterBase>();
         _body = character != null ? character.transform : transform.root;
+
+        if (_camera != null && _camera.TryGetComponent<Camera>(out var cam) && cam.nearClipPlane > _nearClip)
+            cam.nearClipPlane = _nearClip;
 
         if (_camera != null && _camera.parent != null)
         {

@@ -137,7 +137,7 @@ public static class ChunkPrefabBuilder
         var m = LoadOrCreate(WaterMatPath, "Universal Render Pipeline/Lit");
         m.SetFloat("_Blend", 0f);
         MakeTransparent(m, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
-        m.SetColor("_BaseColor", new Color(0.05f, 0.15f, 0.17f, 0.78f));
+        m.SetColor("_BaseColor", new Color(0.05f, 0.15f, 0.17f, 0.5f));
         m.SetFloat("_Smoothness", 0.92f);
         EditorUtility.SetDirty(m);
         return m;
