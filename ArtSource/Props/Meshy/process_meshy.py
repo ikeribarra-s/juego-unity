@@ -79,6 +79,18 @@ PROPS = {
     "SewerValve":  dict(box=(1.1, 0.8, 1.3), tris=700, px=128, pivot="bottom", pal=["iron", "rust", "moss"]),
 }
 
+
+PROPS.update({
+ "RockBoulderA": dict(box=(1.0,0.9,0.7), tris=400, px=128, pivot="bottom", pal=["rock_grey"], dither=0.02),
+ "RockBoulderB": dict(box=(0.7,0.7,0.5), tris=300, px=128, pivot="bottom", pal=["rock_grey"], dither=0.02),
+ "RockCluster": dict(box=(0.9,0.9,0.45), tris=400, px=128, pivot="bottom", pal=["rock_grey"], dither=0.02, stretch=True),
+ "RubblePile": dict(box=(1.4,1.0,0.5), tris=600, px=128, pivot="bottom", pal=["stone","stone_dk"], stretch=True, voxel=0.03),
+ "BoneScatter": dict(box=(0.9,0.9,0.2), tris=400, px=64, pivot="bottom", pal=["bone","dirt"], voxel=0.012, stretch=True),
+ "SkullPile": dict(box=(0.6,0.6,0.45), tris=450, px=128, pivot="bottom", pal=["bone","dirt"]),
+ "Ribcage": dict(box=(1.0,0.5,0.25), tris=350, px=128, pivot="bottom", pal=["bone","dirt"], voxel=0.012, yaw=90, stretch=True),
+ "Remains": dict(box=(1.8,0.7,0.3), tris=450, px=128, pivot="bottom", pal=["bone","cloth","dirt"], yaw=90, stretch=True),
+ "DogBowl": dict(box=(0.6,0.6,0.3), tris=500, px=128, pivot="bottom", pal=["iron","bone","red"], voxel=0.012),
+})
 # Blender asset library: catalogue + suggested chunk per prop (tags on the asset)
 LIB = {
     "Bell": ("Structural", "CH_SP_BellTower"), "Skull": ("Funerary", "CH_SP_Ossuary"),
@@ -96,6 +108,10 @@ LIB = {
     "Font": ("Ritual", "CH_Room_Chapel"), "Brazier": ("Lighting", "CH_Room_Ritual"),
     "SewerValve": ("Structural", "CH_SP_SewerChannel"),
 }
+LIB.update({"RockBoulderA":("Debris","CH_SP_CaveTransition"),"RockBoulderB":("Debris","CH_SP_CaveTransition"),
+ "RockCluster":("Debris","CH_SP_CollapsedCorridor"),"RubblePile":("Debris","CH_SP_CollapsedCorridor"),
+ "BoneScatter":("Debris","CH_SP_Ossuary"),"SkullPile":("Funerary","CH_SP_Ossuary"),
+ "Ribcage":("Debris","CH_SP_TrapCorridor"),"Remains":("Funerary","CH_SP_TrapCorridor")})
 CATEGORIES = ["Furniture", "Containers", "Lighting", "Funerary", "Ritual", "Debris", "Structural"]
 
 BAYER = (np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) + 0.5) / 16 - 0.5

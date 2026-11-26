@@ -54,11 +54,11 @@
    ],
    "tris": {
     "structure": 840,
-    "detail": 172,
+    "detail": 112,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 1068,
+   "tris_lod0": 1008,
    "tris_lod1": 912,
    "mask_north_up": [
     "##DDDD##",
@@ -150,7 +150,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       -1.6,
+       0.0,
+       -2.6
+      ],
+      "forward": [
+       -0.993,
+       0,
+       0.116
+      ],
+      "scale": 0.45887254996765603,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Corner",
@@ -188,11 +207,11 @@
    ],
    "tris": {
     "structure": 956,
-    "detail": 184,
+    "detail": 76,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 1188,
+   "tris_lod0": 1080,
    "tris_lod1": 1020,
    "mask_north_up": [
     "##DDDD##",
@@ -271,7 +290,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       -1.0,
+       0.0,
+       -1.2
+      ],
+      "forward": [
+       0.616,
+       0,
+       -0.788
+      ],
+      "scale": 1.0296053279737782,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_T",
@@ -314,11 +352,11 @@
    ],
    "tris": {
     "structure": 960,
-    "detail": 140,
+    "detail": 92,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1168,
+   "tris_lod0": 1120,
    "tris_lod1": 1048,
    "mask_north_up": [
     "##DDDD##",
@@ -423,7 +461,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       1.4,
+       0.0,
+       -1.5
+      ],
+      "forward": [
+       0.997,
+       0,
+       -0.076
+      ],
+      "scale": 0.355949712593602,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Cross",
@@ -613,11 +670,11 @@
    ],
    "tris": {
     "structure": 822,
-    "detail": 346,
+    "detail": 94,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1196,
+   "tris_lod0": 944,
    "tris_lod1": 862,
    "mask_north_up": [
     "########",
@@ -722,7 +779,42 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_SkullPile",
+      "prefab": "PROP_MeshySkullPile",
+      "pos": [
+       0.0,
+       1.53,
+       1.8
+      ],
+      "forward": [
+       -0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.4,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       0.6,
+       0.0,
+       0.4
+      ],
+      "forward": [
+       0.925,
+       0,
+       0.38
+      ],
+      "scale": 1.5221694977496592,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Room_Storage",
@@ -890,7 +982,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Sacks",
+      "prefab": "PROP_MeshySacks",
+      "pos": [
+       1.1,
+       0.0,
+       2.35
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Room_PillarHall",
@@ -939,11 +1050,11 @@
    ],
    "tris": {
     "structure": 2916,
-    "detail": 700,
+    "detail": 580,
     "floor_lod1": 140,
     "ceiling": 416
    },
-   "tris_lod0": 4032,
+   "tris_lod0": 3912,
    "tris_lod1": 3472,
    "mask_north_up": [
     "##########DDDD##",
@@ -1225,7 +1336,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       4.5,
+       0.0,
+       -6.2
+      ],
+      "forward": [
+       0.641,
+       0,
+       -0.767
+      ],
+      "scale": 1.1538390546616888,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Room_Crypt",
@@ -1263,13 +1393,13 @@
     }
    ],
    "tris": {
-    "structure": 2536,
-    "detail": 400,
+    "structure": 2376,
+    "detail": 292,
     "floor_lod1": 64,
     "ceiling": 156
    },
-   "tris_lod0": 3092,
-   "tris_lod1": 2756,
+   "tris_lod0": 2824,
+   "tris_lod1": 2596,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -1459,7 +1589,74 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Coffin",
+      "prefab": "PROP_MeshyCoffin",
+      "pos": [
+       -2.6,
+       0.3,
+       -4.25
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_CoffinAjar",
+      "prefab": "PROP_MeshyCoffinAjar",
+      "pos": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_Ribcage",
+      "prefab": "PROP_MeshyRibcage",
+      "pos": [
+       1.4,
+       0.0,
+       -2.3
+      ],
+      "forward": [
+       0.168,
+       0,
+       -0.986
+      ],
+      "scale": 0.9441857885878455,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       1.4,
+       0.0,
+       3.0
+      ],
+      "forward": [
+       0.997,
+       0,
+       0.078
+      ],
+      "scale": 1.223639771221698,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Room_Ritual",
@@ -1498,11 +1695,11 @@
    ],
    "tris": {
     "structure": 2760,
-    "detail": 1110,
+    "detail": 966,
     "floor_lod1": 132,
     "ceiling": 132
    },
-   "tris_lod0": 4002,
+   "tris_lod0": 3858,
    "tris_lod1": 3024,
    "mask_north_up": [
     "##########DDDD##",
@@ -1788,6 +1985,38 @@
       ],
       "scale": 1.0,
       "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       2.5,
+       0.0,
+       -3.8
+      ],
+      "forward": [
+       -0.771,
+       0,
+       -0.636
+      ],
+      "scale": 1.4885962716802907,
+      "part": ""
+     },
+     {
+      "name": "HERO_Brazier",
+      "prefab": "PROP_MeshyBrazier",
+      "pos": [
+       -6.2,
+       0.0,
+       2.6
+      ],
+      "forward": [
+       0.928,
+       0,
+       -0.371
+      ],
+      "scale": 1.0,
+      "part": ""
      }
     ]
    }
@@ -1828,11 +2057,11 @@
    ],
    "tris": {
     "structure": 944,
-    "detail": 1672,
+    "detail": 1216,
     "floor_lod1": 16,
     "ceiling": 266
    },
-   "tris_lod0": 2882,
+   "tris_lod0": 2426,
    "tris_lod1": 1226,
    "mask_north_up": [
     "##DDDD##",
@@ -1919,7 +2148,57 @@
      ],
      "height": 1.3,
      "length": 3.0
-    }
+    },
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       1.3,
+       1.6,
+       0.0
+      ],
+      "forward": [
+       1.0,
+       0,
+       0.0
+      ],
+      "scale": 1.5,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockCluster_01",
+      "prefab": "PROP_MeshyRockCluster",
+      "pos": [
+       0.0,
+       0.0,
+       -2.3
+      ],
+      "forward": [
+       -0.016,
+       0,
+       -1.0
+      ],
+      "scale": 1.1096249860148069,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockCluster_02",
+      "prefab": "PROP_MeshyRockCluster",
+      "pos": [
+       -0.5,
+       0.0,
+       2.4
+      ],
+      "forward": [
+       -0.005,
+       0,
+       1.0
+      ],
+      "scale": 0.9732791979883885,
+      "part": ""
+     }
+    ]
    }
   },
   {
@@ -2162,11 +2441,11 @@
    ],
    "tris": {
     "structure": 2972,
-    "detail": 700,
+    "detail": 280,
     "floor_lod1": 132,
     "ceiling": 120
    },
-   "tris_lod0": 3792,
+   "tris_lod0": 3372,
    "tris_lod1": 3224,
    "mask_north_up": [
     "##DDDD##",
@@ -2300,7 +2579,41 @@
       1.0
      ],
      "stairs": "x -3..-1.8, y -1 -> 4, 31 deg"
-    }
+    },
+    "heroes": [
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       1.2,
+       -3.0,
+       -1.8
+      ],
+      "forward": [
+       -0.923,
+       0,
+       0.385
+      ],
+      "scale": 2.0371171587616765,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockCluster",
+      "prefab": "PROP_MeshyRockCluster",
+      "pos": [
+       2.3,
+       -3.0,
+       3.2
+      ],
+      "forward": [
+       0.983,
+       0,
+       0.182
+      ],
+      "scale": 0.7488585200964024,
+      "part": ""
+     }
+    ]
    }
   },
   {
@@ -2544,13 +2857,13 @@
     }
    ],
    "tris": {
-    "structure": 1944,
-    "detail": 1774,
+    "structure": 1914,
+    "detail": 226,
     "floor_lod1": 176,
     "ceiling": 120
    },
-   "tris_lod0": 3838,
-   "tris_lod1": 2240,
+   "tris_lod0": 2260,
+   "tris_lod1": 2210,
    "mask_north_up": [
     "########",
     "#ooo...#",
@@ -2744,6 +3057,54 @@
       ],
       "scale": 1.0,
       "part": ""
+     },
+     {
+      "name": "HERO_BonePile",
+      "prefab": "PROP_MeshyBonePile",
+      "pos": [
+       -1.9,
+       0.55,
+       5.4
+      ],
+      "forward": [
+       -0.823,
+       0,
+       0.568
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_DogBowl",
+      "prefab": "PROP_MeshyDogBowl",
+      "pos": [
+       2.2,
+       0.0,
+       0.6
+      ],
+      "forward": [
+       -0.582,
+       0,
+       -0.813
+      ],
+      "scale": 1.2,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       0.5,
+       0.0,
+       -1.0
+      ],
+      "forward": [
+       0.882,
+       0,
+       0.471
+      ],
+      "scale": 1.998988780580559,
+      "part": ""
      }
     ]
    }
@@ -2910,12 +3271,12 @@
    ],
    "tris": {
     "structure": 2928,
-    "detail": 504,
+    "detail": 432,
     "floor_lod1": 132,
     "ceiling": 132,
     "gate": 156
    },
-   "tris_lod0": 3720,
+   "tris_lod0": 3648,
    "tris_lod1": 3348,
    "mask_north_up": [
     "######....######",
@@ -3098,6 +3459,24 @@
      9.5,
      3.3,
      7.0
+    ],
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       -5.8,
+       0.0,
+       -6.0
+      ],
+      "forward": [
+       -0.795,
+       0,
+       0.606
+      ],
+      "scale": 0.5503117004719805,
+      "part": ""
+     }
     ]
    }
   },
@@ -3566,6 +3945,22 @@
       ],
       "scale": 1.0,
       "part": ""
+     },
+     {
+      "name": "HERO_Urns",
+      "prefab": "PROP_MeshyUrns",
+      "pos": [
+       1.4,
+       0.0,
+       -2.5
+      ],
+      "forward": [
+       0.0,
+       0,
+       1.0
+      ],
+      "scale": 1.0,
+      "part": ""
      }
     ]
    }
@@ -3606,11 +4001,11 @@
    ],
    "tris": {
     "structure": 1022,
-    "detail": 820,
+    "detail": 496,
     "floor_lod1": 64,
     "ceiling": 120
    },
-   "tris_lod0": 1962,
+   "tris_lod0": 1638,
    "tris_lod1": 1206,
    "mask_north_up": [
     "##DDDD##",
@@ -3778,6 +4173,38 @@
        -1.0
       ],
       "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter_01",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       1.5,
+       0.0,
+       -4.0
+      ],
+      "forward": [
+       1.0,
+       0,
+       -0.024
+      ],
+      "scale": 1.5678389700563988,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter_02",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       -1.6,
+       0.0,
+       4.5
+      ],
+      "forward": [
+       -0.598,
+       0,
+       0.801
+      ],
+      "scale": 1.350907508721587,
       "part": ""
      }
     ]
@@ -4033,6 +4460,54 @@
       ],
       "scale": 1.0,
       "part": ""
+     },
+     {
+      "name": "HERO_Candelabra_01",
+      "prefab": "PROP_MeshyCandelabra",
+      "pos": [
+       -1.3,
+       0.0,
+       5.6
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_Candelabra_02",
+      "prefab": "PROP_MeshyCandelabra",
+      "pos": [
+       1.3,
+       0.0,
+       5.6
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_Font",
+      "prefab": "PROP_MeshyFont",
+      "pos": [
+       2.4,
+       0.0,
+       -6.2
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
      }
     ]
    }
@@ -4074,11 +4549,11 @@
    ],
    "tris": {
     "structure": 2024,
-    "detail": 1780,
+    "detail": 1636,
     "floor_lod1": 64,
     "ceiling": 64
    },
-   "tris_lod0": 3868,
+   "tris_lod0": 3724,
    "tris_lod1": 2152,
    "mask_north_up": [
     "##DDDD##",
@@ -4269,7 +4744,58 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_Remains",
+      "prefab": "PROP_MeshyRemains",
+      "pos": [
+       -2.55,
+       0.45,
+       -5.85
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 0.9,
+      "part": ""
+     },
+     {
+      "name": "HERO_Cage",
+      "prefab": "PROP_MeshyCage",
+      "pos": [
+       1.9,
+       3.9,
+       -0.8
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.2,
+      "part": ""
+     },
+     {
+      "name": "HERO_Shackles",
+      "prefab": "PROP_MeshyShackles",
+      "pos": [
+       2.7,
+       0.0,
+       2.75
+      ],
+      "forward": [
+       -1.0,
+       0,
+       0.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_SP_WellRoom",
@@ -4312,11 +4838,11 @@
    ],
    "tris": {
     "structure": 1280,
-    "detail": 193,
+    "detail": 133,
     "floor_lod1": 46,
     "ceiling": 96
    },
-   "tris_lod0": 1569,
+   "tris_lod0": 1509,
    "tris_lod1": 1422,
    "mask_north_up": [
     "########",
@@ -4506,6 +5032,22 @@
        -1.0
       ],
       "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockCluster",
+      "prefab": "PROP_MeshyRockCluster",
+      "pos": [
+       -2.4,
+       0.0,
+       2.3
+      ],
+      "forward": [
+       -0.898,
+       0,
+       0.44
+      ],
+      "scale": 0.7113415291161073,
       "part": ""
      }
     ]
@@ -5021,14 +5563,14 @@
     }
    ],
    "tris": {
-    "structure": 1328,
+    "structure": 1292,
     "detail": 1870,
     "floor_lod1": 64,
     "ceiling": 392,
     "water": 15
    },
-   "tris_lod0": 3605,
-   "tris_lod1": 1799,
+   "tris_lod0": 3569,
+   "tris_lod1": 1763,
    "mask_north_up": [
     "##DDDD##",
     "#......#",
@@ -5176,6 +5718,70 @@
        0.6,
        0.0,
        0.5
+      ],
+      "forward": [
+       0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.0,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockBoulderB",
+      "prefab": "PROP_MeshyRockBoulderB",
+      "pos": [
+       -2.3,
+       0.0,
+       2.6
+      ],
+      "forward": [
+       0.989,
+       0,
+       -0.148
+      ],
+      "scale": 1.736460226616589,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockBoulderA_01",
+      "prefab": "PROP_MeshyRockBoulderA",
+      "pos": [
+       2.3,
+       0.0,
+       -2.0
+      ],
+      "forward": [
+       -0.81,
+       0,
+       -0.587
+      ],
+      "scale": 1.1807395827424627,
+      "part": ""
+     },
+     {
+      "name": "HERO_RockBoulderA_02",
+      "prefab": "PROP_MeshyRockBoulderA",
+      "pos": [
+       2.4,
+       0.0,
+       5.5
+      ],
+      "forward": [
+       -0.832,
+       0,
+       -0.554
+      ],
+      "scale": 1.0948908197996614,
+      "part": ""
+     },
+     {
+      "name": "HERO_Mushrooms",
+      "prefab": "PROP_MeshyMushrooms",
+      "pos": [
+       -2.0,
+       0.0,
+       -4.6
       ],
       "forward": [
        0.0,
@@ -5638,11 +6244,11 @@
    ],
    "tris": {
     "structure": 1142,
-    "detail": 320,
+    "detail": 140,
     "floor_lod1": 30,
     "ceiling": 48
    },
-   "tris_lod0": 1510,
+   "tris_lod0": 1330,
    "tris_lod1": 1220,
    "mask_north_up": [
     "##DDDD##",
@@ -5761,7 +6367,25 @@
      "ledge_width": 1.2,
      "plank_width": 0.5,
      "VOL_Trap": "trigger over the spikes (hook a kill / damage)"
-    }
+    },
+    "heroes": [
+     {
+      "name": "HERO_Remains",
+      "prefab": "PROP_MeshyRemains",
+      "pos": [
+       -1.0,
+       -0.8,
+       0.3
+      ],
+      "forward": [
+       1.0,
+       0,
+       0.0
+      ],
+      "scale": 0.7,
+      "part": ""
+     }
+    ]
    }
   },
   {
@@ -5811,11 +6435,11 @@
    ],
    "tris": {
     "structure": 1456,
-    "detail": 212,
+    "detail": 140,
     "floor_lod1": 30,
     "ceiling": 88
    },
-   "tris_lod0": 1756,
+   "tris_lod0": 1684,
    "tris_lod1": 1574,
    "mask_north_up": [
     "##DDDD##",
@@ -5948,7 +6572,25 @@
      "cellar_floor": -1.2,
      "steps": "x -2..0, rises 0.24 m",
      "grate": "visual hole to the level below, collider holds"
-    }
+    },
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       -2.5,
+       -1.2,
+       0.6
+      ],
+      "forward": [
+       0.971,
+       0,
+       -0.238
+      ],
+      "scale": 0.4654827617338473,
+      "part": ""
+     }
+    ]
    }
   },
   {
@@ -5986,13 +6628,13 @@
     }
    ],
    "tris": {
-    "structure": 1156,
+    "structure": 892,
     "detail": 190,
     "floor_lod1": 16,
     "ceiling": 36
    },
-   "tris_lod0": 1382,
-   "tris_lod1": 1208,
+   "tris_lod0": 1118,
+   "tris_lod1": 944,
    "mask_north_up": [
     "##DDDD##",
     "##....##",
@@ -6083,7 +6725,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       1.6,
+       0.0,
+       0.0
+      ],
+      "forward": [
+       1.0,
+       0,
+       0.0
+      ],
+      "scale": 1.2,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Corner_B",
@@ -6123,12 +6784,12 @@
    ],
    "tris": {
     "structure": 904,
-    "detail": 249,
+    "detail": 141,
     "floor_lod1": 16,
     "ceiling": 48,
     "water": 15
    },
-   "tris_lod0": 1216,
+   "tris_lod0": 1108,
    "tris_lod1": 983,
    "mask_north_up": [
     "##DDDD##",
@@ -6220,7 +6881,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_SkullPile",
+      "prefab": "PROP_MeshySkullPile",
+      "pos": [
+       -1.5,
+       0.9,
+       -1.45
+      ],
+      "forward": [
+       0.707,
+       0,
+       0.707
+      ],
+      "scale": 1.2,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_T_B",
@@ -6411,11 +7091,11 @@
    ],
    "tris": {
     "structure": 792,
-    "detail": 172,
+    "detail": 112,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 1020,
+   "tris_lod0": 960,
    "tris_lod1": 864,
    "mask_north_up": [
     "##DDDD##",
@@ -6507,7 +7187,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       -1.6,
+       0.0,
+       -2.6
+      ],
+      "forward": [
+       -0.097,
+       0,
+       0.995
+      ],
+      "scale": 0.47775494318834233,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Straight_H50",
@@ -6547,11 +7246,11 @@
    ],
    "tris": {
     "structure": 1036,
-    "detail": 172,
+    "detail": 112,
     "floor_lod1": 16,
     "ceiling": 56
    },
-   "tris_lod0": 1264,
+   "tris_lod0": 1204,
    "tris_lod1": 1108,
    "mask_north_up": [
     "##DDDD##",
@@ -6643,7 +7342,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       -1.6,
+       0.0,
+       -2.6
+      ],
+      "forward": [
+       0.959,
+       0,
+       -0.285
+      ],
+      "scale": 0.4579292734904632,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Corner_H36",
@@ -6681,11 +7399,11 @@
    ],
    "tris": {
     "structure": 812,
-    "detail": 184,
+    "detail": 76,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 1044,
+   "tris_lod0": 936,
    "tris_lod1": 876,
    "mask_north_up": [
     "##DDDD##",
@@ -6764,7 +7482,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       -1.0,
+       0.0,
+       -1.2
+      ],
+      "forward": [
+       0.989,
+       0,
+       0.151
+      ],
+      "scale": 1.281941552906752,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Corner_H50",
@@ -6804,11 +7541,11 @@
    ],
    "tris": {
     "structure": 972,
-    "detail": 184,
+    "detail": 76,
     "floor_lod1": 16,
     "ceiling": 48
    },
-   "tris_lod0": 1204,
+   "tris_lod0": 1096,
    "tris_lod1": 1036,
    "mask_north_up": [
     "##DDDD##",
@@ -6887,7 +7624,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       -1.0,
+       0.0,
+       -1.2
+      ],
+      "forward": [
+       -0.649,
+       0,
+       -0.76
+      ],
+      "scale": 1.150541213959071,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_T_H36",
@@ -6930,11 +7686,11 @@
    ],
    "tris": {
     "structure": 984,
-    "detail": 140,
+    "detail": 92,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1192,
+   "tris_lod0": 1144,
    "tris_lod1": 1072,
    "mask_north_up": [
     "##DDDD##",
@@ -7039,7 +7795,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       1.4,
+       0.0,
+       -1.5
+      ],
+      "forward": [
+       -0.248,
+       0,
+       -0.969
+      ],
+      "scale": 0.414082724667004,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_T_H50",
@@ -7084,11 +7859,11 @@
    ],
    "tris": {
     "structure": 1136,
-    "detail": 140,
+    "detail": 92,
     "floor_lod1": 20,
     "ceiling": 68
    },
-   "tris_lod0": 1344,
+   "tris_lod0": 1296,
    "tris_lod1": 1224,
    "mask_north_up": [
     "##DDDD##",
@@ -7193,7 +7968,26 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_RubblePile",
+      "prefab": "PROP_MeshyRubblePile",
+      "pos": [
+       1.4,
+       0.0,
+       -1.5
+      ],
+      "forward": [
+       0.453,
+       0,
+       -0.892
+      ],
+      "scale": 0.404395531124558,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_Cross_H36",
@@ -7542,11 +8336,11 @@
    ],
    "tris": {
     "structure": 870,
-    "detail": 346,
+    "detail": 94,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1244,
+   "tris_lod0": 992,
    "tris_lod1": 910,
    "mask_north_up": [
     "########",
@@ -7651,7 +8445,42 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_SkullPile",
+      "prefab": "PROP_MeshySkullPile",
+      "pos": [
+       0.0,
+       1.53,
+       1.8
+      ],
+      "forward": [
+       -0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.4,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       0.6,
+       0.0,
+       0.4
+      ],
+      "forward": [
+       0.705,
+       0,
+       0.709
+      ],
+      "scale": 1.4792372733324477,
+      "part": ""
+     }
+    ]
+   }
   },
   {
    "name": "CH_Corridor_DeadEnd_H50",
@@ -7686,11 +8515,11 @@
    ],
    "tris": {
     "structure": 998,
-    "detail": 346,
+    "detail": 94,
     "floor_lod1": 12,
     "ceiling": 28
    },
-   "tris_lod0": 1372,
+   "tris_lod0": 1120,
    "tris_lod1": 1038,
    "mask_north_up": [
     "########",
@@ -7795,7 +8624,42 @@
      ]
     }
    ],
-   "notes": {}
+   "notes": {
+    "heroes": [
+     {
+      "name": "HERO_SkullPile",
+      "prefab": "PROP_MeshySkullPile",
+      "pos": [
+       0.0,
+       1.53,
+       1.8
+      ],
+      "forward": [
+       -0.0,
+       0,
+       -1.0
+      ],
+      "scale": 1.4,
+      "part": ""
+     },
+     {
+      "name": "HERO_BoneScatter",
+      "prefab": "PROP_MeshyBoneScatter",
+      "pos": [
+       0.6,
+       0.0,
+       0.4
+      ],
+      "forward": [
+       0.972,
+       0,
+       -0.236
+      ],
+      "scale": 1.4809642707995423,
+      "part": ""
+     }
+    ]
+   }
   }
  ]
 }

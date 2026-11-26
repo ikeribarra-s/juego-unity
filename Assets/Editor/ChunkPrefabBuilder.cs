@@ -341,7 +341,9 @@ public static class ChunkPrefabBuilder
                 if (a.name.EndsWith("_Bell") || a.name.Contains("_Lid_") || a.name.EndsWith("_Gate")) moving = true;
             foreach (var r in p.GetComponentsInChildren<MeshRenderer>(true))
             {
-                r.shadowCastingMode = ShadowCastingMode.On;
+                // low floor debris replaces no-shadow detail pieces: don't cast shadows (saves shadow-caster draws)
+                bool noShadow = prop == "BoneScatter" || prop == "RubblePile" || prop == "RockCluster" || prop == "Remains" || prop == "Ribcage";
+                r.shadowCastingMode = noShadow ? ShadowCastingMode.Off : ShadowCastingMode.On;
                 r.receiveShadows = true;
                 r.lightProbeUsage = LightProbeUsage.Off;
                 r.reflectionProbeUsage = ReflectionProbeUsage.Off;

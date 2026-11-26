@@ -4,8 +4,9 @@ using UnityEngine;
 /// Bridges the custom CharacterController-based movement to Unity's Starter Assets
 /// humanoid Animator Controller (StarterAssetsThirdPerson). Each frame it reads
 /// movement state from <see cref="CharacterMovement"/> and pushes it into the
-/// controller's parameters: float "Speed", float "MotionSpeed", bools "Grounded",
-/// "Jump", "FreeFall".
+/// controller's parameters (PlayerAnimator.controller, UAL locomotion clips):
+///   floats MoveX / MoveZ (planar velocity in character-local space, m/s, damped), Speed (|planar|, damped),
+///   VelocityY, MotionSpeed; bools Grounded, FreeFall (airborne &gt; _fallTimeout), Crouch; trigger Jump.
 ///
 /// Also drives a procedural head/neck look via Unity's built-in LookAt IK so the
 /// character's head turns toward wherever the player is aiming the camera.
@@ -22,11 +23,15 @@ public class AnimationHandler : MonoBehaviour
     [Header("Locomotion Tuning")]
     [Tooltip("Damping (s) applied to the Speed parameter so the locomotion blend is smooth.")]
     [SerializeField] private float _speedDampTime = 0.1f;
-    [Tooltip("Grace period (s) after leaving the ground before FreeFall is set — avoids flicker on small steps.")]
-    [SerializeField] private float _fallTimeout = 0.15f;
+    [Tooltip("Time (s) in the air before FreeFall (-> InAir pose) is set — avoids flicker on small steps / ledges.")]
+    [SerializeField] private float _fallTimeout = 0.2f;
     [Tooltip("How long (s) after a jump to treat the character as airborne, regardless of " +
              "CharacterController.isGrounded (which lags a frame after the jump impulse).")]
     [SerializeField] private float _jumpHoldTime = 0.2f;
+
+    [Tooltip("Start the landing pose this long (s) before touchdown. Covers the stepped Animator (up to ~50 ms late) and the " +
+             "InAir -> JumpLand fade, so the hanging leg of the fall pose never sinks into the floor. 0 = land on contact.")]
+    [SerializeField] private float _landLead = 0.13f;
 
     [Header("Head Look IK")]
     [SerializeField] private bool _headLook = true;
@@ -46,17 +51,30 @@ public class AnimationHandler : MonoBehaviour
     [SerializeField] private float _minLookDistance = 0.6f;
     [Tooltip("Layers the aim ray can hit. Exclude the player/character layer so the ray ignores its own body.")]
     [SerializeField] private LayerMask _lookRayMask = ~0;
-    [SerializeField] private float _lookSmoothing = 12f;
+    [Tooltip("Look-target response (1/s), applied with the REAL time since the last IK evaluation. OnAnimatorIK only runs on " +
+             "RetroAnimationStepper steps, so a per-call 'dt * k' lerp (the old code) used one frame's dt per ~50 ms step and " +
+             "lagged ~0.25 s. 0 = no smoothing.")]
+    [SerializeField] private float _lookResponse = 40f;
+    [Tooltip("Debug: use the legacy per-call lerp (dt of one frame) to reproduce the old lag.")]
+    [SerializeField] private bool _legacyLookLag;
+    private float _lastLookIkTime = -1f;
 
     // Parameter hashes for the StarterAssetsThirdPerson controller.
     private static readonly int SpeedHash       = Animator.StringToHash("Speed");
     private static readonly int MotionSpeedHash = Animator.StringToHash("MotionSpeed");
     private static readonly int GroundedHash    = Animator.StringToHash("Grounded");
-    private static readonly int JumpHash        = Animator.StringToHash("Jump");
+    private static readonly int JumpHash        = Animator.StringToHash("Jump");       // trigger
     private static readonly int FreeFallHash    = Animator.StringToHash("FreeFall");
+    private static readonly int MoveXHash       = Animator.StringToHash("MoveX");
+    private static readonly int MoveZHash       = Animator.StringToHash("MoveZ");
+    private static readonly int VelocityYHash   = Animator.StringToHash("VelocityY");
+    private static readonly int CrouchHash      = Animator.StringToHash("Crouch");
+    private static readonly int LandingHash     = Animator.StringToHash("Landing");    // falling and about to touch down
 
     private Animator          _animator;
     private CharacterMovement _movement;
+    private CharacterBase     _character;
+    private readonly RaycastHit[] _landHits = new RaycastHit[8];
     private Transform         _lookSource;   // CameraRoot — carries the look yaw + pitch
 
     private float   _fallTimer;
@@ -69,6 +87,7 @@ public class AnimationHandler : MonoBehaviour
         _animator = GetComponent<Animator>();
 
         var character = GetComponentInParent<CharacterBase>();
+        _character  = character;
         _movement   = GetComponentInParent<CharacterMovement>();
         _lookSource = character != null ? character.CameraRoot : null;
 
@@ -89,11 +108,11 @@ public class AnimationHandler : MonoBehaviour
 
     private void OnJumped()
     {
-        _animator.SetBool(JumpHash, true);
+        _animator.SetTrigger(JumpHash);
         _animator.SetBool(FreeFallHash, false);
         // Force the airborne state to register even though isGrounded lags a frame.
         _jumpHold  = _jumpHoldTime;
-        _fallTimer = _fallTimeout;
+        _fallTimer = 0f;   // airborne clock restarts: FreeFall only after _fallTimeout in the air
     }
 
     private void Update()
@@ -112,30 +131,47 @@ public class AnimationHandler : MonoBehaviour
 
         _animator.SetBool(GroundedHash, grounded);
 
-        // Planar speed (m/s) drives the locomotion blend tree.
-        float speed = _movement.PlanarVelocity.magnitude;
-        _animator.SetFloat(SpeedHash, speed, _speedDampTime, Time.deltaTime);
+        // Planar velocity in the character's local space (x = right, z = forward), m/s. SetFloat's dampTime uses the
+        // real frame dt; the Animator itself is only evaluated on RetroAnimationStepper steps, which read the latest value.
+        Vector3 pv = _movement.PlanarVelocity;
+        Vector3 local = _movement.transform.InverseTransformDirection(pv);
+        _animator.SetFloat(MoveXHash, local.x, _speedDampTime, Time.deltaTime);
+        _animator.SetFloat(MoveZHash, local.z, _speedDampTime, Time.deltaTime);
+        _animator.SetFloat(SpeedHash, pv.magnitude, _speedDampTime, Time.deltaTime);
+        _animator.SetFloat(VelocityYHash, _movement.VerticalVelocity);
         _animator.SetFloat(MotionSpeedHash, 1f);
+        _animator.SetBool(CrouchHash, _movement.IsCrouching);
+        _animator.SetBool(LandingHash, !grounded && AboutToLand());
 
         if (grounded)
         {
-            _fallTimer = _fallTimeout;
-            _animator.SetBool(JumpHash, false);
+            _fallTimer = 0f;
             _animator.SetBool(FreeFallHash, false);
         }
         else
         {
-            if (_fallTimer > 0f) _fallTimer -= Time.deltaTime;
-
-            // Enter FreeFall once we're past the jump apex (descending). Basing this on
-            // vertical velocity makes it scale automatically with Gravity / JumpForce —
-            // a higher jump or weaker gravity simply spends longer in the rising state.
-            // The timer still suppresses flicker on small steps where isGrounded briefly
-            // drops without any real fall.
-            bool descending = _movement.VerticalVelocity < -0.2f;
-            if (_fallTimer <= 0f && descending)
-                _animator.SetBool(FreeFallHash, true);
+            // Airborne without a jump (ledge, step-down): FreeFall -> InAir after _fallTimeout. Small steps never
+            // reach it. (A jump goes through the Jump trigger -> JumpStart -> InAir instead.)
+            _fallTimer += Time.deltaTime;
+            if (_fallTimer >= _fallTimeout) _animator.SetBool(FreeFallHash, true);
         }
+    }
+
+    // True while falling and the floor under the capsule will be reached within _landLead seconds (gravity included).
+    private bool AboutToLand()
+    {
+        float fall = -_movement.VerticalVelocity;
+        if (_landLead <= 0f || fall <= 0.5f || _character == null || _character.Controller == null || _character.Stats == null) return false;
+
+        float g     = -_character.Stats.Gravity;
+        float reach = fall * _landLead + 0.5f * g * _landLead * _landLead;   // distance fallen in _landLead
+        float r     = _character.Controller.radius * 0.9f;
+        Transform root = _movement.transform;
+        Vector3 origin = root.position + Vector3.up * (r + 0.1f);
+        int n = Physics.SphereCastNonAlloc(origin, r, Vector3.down, _landHits, reach + 0.1f, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+            if (!_landHits[i].collider.transform.IsChildOf(root) && _landHits[i].normal.y > 0.5f) return true;
+        return false;
     }
 
     // ── Procedural head/neck look ───────────────────────────────────────────────
@@ -159,7 +195,11 @@ public class AnimationHandler : MonoBehaviour
             target = origin + dir * _minLookDistance;
 
         if (!_lookInit) { _smoothedLookPoint = target; _lookInit = true; }
-        _smoothedLookPoint = Vector3.Lerp(_smoothedLookPoint, target, Time.deltaTime * _lookSmoothing);
+        float stepDt = _lastLookIkTime < 0f ? 0f : Mathf.Clamp(Time.time - _lastLookIkTime, 0f, 0.25f);
+        _lastLookIkTime = Time.time;
+        float k = _legacyLookLag ? Mathf.Clamp01(Time.deltaTime * 12f)
+                : (_lookResponse <= 0f ? 1f : 1f - Mathf.Exp(-stepDt * _lookResponse));
+        _smoothedLookPoint = Vector3.Lerp(_smoothedLookPoint, target, k);
 
         _animator.SetLookAtWeight(_lookWeight, _bodyWeight, _headWeight, _eyesWeight, _clampWeight);
         _animator.SetLookAtPosition(_smoothedLookPoint);

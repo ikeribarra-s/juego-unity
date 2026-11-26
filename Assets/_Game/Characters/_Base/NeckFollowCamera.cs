@@ -21,11 +21,21 @@ public class NeckFollowCamera : MonoBehaviour
              "(x = right, y = up, z = forward). Lifts the camera from the neck up to eye level.")]
     [SerializeField] private Vector3 _eyeOffset = new Vector3(0f, 0.15f, 0.08f);
 
+    [Tooltip("Eye offset while crouched (same axes). Not pushed forward: with the camera in front of the shoulder the lantern " +
+             "arm could not reach its framing and the lantern came within 0.40 m. Blended by CartoonAnimator.CrouchBlend.")]
+    [SerializeField] private Vector3 _crouchEyeOffset = new Vector3(0f, 0.15f, 0f);
+
     [Tooltip("Smoothing time in seconds. 0 = glued exactly to the neck (snappiest, but shows the " +
              "stepped 24fps motion). ~0.04-0.06 hides the step without feeling heavy. Lower = snappier.")]
     [SerializeField] private float _smoothTime = 0.05f;
 
+    /// <summary>Eye offset currently applied (stand/crouch blend), in the character's axes. Used by TorchArmAnimator.</summary>
+    public Vector3 CurrentEyeOffset { get; private set; }
+    /// <summary>The standing eye offset (what the lantern framing is calibrated against).</summary>
+    public Vector3 StandingEyeOffset => _eyeOffset;
+
     private Animator  _animator;
+    private CartoonAnimator _cartoon;
     private Transform _neck;
     private Transform _body;        // character root — stable orientation for the eye offset
     private Vector3   _restLocalPos;
@@ -35,6 +45,7 @@ public class NeckFollowCamera : MonoBehaviour
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _cartoon = GetComponent<CartoonAnimator>();
         _neck = _animator.GetBoneTransform(HumanBodyBones.Neck);
         if (_neck == null) _neck = _animator.GetBoneTransform(HumanBodyBones.Head);
         if (_neck == null)
@@ -61,10 +72,12 @@ public class NeckFollowCamera : MonoBehaviour
 
         // Neck-anchored eye position: the neck joint plus an offset along the BODY's
         // orientation (not the neck's animated rotation, so the offset stays stable).
+        Vector3 eye = _cartoon != null ? Vector3.Lerp(_eyeOffset, _crouchEyeOffset, _cartoon.CrouchBlend) : _eyeOffset;
+        CurrentEyeOffset = eye;
         Vector3 neckPos = _neck.position
-                        + _body.right   * _eyeOffset.x
-                        + _body.up      * _eyeOffset.y
-                        + _body.forward * _eyeOffset.z;
+                        + _body.right   * eye.x
+                        + _body.up      * eye.y
+                        + _body.forward * eye.z;
 
         Vector3 target = Vector3.Lerp(staticPos, neckPos, _followWeight);
 

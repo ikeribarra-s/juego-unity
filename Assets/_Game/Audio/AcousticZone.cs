@@ -21,6 +21,20 @@ public class AcousticZone : MonoBehaviour
     [SerializeField] private Vector3 _size = new(8f, 4f, 8f);
 
     public Acoustic Type => _type;
+    private string _name;
+    /// <summary>Cached GameObject name (no per-call allocation).</summary>
+    public string ZoneName => _name ??= name;
+
+    /// <summary>Signed distance to the nearest edge: positive inside, negative outside (metres).</summary>
+    public float SignedEdge(Vector3 worldPos)
+    {
+        Vector3 p = transform.InverseTransformPoint(worldPos) - _localCenter;
+        Vector3 h = _size * 0.5f; Vector3 s = transform.lossyScale;
+        return Mathf.Min((h.x - Mathf.Abs(p.x)) * Mathf.Abs(s.x), (h.z - Mathf.Abs(p.z)) * Mathf.Abs(s.z), h.y - Mathf.Abs(p.y));
+    }
+
+    /// <summary>World-space centre of the zone's roof (ceiling effects).</summary>
+    public Vector3 TopCentre => transform.TransformPoint(_localCenter + Vector3.up * (_size.y * 0.5f));
 
     public void Configure(Acoustic type, Vector3 localCenter, Vector3 size)
     {

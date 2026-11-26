@@ -46,3 +46,7 @@ __pycache__/
 # Blender backups
 *.blend1
 *.txt~
+
+# MCP / editor screenshots
+/Assets/Screenshots/
+/Assets/Screenshots.meta

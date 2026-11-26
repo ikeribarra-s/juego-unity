@@ -27,6 +27,35 @@ MonoBehaviour:
   BedVolume: 0.45
   CrossfadeTime: 4
   AreaCheckInterval: 0.5
+  AcousticBeds:
+  - Type: 3
+    Loop: {fileID: 11400000, guid: 349da8d275880c742a6eea448c5f8dbf, type: 2}
+    OnlyInTransition: 0
+  - Type: 2
+    Loop: {fileID: 11400000, guid: 558f5e405fdce0f4ea72409750550d30, type: 2}
+    OnlyInTransition: 0
+  - Type: 4
+    Loop: {fileID: 11400000, guid: 17177b75b8b2e214ba371764e02e6f64, type: 2}
+    OnlyInTransition: 0
+  - Type: 5
+    Loop: {fileID: 11400000, guid: 0cfaf958010bf8f4ba2b42ecbda94886, type: 2}
+    OnlyInTransition: 0
+  - Type: 1
+    Loop: {fileID: 11400000, guid: b6c82b55a92fb95408de5fac573f14f8, type: 2}
+    OnlyInTransition: 0
+  - Type: 0
+    Loop: {fileID: 11400000, guid: c9db6dd6ff7d543478849e69eee623c7, type: 2}
+    OnlyInTransition: 1
+  NamedBeds:
+  - NameContains: CH_Room_Ritual
+    Loop: {fileID: 11400000, guid: ce65bb52618edb2468712b739905c071, type: 2}
+    Sting: {fileID: 11400000, guid: 32ee0fadc11485b49943ab320c9c4271, type: 2}
+  - NameContains: ChuchoDen
+    Loop: {fileID: 11400000, guid: 558f5e405fdce0f4ea72409750550d30, type: 2}
+    Sting: {fileID: 11400000, guid: 6171e3710d730d647813d21ef87edd47, type: 2}
+  ZoneSwitchEdge: 0.5
+  ZoneSwitchTime: 1
+  StingCooldown: 90
   Drip: {fileID: 11400000, guid: 6922f6a770a7a184382dc5b65e01275e, type: 2}
   DripRadius: 22
   DripInterval: {x: 2.5, y: 6}

@@ -371,3 +371,16 @@ prefab, and a preview. Unity counterparts: `Assets/Art/Environment/Props/Meshy/P
 To use one in a chunk: add `c.hero("<Name>", pos, face)` in the chunk definition (see 9.4) and rebuild.
 New props: generate (Meshy 6, prompt prefix in `PROPS`/report), add a `PROPS` + `LIB` entry, `process(...)`, `mark_library()`.
 Hi-poly originals stay outside the repo in `juego-unity/meshy_sources/*.glb` (`import_archive(name)` re-imports one for a re-bake).
+
+### 9.6 Rocks, rubble and bones heroes + batch-2 placements (2026-11-25)
+Batch 3 (Meshy 6, 8 new + DogBowl regenerated): RockBoulderA/B (391/291 tris), RockCluster (387), RubblePile (582), BoneScatter (387, 64 px),
+SkullPile (435), Ribcage (339), Remains (474), DogBowl (484). Placed with `c.hero(...)` / `c.hero_rand(props, pos, key, scale)`;
+`c.scratch()` (context manager) builds the superseded procedural piece into a throw-away MB with the same `c.rng` draws, and
+`c.hero_site(key)` is an independent `random.Random(crc32(name:key))` for yaw / scale / variant, so `c.rng` and every collider,
+socket, VOL_* and footprint are untouched (verified: per-chunk `c.rng` state hash identical before/after on all 42 chunks; manifest
+differs only in tri counts / notes; collider count per chunk prefab identical).
+Replaced: CaveTransition 3 boulders (A,A,B), CollapsedCorridor slab rubble + 2 spills, 8 floor rubble spots, 11 bone scatters,
+shrine / alcove skulls (SkullPile), prison + trap skeletons (Remains), Chucho den bone mound (BonePile) + dog bowl (DogBowl).
+Placed from batch 2: CoffinAjar (Crypt sarcophagus) + Coffin (W niche bay) + Ribcage, Candelabra x2 + Font (Chapel), Brazier (Ritual),
+Cage (hangs, scale 1.2, bottom ~1.9 m) + Shackles (PrisonBlock closed cells), Sacks (Storage), Urns (Larder), Mushrooms (Cave).
+`ChunkPrefabBuilder.NestHeroProps`: BoneScatter, RubblePile, RockCluster, Remains, Ribcage cast no shadows.

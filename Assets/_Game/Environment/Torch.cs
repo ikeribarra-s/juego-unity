@@ -48,8 +48,16 @@ public class Torch : MonoBehaviour, IInteractable
     [Header("Thrown physics")]
     [SerializeField] private float _mass = 1f;
 
+    [Header("Floor")]
+    [Tooltip("A torch thrown/dropped goes out the first time it lands on a floor (contact normal up). " +
+             "Wall torches and the carried torch are never affected; a floor-burnt torch can be picked up (stays Out).")]
+    [SerializeField] private bool _extinguishOnFloor = true;
+
     private Rigidbody _body;
     private TorchStateController _state;
+    private bool _armedForFloor;    // set by Launch (a release); cleared by the first floor contact or by pickup
+    private bool _burntOnFloor;     // went out on the floor: still pickable, stays Out
+    private bool _outNoController;  // fallback when there is no TorchStateController
 
     public bool       IsCarried   { get; private set; }
     public string     DisplayName => _displayName;
@@ -57,7 +65,7 @@ public class Torch : MonoBehaviour, IInteractable
     public Quaternion UprightRotation => Quaternion.Euler(_uprightEuler);
 
     /// <summary>False while burnt out (see <see cref="TorchStateController"/>).</summary>
-    public bool IsLit => State == null || State.IsLit;
+    public bool IsLit => State != null ? State.IsLit : !_outNoController;
     private TorchStateController State => _state != null ? _state : (_state = GetComponent<TorchStateController>());
 
     // A mounted torch (no Rigidbody yet) must never block a walkway — the chunk balconies are 1.4 m wide and a
@@ -73,19 +81,50 @@ public class Torch : MonoBehaviour, IInteractable
     {
         if (IsCarried) return string.Empty;
         if (IsLit) return _prompt;
-        return CarriesLitTorch(FindLocalInteractorHint()) ? _relightPrompt : _deadPrompt;
+        if (CarriesLitTorch(FindLocalInteractorHint())) return _relightPrompt;
+        return _burntOnFloor ? _prompt : _deadPrompt;
     }
 
     public void Interact(CharacterBase interactor)
     {
         if (IsCarried || interactor == null) return;
-        if (!IsLit)
+        // A lit carried torch relights a burnt one, floor or wall (Living Map E1).
+        if (!IsLit && CarriesLitTorch(interactor))
         {
-            // A dead torch can't be taken; a lit carried torch relights it (Living Map E1).
-            if (CarriesLitTorch(interactor)) State.Relight();
+            if (State != null) State.Relight();
             return;
         }
+        // A wall torch burnt out by the director can't be taken; a floor-burnt one can (stays Out).
+        if (!IsLit && !_burntOnFloor) return;
         interactor.TorchCarrier?.TryCarry(this);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!_armedForFloor || IsCarried) return;
+        for (int i = 0; i < collision.contactCount; i++)
+        {
+            if (collision.GetContact(i).normal.y <= 0.6f) continue;   // walls / ceilings don't count
+            _armedForFloor = false;
+            ExtinguishOnFloor();
+            return;
+        }
+    }
+
+    // A grazing first contact (box edge, side normal) can leave the torch resting on the floor without a new
+    // Enter, so keep checking while armed. Unarmed torches return immediately.
+    private void OnCollisionStay(Collision collision) => OnCollisionEnter(collision);
+
+    private void ExtinguishOnFloor()
+    {
+        _burntOnFloor = true;
+        if (State != null) { State.Extinguish(); return; }   // existing Out fade + "out" sound
+        // No TorchStateController: switch the lights and flame/embers off directly, play nothing.
+        _outNoController = true;
+        foreach (var l in GetComponentsInChildren<Light>(true)) l.enabled = false;
+        foreach (var ps in GetComponentsInChildren<ParticleSystem>(true)) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        foreach (var t in GetComponentsInChildren<Transform>(true))
+            if (t.name == "FlameFlipbook") t.gameObject.SetActive(false);
     }
 
     private static bool CarriesLitTorch(CharacterBase who) =>
@@ -103,6 +142,7 @@ public class Torch : MonoBehaviour, IInteractable
     public void SetCarried(bool carried)
     {
         IsCarried = carried;
+        if (carried) _armedForFloor = false;
         if (carried && _body == null) _body = GetComponent<Rigidbody>();
         if (carried && _body != null)
         {
@@ -132,5 +172,6 @@ public class Torch : MonoBehaviour, IInteractable
         _body.useGravity      = true;
         _body.linearVelocity  = velocity;
         _body.angularVelocity = Vector3.zero;
+        _armedForFloor        = _extinguishOnFloor;   // a release: the next floor contact puts it out
     }
 }

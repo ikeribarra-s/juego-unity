@@ -13,6 +13,7 @@
 # written into Blender (R below). In Chunks.blend North is therefore Blender -Y. In Unity: natural
 # (x, y, z) -> Unity (x, z, y) exactly.
 import bpy, bmesh, math, random, json, os, zlib, shutil
+from contextlib import contextmanager, nullcontext as contextlib_nullcontext
 from mathutils import Vector, Matrix
 
 REPO = r"C:\Users\redux\Desktop\proyectos\juego-unity\juego"
@@ -367,6 +368,28 @@ class Chunk:
         random sequence (and every later draw) stays identical with HERO_PROPS on or off."""
         return MB(self.rng)
 
+    @contextmanager
+    def scratch(self):
+        """build superseded procedural geometry (same rng draws) into a throw-away MB: `with c.scratch(): c.rubble(...)`."""
+        real = self.mb
+        self.mb = MB(self.rng)
+        try:
+            yield self.mb
+        finally:
+            self.mb = real
+
+    def hero_site(self, key):
+        """independent RNG for hero yaw / scale / variant: NEVER touches self.rng (so geometry + colliders stay identical)."""
+        return random.Random(zlib.crc32(("%s:%s" % (self.name, key)).encode()))
+
+    def hero_rand(self, props, pos, key, scale=1.0, yaw=True, jitter=0.12, part=None):
+        """hero with a per-site random variant (props list) / yaw / scale jitter from hero_site(key); does not touch self.rng."""
+        r = self.hero_site(key)
+        prop = props[r.randrange(len(props))] if isinstance(props, (list, tuple)) else props
+        a = r.uniform(0, 2 * math.pi) if yaw else math.pi * 1.5
+        sc = scale * (1 + r.uniform(-jitter, jitter))
+        self.hero(prop, pos, (math.cos(a), math.sin(a)), scale=sc, part=part)
+
     def torch(self, x, y, face, z=2.0):
         self.sock("Torch", (x, y, z), face)
 
@@ -718,7 +741,12 @@ def ch_corridor_straight():
     c.wall_torch(2.0, 0.0, (-1, 0))
     c.sock("Prop", (-1.4, 1.0, 0), (1, 0)); c.sock("Prop", (1.4, -2.8, 0), (-1, 0))
     c.sock("Drip", (-0.6, -1.0, c.H - 0.1), (0, -1))
-    c.rubble(-1.6, -2.6, 0.4, 0.5, 0.25, 5, max_r=0.22)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(-1.6, -2.6, 0.4, 0.5, 0.25, 5, max_r=0.22)
+        c.hero_rand("RubblePile", (-1.6, -2.6, 0.0), "rubble", scale=0.5)
+    else:
+        c.rubble(-1.6, -2.6, 0.4, 0.5, 0.25, 5, max_r=0.22)
     c.skull(1.5, 2.6, 0.0, 2.4)
     return c
 
@@ -730,7 +758,12 @@ def ch_corridor_corner():
     c.ribs('y', [2.6], (-2, 2)); c.ribs('x', [2.6], (-2, 2))
     c.wall_torch(-2.0, -0.5, (1, 0))
     c.sock("Prop", (-1.3, -1.3, 0), (1, 1)); c.sock("Drip", (0.3, 0.3, c.H - 0.1), (0, -1))
-    c.bones_scatter(-1.0, -1.2, 0.5, 3)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(-1.0, -1.2, 0.5, 3)
+        c.hero_rand("BoneScatter", (-1.0, -1.2, 0.0), "bones", scale=1.15)
+    else:
+        c.bones_scatter(-1.0, -1.2, 0.5, 3)
     return c
 
 
@@ -742,7 +775,12 @@ def ch_corridor_t():
     c.wall_torch(0.0, -2.0, (0, 1))
     c.sock("Prop", (-1.2, -1.4, 0), (0, 1)); c.sock("Prop", (1.3, -1.4, 0), (0, 1))
     c.sock("Drip", (0.0, 0.0, c.H - 0.1), (0, -1))
-    c.rubble(1.4, -1.5, 0.4, 0.3, 0.2, 4, max_r=0.2)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(1.4, -1.5, 0.4, 0.3, 0.2, 4, max_r=0.2)
+        c.hero_rand("RubblePile", (1.4, -1.5, 0.0), "rubble", scale=0.4)
+    else:
+        c.rubble(1.4, -1.5, 0.4, 0.3, 0.2, 4, max_r=0.2)
     return c
 
 
@@ -777,8 +815,11 @@ def ch_corridor_deadend():
     c.mb.box(-1.0, 1.5, 1.45, 1.0, 2.0, 1.53, "wall2")
     c.col("Block", -1.4, 1.15, 0, 1.4, 2.0, 1.53)
     c.mark_blocked(-1.4, 1.15, 1.4, 2.0)
-    for x in (-0.55, 0.0, 0.55):
-        c.skull(x, 1.8, 1.53, -math.pi / 2 + 0.2 * x, 0.2)
+    with (c.scratch() if HERO_PROPS else contextlib_nullcontext()):
+        for x in (-0.55, 0.0, 0.55):
+            c.skull(x, 1.8, 1.53, -math.pi / 2 + 0.2 * x, 0.2)
+    if HERO_PROPS:
+        c.hero_rand("SkullPile", (0.0, 1.8, 1.53), "skulls", scale=1.4, jitter=0.0, yaw=False)
     for x in (-1.15, 1.15):
         c.candle(x, 1.45, 1.0, 0.3)
     c.sock("Evidence", (0.0, 1.45, 1.0), (0, -1))     # on the shrine shelf
@@ -786,7 +827,12 @@ def ch_corridor_deadend():
     c.wall_torch(-2.0, -1.0, (1, 0))
     c.sock("Prop", (1.3, -2.5, 0), (-1, 0))
     c.sock("Drip", (0.8, -0.3, c.H - 0.1), (0, -1))
-    c.bones_scatter(0.6, 0.4, 0.6, 4)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(0.6, 0.4, 0.6, 4)
+        c.hero_rand("BoneScatter", (0.6, 0.4, 0.0), "bones", scale=1.38)
+    else:
+        c.bones_scatter(0.6, 0.4, 0.6, 4)
     return c
 
 
@@ -820,6 +866,8 @@ def ch_room_storage():
     c.wall_torch(-3.0, -0.8, (1, 0))
     c.sock("Prop_Barrel", (-2.3, -2.2, 0), (1, 1)); c.sock("Prop_Crate", (0.0, 2.3, 0), (0, -1))
     c.sock("Prop", (-0.8, 0.6, 0), (0, -1))
+    if HERO_PROPS:
+        c.hero("Sacks", (1.1, 2.35, 0.0), (0, -1))
     c.sock("Evidence", (2.6, 0.3, 1.15 + 0.07), (-1, 0)); c.sock("Evidence", (-1.0, -1.5, 0), (0, 1))
     c.sock("Spawn", (0.5, -1.0, 0), (0, 1))
     c.sock("Drip", (-1.5, 0.8, c.H - 0.1), (0, -1))
@@ -840,7 +888,12 @@ def ch_room_pillarhall():
     for x in (-3.5, 3.5):
         c.ceil.box(x - 0.2, -7, c.H - 0.3, x + 0.2, 7, c.H, "wall3", skip=('t',))
     # worn central runner of darker slabs + a cracked floor patch with rubble
-    c.rubble(4.5, -6.2, 0.7, 0.4, 0.45, 10, max_r=0.35)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(4.5, -6.2, 0.7, 0.4, 0.45, 10, max_r=0.35)
+        c.hero_rand("RubblePile", (4.5, -6.2, 0.0), "rubble", scale=1.15, jitter=0.03)
+    else:
+        c.rubble(4.5, -6.2, 0.7, 0.4, 0.45, 10, max_r=0.35)
     c.col("Block", 3.8, -6.7, 0, 5.2, -5.7, 0.6)
     c.mark_blocked(3.8, -6.7, 5.2, -5.7)
     c.pillar(6.0, 6.0, c.H, broken_at=1.4)     # a broken column stump in the NW corner
@@ -880,19 +933,27 @@ def ch_room_crypt():
         for (ya, yb) in bays:
             for zr in ((0.3, 1.25), (1.45, 2.6)):
                 c.mb.poly([(xbk, ya, zr[0]), (xbk, yb, zr[0]), (xbk, yb, zr[1]), (xbk, ya, zr[1])][::(-sx)], "void")
-                if c.rng.random() < 0.6:
-                    c.mb.obox((sx * 2.6, (ya + yb) / 2, zr[0] + 0.16), (0.42, (yb - ya) * 0.8, 0.3), (0, 0, 0), ["cloth", "bone2"])
-                else:
-                    c.skull(sx * 2.6, (ya + yb) / 2 + c.rng.uniform(-0.6, 0.6), zr[0], (math.pi if sx > 0 else 0.0), 0.2)
+                hero_coffin = HERO_PROPS and sx == -1 and ya == bays[0][0] and zr[0] == 0.3
+                with (c.scratch() if hero_coffin else contextlib_nullcontext()):
+                    if c.rng.random() < 0.6:
+                        c.mb.obox((sx * 2.6, (ya + yb) / 2, zr[0] + 0.16), (0.42, (yb - ya) * 0.8, 0.3), (0, 0, 0), ["cloth", "bone2"])
+                    else:
+                        c.skull(sx * 2.6, (ya + yb) / 2 + c.rng.uniform(-0.6, 0.6), zr[0], (math.pi if sx > 0 else 0.0), 0.2)
+                if hero_coffin:
+                    c.hero("Coffin", (-2.6, (ya + yb) / 2, 0.3), (0, -1))
     # central sarcophagus with the lid slid aside
-    c.mb.box(-0.55, -1.2, 0, 0.55, 1.2, 0.85, "wall2", skip=('b', 't'))
-    c.mb.box(-0.45, -1.1, 0.25, 0.45, 1.1, 0.3, "void")
-    for sx in (-1, 1):
-        c.mb.box(sx * 0.45, -1.2, 0.3, sx * 0.55, 1.2, 0.85, "wall2", skip=('b', 's', 'n'))
-    c.mb.box(-0.55, -1.2, 0.3, 0.55, -1.1, 0.85, "wall2", skip=('b',))
-    c.mb.box(-0.55, 1.1, 0.3, 0.55, 1.2, 0.85, "wall2", skip=('b',))
-    c.mb.obox((0.35, 0.2, 0.95), (1.25, 2.55, 0.18), (0.0, 0.08, 0.25), "wall4")
-    c.mb.box(-0.65, -1.3, 0, 0.65, 1.3, 0.12, "wall3", skip=('b',))
+    with (c.scratch() if HERO_PROPS else contextlib_nullcontext()):
+        c.mb.box(-0.55, -1.2, 0, 0.55, 1.2, 0.85, "wall2", skip=('b', 't'))
+        c.mb.box(-0.45, -1.1, 0.25, 0.45, 1.1, 0.3, "void")
+        for sx in (-1, 1):
+            c.mb.box(sx * 0.45, -1.2, 0.3, sx * 0.55, 1.2, 0.85, "wall2", skip=('b', 's', 'n'))
+        c.mb.box(-0.55, -1.2, 0.3, 0.55, -1.1, 0.85, "wall2", skip=('b',))
+        c.mb.box(-0.55, 1.1, 0.3, 0.55, 1.2, 0.85, "wall2", skip=('b',))
+        c.mb.obox((0.35, 0.2, 0.95), (1.25, 2.55, 0.18), (0.0, 0.08, 0.25), "wall4")
+        c.mb.box(-0.65, -1.3, 0, 0.65, 1.3, 0.12, "wall3", skip=('b',))
+    if HERO_PROPS:
+        c.hero("CoffinAjar", (0.0, 0.0, 0.0), (0, -1))
+        c.hero_rand("Ribcage", (1.4, -2.3, 0.0), "ribcage", scale=1.0)
     c.col("Block", -0.65, -1.3, 0, 0.65, 1.3, 0.9); c.mark_blocked(-0.65, -1.3, 0.65, 1.3)
     c.sock("Evidence", (0.0, 0.0, 0.3), (0, -1))           # inside the open sarcophagus
     c.sock("Evidence", (-1.6, -5.0, 0), (1, 0))
@@ -901,7 +962,12 @@ def ch_room_crypt():
         c.sock("Candle", (2.3 if ya > 0 else -2.3, ya, zr), (-1 if ya > 0 else 1, 0))
     c.sock("Drip", (0.8, 3.5, c.H - 0.1), (0, -1)); c.sock("Drip", (-0.6, -3.3, c.H - 0.1), (0, -1))
     c.sock("Spawn", (0.0, -4.5, 0), (0, 1))
-    c.bones_scatter(1.4, 3.0, 0.5, 3)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(1.4, 3.0, 0.5, 3)
+        c.hero_rand("BoneScatter", (1.4, 3.0, 0.0), "bones", scale=1.15)
+    else:
+        c.bones_scatter(1.4, 3.0, 0.5, 3)
     return c
 
 
@@ -983,8 +1049,15 @@ def ch_room_ritual():
     c.sock("Evidence", (0.0, cy, 1.5), (0, -1)); c.sock("Evidence", (5.6, 1.5, 0), (-1, 0))
     c.sock("Prop", (-6.0, -2.0, 0), (1, 0)); c.sock("Prop", (6.0, 3.0, 0), (-1, 0)); c.sock("Prop", (-2.5, -6.0, 0), (0, 1))
     c.sock("Spawn", (-4.0, -5.0, 0), (0, 1))
-    c.bones_scatter(2.5, -3.8, 0.7, 4)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(2.5, -3.8, 0.7, 4)
+        c.hero_rand("BoneScatter", (2.5, -3.8, 0.0), "bones", scale=1.61)
+    else:
+        c.bones_scatter(2.5, -3.8, 0.7, 4)
     c.skull(-1.8, -2.2, 0.0, 1.0); c.skull(2.1, 3.2, 0.5, 2.3, 0.2)
+    if HERO_PROPS:
+        c.hero("Brazier", (-6.2, 2.6, 0.0), (1, -0.4))
     return c
 
 
@@ -1010,10 +1083,25 @@ def ch_sp_collapsed():
     c.rubble(-0.6, 0.0, 1.2, 1.4, 3.9, 25, max_r=0.6)
     c.mb.obox((1.3, 0.0, 1.45), (1.9, 3.2, 0.3), (0.05, -0.12, 0.0), ["wall2", "wall4"])
     c.mb.hcyl((-0.5, -1.8, 1.9), (2.0, 1.6, 1.4), 0.17, 6, "wood2")
-    c.rubble(1.3, 0.0, 0.6, 1.4, 2.3, 18, z=1.6, max_r=0.45)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(1.3, 0.0, 0.6, 1.4, 2.3, 18, z=1.6, max_r=0.45)
+        c.hero("RubblePile", (1.3, 0.0, 1.6), (1, 0), scale=1.5)
+    else:
+        c.rubble(1.3, 0.0, 0.6, 1.4, 2.3, 18, z=1.6, max_r=0.45)
     c.mb.box(gx0 - 0.28, -0.9, 0.0, gx0 - 0.02, -0.6, 1.3, "wood1")   # a prop post holding it up (outside the gap)
-    c.rubble(0.0, -2.3, 1.2, 0.6, 0.35, 10, max_r=0.22)   # spill on the floor (low, no collider)
-    c.rubble(-0.5, 2.4, 1.2, 0.6, 0.35, 10, max_r=0.22)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(0.0, -2.3, 1.2, 0.6, 0.35, 10, max_r=0.22)   # spill on the floor (low, no collider)
+        c.hero_rand("RockCluster", (0.0, -2.3, 0.0), "spill_a", scale=1.1)
+    else:
+        c.rubble(0.0, -2.3, 1.2, 0.6, 0.35, 10, max_r=0.22)   # spill on the floor (low, no collider)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(-0.5, 2.4, 1.2, 0.6, 0.35, 10, max_r=0.22)
+        c.hero_rand("RockCluster", (-0.5, 2.4, 0.0), "spill_b", scale=1.1)
+    else:
+        c.rubble(-0.5, 2.4, 1.2, 0.6, 0.35, 10, max_r=0.22)
     # shaft above the collapsed ceiling (seen from inside), dark at the top
     c.ceil.box_in(-2, -1, c.H, 1, 1, c.H + 2.5, ["wall3", "stone_dk"], skip=('b', 't'))
     c.ceil.poly([(-2, -1, c.H + 2.5), (-2, 1, c.H + 2.5), (1, 1, c.H + 2.5), (1, -1, c.H + 2.5)], "void")
@@ -1135,10 +1223,20 @@ def ch_sp_pitbridge():
     c.col("Block", sx0, 1.5, PZ, sx1, 4.0, -1.4)
     c.mark_blocked(-3, -4, 3, 4)
     # bones and a lost explorer at the bottom
-    c.bones_scatter(1.2, -1.8, 1.2, 9, z=PZ)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(1.2, -1.8, 1.2, 9, z=PZ)
+        c.hero_rand("BoneScatter", (1.2, -1.8, PZ), "bones", scale=2.0)
+    else:
+        c.bones_scatter(1.2, -1.8, 1.2, 9, z=PZ)
     c.skull(1.6, -2.4, PZ, 0.5); c.skull(0.3, 2.2, PZ, 2.0)
     c.mb.obox((2.2, 1.0, PZ + 0.15), (0.9, 0.3, 0.3), (0, 0, 0.3), "rust")
-    c.rubble(2.3, 3.2, 0.6, 0.5, 0.5, 8, z=PZ, max_r=0.3)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(2.3, 3.2, 0.6, 0.5, 0.5, 8, z=PZ, max_r=0.3)
+        c.hero_rand("RockCluster", (2.3, 3.2, PZ), "rubble", scale=0.8)
+    else:
+        c.rubble(2.3, 3.2, 0.6, 0.5, 0.5, 8, z=PZ, max_r=0.3)
     c.wall_torch(-3.0, -5.6, (1, 0)); c.wall_torch(3.0, 5.6, (-1, 0))
     c.sock("Evidence", (1.6, -1.2, PZ), (0, 1))          # risk/reward at the bottom
     c.sock("Prop", (2.2, -5.8, 0), (-1, 0)); c.sock("Prop", (-2.2, 6.2, 0), (1, 0))
@@ -1230,18 +1328,24 @@ def ch_sp_den():
     # bone pile mound (landmark) in the NW corner, leaving free floor in front of it
     px, py = -1.9, 5.4
     c.mb.cyl(px, py, 0.0, 0.55, 1.05, 8, "dirt2", r_top=0.35)
-    for _ in range(34):
-        a = c.rng.uniform(0, 2 * math.pi); r = math.sqrt(c.rng.random()) * 1.0
-        z = 0.55 * (1 - (r / 1.05) ** 2) + 0.02
-        c.bone(px + math.cos(a) * r, py + math.sin(a) * r, z - 0.03, c.rng.uniform(0.3, 0.55), c.rng.uniform(0, math.pi),
-               tilt=c.rng.uniform(-0.4, 0.4))
-    c.skull(px + 0.2, py - 0.3, 0.5, -1.2, 0.26); c.skull(px - 0.6, py + 0.4, 0.3, 0.5, 0.22)
+    with (c.scratch() if HERO_PROPS else contextlib_nullcontext()):
+        for _ in range(34):
+            a = c.rng.uniform(0, 2 * math.pi); r = math.sqrt(c.rng.random()) * 1.0
+            z = 0.55 * (1 - (r / 1.05) ** 2) + 0.02
+            c.bone(px + math.cos(a) * r, py + math.sin(a) * r, z - 0.03, c.rng.uniform(0.3, 0.55), c.rng.uniform(0, math.pi),
+                   tilt=c.rng.uniform(-0.4, 0.4))
+        c.skull(px + 0.2, py - 0.3, 0.5, -1.2, 0.26); c.skull(px - 0.6, py + 0.4, 0.3, 0.5, 0.22)
+    if HERO_PROPS:
+        c.hero_rand("BonePile", (px, py, 0.55), "bonepile", scale=1.0, jitter=0.0)
     c.col("Rail", px - 0.9, py - 0.9, 0, px + 0.9, py + 0.9, 0.5)
     c.mark_blocked(px - 0.9, py - 0.9, px + 0.9, py + 0.9)
     # dog bowl (with a bone in it) + chewed planks + claw marks everywhere
-    c.mb.cyl(2.2, 0.6, 0.0, 0.14, 0.32, 8, "iron1", r_top=0.38)
-    c.mb.cyl(2.2, 0.6, 0.14, 0.1, 0.33, 8, "rust", r_top=0.0, caps=(False, False))
-    c.bone(2.2, 0.6, 0.12, 0.45, 0.8)
+    with (c.scratch() if HERO_PROPS else contextlib_nullcontext()):
+        c.mb.cyl(2.2, 0.6, 0.0, 0.14, 0.32, 8, "iron1", r_top=0.38)
+        c.mb.cyl(2.2, 0.6, 0.14, 0.1, 0.33, 8, "rust", r_top=0.0, caps=(False, False))
+        c.bone(2.2, 0.6, 0.12, 0.45, 0.8)
+    if HERO_PROPS:
+        c.hero_rand("DogBowl", (2.2, 0.6, 0.0), "dogbowl", scale=1.2, jitter=0.0)
     for (x, y, a) in ((-1.5, 1.0, 0.3), (-2.1, 0.3, 1.9), (1.0, -2.6, 2.6)):
         c.mb.obox((x, y, 0.03), (1.2, 0.22, 0.05), (0, 0, a), WOOD)
     for (x, y, z, f) in ((3.0, -1.0, 0.5, (-1, 0)), (3.0, 3.0, 0.9, (-1, 0)), (-3.0, -3.5, 0.4, (1, 0)),
@@ -1251,7 +1355,12 @@ def ch_sp_den():
     # a dug hole/burrow mound (where Chucho buries stolen items)
     c.mb.cyl(-1.4, -3.0, 0.0, 0.22, 0.85, 7, "dirt1", r_top=0.3)
     c.mb.cyl(-1.4, -3.0, 0.22, 0.24, 0.3, 7, "void", r_top=0.0, caps=(False, False))
-    c.bones_scatter(0.5, -1.0, 2.0, 6)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(0.5, -1.0, 2.0, 6)
+        c.hero_rand("BoneScatter", (0.5, -1.0, 0.0), "bones", scale=2.0)
+    else:
+        c.bones_scatter(0.5, -1.0, 2.0, 6)
     # wooden sign on the north wall with "CHUCHO" in chunky pixel letters
     c.mb.box(-1.75, 6.9, 2.15, 1.75, 7.0, 2.95, "wood1")
     c.mb.box(-1.85, 6.86, 2.1, -1.65, 7.0, 3.0, "wood2"); c.mb.box(1.65, 6.86, 2.1, 1.85, 7.0, 3.0, "wood2")
@@ -1371,7 +1480,12 @@ def ch_extraction_gate():
     c.sock("Prop", (-6.0, 6.0, 0), (1, -1)); c.sock("Prop", (6.0, 6.0, 0), (-1, -1)); c.sock("Prop", (6.0, -6.0, 0), (-1, 1))
     c.sock("Spawn", (-3.5, -5.0, 0), (0, 1))
     c.extra["extraction_zone_size"] = [9.5, 3.3, 7.0]
-    c.rubble(-5.8, -6.0, 0.6, 0.5, 0.35, 6, max_r=0.25)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(-5.8, -6.0, 0.6, 0.5, 0.35, 6, max_r=0.25)
+        c.hero_rand("RubblePile", (-5.8, -6.0, 0.0), "rubble", scale=0.5)
+    else:
+        c.rubble(-5.8, -6.0, 0.6, 0.5, 0.35, 6, max_r=0.25)
     return c
 
 

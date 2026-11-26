@@ -125,7 +125,9 @@ public class CharacterMovement : MonoBehaviour
         // Center tracks height/2 every frame so the feet stay planted at y=0 during the blend.
         float h = Mathf.Lerp(_controller.height, targetHeight, Time.deltaTime * _crouchTransitionSpeed);
         _controller.height = h;
-        _controller.center = new Vector3(0f, h * 0.5f, 0f);
+        // + skinWidth: the controller rests one skin width above the floor, so lifting the capsule by it puts the
+        // character root (and the model's soles) exactly on the floor.
+        _controller.center = new Vector3(0f, h * 0.5f + _controller.skinWidth, 0f);
 
         var pos = _character.CameraRoot.localPosition;
         pos.y = Mathf.Lerp(pos.y, targetCameraY, Time.deltaTime * _crouchTransitionSpeed);
@@ -199,7 +201,7 @@ public class CharacterMovement : MonoBehaviour
         // standing would reclaim. Starting at the capsule top avoids the self-overlap
         // that would otherwise make SphereCast ignore a low ceiling.
         float radius = _controller.radius;
-        Vector3 top  = transform.position + Vector3.up * (_controller.height - radius);
+        Vector3 top  = transform.position + Vector3.up * (_controller.center.y + _controller.height * 0.5f - radius);
         float gap    = _standHeight - _controller.height;
         if (gap <= 0f) return true;
 

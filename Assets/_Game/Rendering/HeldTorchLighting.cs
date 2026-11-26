@@ -72,6 +72,12 @@ public class HeldTorchLighting : MonoBehaviour
 
     private void Update()
     {
+        // The fill is the torch's own glow: dark when the carried torch is Out.
+        if (Active && _fill != null && _carrier.Carried != null)
+        {
+            var st = _carrier.Carried.GetComponent<TorchStateController>();
+            if (st != null) _fill.enabled = st.IsLit;
+        }
         if (!Active || Time.unscaledTime < _nextRelayer) return;
         _nextRelayer = Time.unscaledTime + _relayerInterval;
         RelayerWorldLights();

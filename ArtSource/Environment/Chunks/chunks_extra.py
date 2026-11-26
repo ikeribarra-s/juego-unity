@@ -274,6 +274,8 @@ def ch_room_larder():
     c.sock("Hide", (-1.0, 2.35, 0.0), (0, -1)); c.sock("Hide", (0.4, 2.4, 0.0), (0, -1))
     c.sock("Evidence", (0.6, -1.0, 0.92), (0, 1)); c.sock("Evidence", (-1.8, 2.5, 0.0), (1, 0))
     c.sock("Prop_Barrel", (2.3, 2.3, 0), (-1, -1)); c.sock("Prop_Crate", (2.4, -2.4, 0), (-1, 1))
+    if HERO_PROPS:
+        c.hero("Urns", (1.4, -2.5, 0.0), (0, 1))
     c.sock("Drip", (0.8, 0.2, c.H - 0.1), (0, -1))
     return c
 
@@ -318,7 +320,13 @@ def ch_sp_ossuary():
     c.candle(-0.25, 0.25, 1.45, 0.22); c.candle(0.25, -0.25, 1.45, 0.3)
     c.col("Block", -1.0, -1.0, 0, 1.0, 1.0, 1.45)
     c.mark_blocked(-1.0, -1.0, 1.0, 1.0)
-    c.bones_scatter(1.5, -4.0, 0.8, 5); c.bones_scatter(-1.6, 4.5, 0.7, 4)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(1.5, -4.0, 0.8, 5); c.bones_scatter(-1.6, 4.5, 0.7, 4)
+        c.hero_rand("BoneScatter", (1.5, -4.0, 0.0), "bones_a", scale=1.4)
+        c.hero_rand("BoneScatter", (-1.6, 4.5, 0.0), "bones_b", scale=1.3)
+    else:
+        c.bones_scatter(1.5, -4.0, 0.8, 5); c.bones_scatter(-1.6, 4.5, 0.7, 4)
     c.torch(3.0, -4.0, (-1, 0)); c.torch(-3.0, 4.2, (1, 0))
     c.sock("Landmark", (0.0, 0.0, 1.9), (0, -1))
     c.sock("Evidence", (-2.5, 0.0, 0.0), (1, 0))        # in front of the VACANCY niche
@@ -385,6 +393,9 @@ def ch_room_chapel():
         for k in range(6):
             a = k * math.pi / 3
             c.ceil.cyl(0.62 * math.cos(a), -1.0 + 0.62 * math.sin(a), 4.3, 4.5, 0.04, 4, "wax")
+    if HERO_PROPS:
+        c.hero("Candelabra", (-1.3, 5.6, 0.0), (0, -1)); c.hero("Candelabra", (1.3, 5.6, 0.0), (0, -1))
+        c.hero("Font", (2.4, -6.2, 0.0), (0, -1))
     c.torch(-3.0, -2.2, (1, 0)); c.torch(3.0, 2.6, (-1, 0))
     c.sock("LightShaft", (0.0, 6.8, 4.3), (0, -1))
     c.sock("Landmark", (0.0, 5.6, 1.3), (0, -1))
@@ -442,7 +453,16 @@ def ch_room_prison():
                 wall_quad(c, (-side, 0), side * 3.0, ya + 0.6 + t * 0.07, ya + 0.63 + t * 0.07, 1.3, 1.7, "mortar")
             c.mb.cat = "S"
         # a prisoner who never left (closed cell)
-    c.skull(-2.55, -6.2, 0.45, 0.0, 0.2); c.bones_scatter(-2.55, -5.5, 0.4, 4, z=0.45)
+    c.skull(-2.55, -6.2, 0.45, 0.0, 0.2)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(-2.55, -5.5, 0.4, 4, z=0.45)
+        c.hero("Remains", (-2.55, -5.85, 0.45), (0, -1), scale=0.9)
+    else:
+        c.bones_scatter(-2.55, -5.5, 0.4, 4, z=0.45)
+    if HERO_PROPS:
+        c.hero("Cage", (1.9, -0.8, c.H - 0.1), (0, -1), scale=1.2)   # hangs from the ceiling, bottom ~1.9 m
+        c.hero("Shackles", (2.7, 2.75, 0.0), (-1, 0))
     c.torch(-1.0, 0.0, (1, 0), z=2.0); c.torch(1.0, 0.0, (-1, 0), z=2.0)
     c.sock("Evidence", (-2.2, 1.8, 0.0), (1, 0)); c.sock("Evidence", (2.2, -5.3, 0.0), (-1, 0))
     c.sock("Prop_Key", (-0.95, 5.0, 1.6), (1, 0))
@@ -484,7 +504,12 @@ def ch_sp_well():
     c.col("Block", -1.15, -1.15, 0, 1.15, 1.15, 0.8)
     c.col("Block", -1.1, -0.1, 0.8, -0.9, 0.1, 2.3); c.col("Block", 0.9, -0.1, 0.8, 1.1, 0.1, 2.3)
     c.mark_blocked(-1.15, -1.15, 1.15, 1.15)
-    c.rubble(-2.4, 2.3, 0.4, 0.4, 0.3, 5, max_r=0.22)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(-2.4, 2.3, 0.4, 0.4, 0.3, 5, max_r=0.22)
+        c.hero_rand("RockCluster", (-2.4, 2.3, 0.0), "rubble", scale=0.7)
+    else:
+        c.rubble(-2.4, 2.3, 0.4, 0.4, 0.3, 5, max_r=0.22)
     c.torch(-1.6, 3.0, (0, -1)); c.torch(1.6, 3.0, (0, -1))
     c.sock("Landmark", (0.0, 0.0, 0.8), (0, -1))
     c.sock("Evidence", (0.0, 0.0, 1.0), (0, -1))          # in the bucket
@@ -639,10 +664,17 @@ def ch_sp_cave():
         c.hero("Stalagnate", (0.6, 0.5, 0.0), (0, -1))
     c.col("Block", -0.1, -0.2, 0, 1.3, 1.2, c.H)
     c.mark_blocked(-0.1, -0.2, 1.3, 1.2)
-    for (x, y, r) in ((-2.3, 2.6, 0.55), (2.3, -2.0, 0.45), (2.4, 5.5, 0.5)):
-        mb.obox((x, y, r * 0.6), (r * 2, r * 1.7, r * 1.3), (0.2, 0.1, c.rng.uniform(0, 3)), ROCK)
+    bvar = c.hero_site("boulders").randrange(3)        # which of the three boulders is the flatter variant B
+    for bi, (x, y, r) in enumerate(((-2.3, 2.6, 0.55), (2.3, -2.0, 0.45), (2.4, 5.5, 0.5))):
+        with (c.scratch() if HERO_PROPS else contextlib_nullcontext()) as sm:
+            (sm or mb).obox((x, y, r * 0.6), (r * 2, r * 1.7, r * 1.3), (0.2, 0.1, c.rng.uniform(0, 3)), ROCK)
+        if HERO_PROPS:
+            bp_ = "RockBoulderB" if bi == bvar else "RockBoulderA"
+            c.hero_rand(bp_, (x, y, 0.0), "boulder%d" % bi, scale=round(r * (3.0 if bp_ == "RockBoulderB" else 2.4), 3))
         c.col("Block", x - r, y - r * 0.85, 0, x + r, y + r * 0.85, r * 1.2)
         c.mark_blocked(x - r, y - r * 0.85, x + r, y + r * 0.85)
+    if HERO_PROPS:
+        c.hero("Mushrooms", (-2.0, -4.6, 0.0), (0, -1))
     for k in range(16):
         x, y = c.rng.uniform(-2.6, 2.6), c.rng.uniform(-3.5, 6.6)
         c.ceil.cyl(x, y, c.H - c.rng.uniform(0.5, 1.3), c.H, 0.03, 5, ROCK, r_top=c.rng.uniform(0.15, 0.3), caps=(True, False))
@@ -804,7 +836,12 @@ def ch_sp_trap():
             if x < LX - 0.25:
                 mb.cyl(x, y, PZ, PZ + c.rng.uniform(0.55, 0.75), 0.09, 4, ["iron0", "rust"], r_top=0.0, caps=(False, False))
     # an unlucky skeleton on the spikes, a warning skull on a stick, a narrow plank shortcut
-    c.bones_scatter(-1.0, 0.3, 0.5, 5, z=PZ + 0.4)
+    if HERO_PROPS:
+        with c.scratch():
+            c.bones_scatter(-1.0, 0.3, 0.5, 5, z=PZ + 0.4)
+        c.hero("Remains", (-1.0, 0.3, PZ + 0.4), (1, 0), scale=0.7)
+    else:
+        c.bones_scatter(-1.0, 0.3, 0.5, 5, z=PZ + 0.4)
     c.skull(-0.8, 0.6, PZ + 0.5, 0.7)
     mb.box(1.3, -3.2, 0, 1.36, -3.14, 1.2, "wood2")
     c.skull(1.33, -3.17, 1.2, math.pi, 0.22)
@@ -860,7 +897,12 @@ def ch_junction_brokenfloor():
     # tilted broken slabs on the rim, rubble in the cellar, a chain down into the dark
     for (x, y, a) in ((-1.5, -0.1, 0.3), (-2.7, 0.15, -0.4), (-0.5, 2.05, 0.2)):
         mb.obox((x, y, -0.15), (0.9, 0.5, 0.1), (a, 0.2, 0.1), FLOOR)
-    c.rubble(-2.5, 0.6, 0.4, 0.4, 0.35, 6, z=CZ, max_r=0.22)
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(-2.5, 0.6, 0.4, 0.4, 0.35, 6, z=CZ, max_r=0.22)
+        c.hero_rand("RubblePile", (-2.5, 0.6, CZ), "rubble", scale=0.5)
+    else:
+        c.rubble(-2.5, 0.6, 0.4, 0.4, 0.35, 6, z=CZ, max_r=0.22)
     mb.hcyl((-1.5, 1.0, c.H), (-1.5, 1.0, 0.6), 0.03, 4, "iron0")
     c.torch(2.6, -2.0, (0, 1))
     c.sock("Evidence", (-2.5, 1.4, CZ), (1, 0))           # down in the cellar
@@ -879,7 +921,12 @@ def ch_corridor_straight_b():
     mb = c.mb
     # wall breach on the east side: dark hole + rubble spilling in
     wall_quad(c, (-1, 0), 2.0, -0.9, 0.9, 0.6, 2.4, "void", off=0.02, cat="S")
-    c.rubble(1.6, 0.0, 0.5, 1.1, 0.7, 22, max_r=0.35, cat="S")
+    if HERO_PROPS:
+        with c.scratch():
+            c.rubble(1.6, 0.0, 0.5, 1.1, 0.7, 22, max_r=0.35, cat="S")
+        c.hero("RubblePile", (1.6, 0.0, 0.0), (1, 0), scale=1.2)
+    else:
+        c.rubble(1.6, 0.0, 0.5, 1.1, 0.7, 22, max_r=0.35, cat="S")
     c.col("Block", 1.2, -1.0, 0, 2.0, 1.0, 0.7)
     c.mark_blocked(1.2, -1.0, 2.0, 1.0)
     # the fallen rib lying across the floor (low, walkable over)
@@ -908,8 +955,11 @@ def ch_corridor_corner_b():
     mb.box(-2.0, -2.0, 0.0, -0.9, -0.9, 0.8, "wall3", skip=('b',))
     mb.box(-2.0, -2.0, 0.8, -0.8, -0.8, 0.9, "wall2")
     c.col("Block", -2.0, -2.0, 0, -0.8, -0.8, 0.9)
-    for (x, y) in ((-1.7, -1.2), (-1.25, -1.6), (-1.5, -1.5)):
-        c.skull(x, y, 0.9, math.pi / 4 + math.pi, 0.2)
+    with (c.scratch() if HERO_PROPS else contextlib_nullcontext()):
+        for (x, y) in ((-1.7, -1.2), (-1.25, -1.6), (-1.5, -1.5)):
+            c.skull(x, y, 0.9, math.pi / 4 + math.pi, 0.2)
+    if HERO_PROPS:
+        c.hero("SkullPile", (-1.5, -1.45, 0.9), (1, 1), scale=1.2)
     c.candle(-1.85, -1.85, 0.9, 0.3)
     mb.cyl(1.4, -1.4, 0.0, 0.55, 0.32, 8, "wood0", r_top=0.33)
     mb.cat = "D"

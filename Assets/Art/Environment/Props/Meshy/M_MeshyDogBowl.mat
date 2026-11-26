@@ -27,10 +27,17 @@ Material:
         m_Texture: {fileID: 2800000, guid: b1710ae5f1242324491bb9b174aa1f12, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AmbientStrength: 1
+    - _BumpScale: 1
     - _ColorDepth: 32
+    - _NormalFadeFar: 28
+    - _NormalFadeNear: 12
     - _VertexColorStrength: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

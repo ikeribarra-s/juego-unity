@@ -28,6 +28,12 @@ public class SoundscapeController : MonoBehaviour
     private float _duck = 1f;                // current bed multiplier (spike duck)
     private string _currentArea = "";
 
+    // Place beds: hysteresis on AcousticZone changes + flip counter + room stingers.
+    private AcousticZone _zone;
+    private float _lastSting = -1e9f;
+    private readonly System.Collections.Generic.HashSet<string> _stung = new();
+    public int AreaFlips { get; private set; }
+
     public string CurrentArea => _currentArea;
     public SoundDefinition CurrentBed => _current;
 
@@ -48,6 +54,7 @@ public class SoundscapeController : MonoBehaviour
 
     private void Start()
     {
+        // TODO(scene reload / DontDestroyOnLoad): the cached listener and zone refs are not re-resolved after a scene change.
         if (_listener == null)
         {
             var l = FindAnyObjectByType<AudioListener>();
@@ -116,27 +123,86 @@ public class SoundscapeController : MonoBehaviour
         if (vol != null && _profile.WaterDrip != null && SoundManager.Instance != null && Time.time >= _nextWaterDrip)
         {
             _nextWaterDrip = Time.time + Random.Range(_profile.WaterDripInterval.x, _profile.WaterDripInterval.y);
-            SoundManager.Instance.Play(_profile.WaterDrip, vol.RandomSurfacePoint());
+            Vector3 sp = vol.RandomSurfacePoint();
+            SoundManager.Instance.Play(_profile.WaterDrip, sp);
+            AtmosphereFX.Splash(sp);
         }
     }
+
+    private SoundDefinition _bDef;                   // bed currently fading out on _b
+    private MultiSectionDungeonGenerator.SectionType _type = MultiSectionDungeonGenerator.SectionType.Transition;
+    private AcousticZone _candZone;
+    private MultiSectionDungeonGenerator.SectionType _candType;
+    private float _candSince, _lastChange = -1e9f;
+    private bool _areaInit, _candActive;
 
     private void UpdateArea()
     {
         var layout = DungeonLayout.Current;
-        MultiSectionDungeonGenerator.SectionType type = layout != null
-            ? layout.SectionAt(_listener.position, out _)
-            : MultiSectionDungeonGenerator.SectionType.Transition;
-        SoundDefinition want = _profile.BedFor(type);
-        if (want == _current) return;
+        Vector3 pos = _listener.position;
+        var rawType = layout != null ? layout.SectionAt(pos, out _) : MultiSectionDungeonGenerator.SectionType.Transition;
+        var rawZone = AcousticZone.TryFind(pos, out float rawEdge);
+        // Hold the committed zone while the listener is still within ZoneSwitchEdge of it (zones are the chunk
+        // footprints: they touch, so a doorway is "just outside" one and "just inside" the next).
+        if (_areaInit && _zone != null && _zone.SignedEdge(pos) > -_profile.ZoneSwitchEdge
+            && !(rawZone != null && rawZone != _zone && rawEdge > _profile.ZoneSwitchEdge))
+            rawZone = _zone;
 
-        if (_debugLog) Debug.Log($"[Soundscape] area {type} → bed {(want != null ? want.name : "none")}", this);
-        _currentArea = type.ToString();
+        // Every change of (zone, section type) must persist ZoneSwitchTime before it is committed.
+        if (!_areaInit) { _areaInit = true; Commit(rawZone, rawType); }
+        else if (rawZone == _zone && rawType == _type) _candActive = false;
+        else
+        {
+            if (!_candActive || _candZone != rawZone || _candType != rawType)
+            { _candZone = rawZone; _candType = rawType; _candSince = Time.time; _candActive = true; }
+            if (Time.time - _candSince >= _profile.ZoneSwitchTime) { Commit(rawZone, rawType); _candActive = false; }
+        }
+
+        SoundDefinition want = _profile.ZoneBed(_zone, _type, out _) ?? _profile.BedFor(_type);
+        if (want == _current) return;                                              // same bed: no flip, crossfade untouched
+        if (Time.time - _lastChange < _profile.CrossfadeTime && _current != null) return;   // let the running crossfade finish
+        SwitchBed(want);
+    }
+
+    private void Commit(AcousticZone zone, MultiSectionDungeonGenerator.SectionType type)
+    {
+        bool zoneChanged = zone != _zone;
+        _zone = zone; _type = type;
+        if (zoneChanged && zone != null) TryStinger(zone);
+    }
+
+    private void SwitchBed(SoundDefinition want)
+    {
+        AreaFlips++;
+        _lastChange = Time.time;
+        if (_debugLog) Debug.Log($"[Soundscape] area {_type} → bed {(want != null ? want.name : "none")}", this);
+        _currentArea = _zone != null ? $"{_type}/{_zone.ZoneName}" : _type.ToString();
+        float curTarget = _current != null ? _current.Volume * _profile.BedVolume : 0f;
+
+        if (want != null && want == _bDef && _b.isPlaying)
+        {
+            // Returning to the bed that is fading out: swap back and continue from where the fade is.
+            (_a, _b) = (_b, _a);
+            (_current, _bDef) = (want, _current);
+            _fade = 1f - _fade;
+            _bStartVolume = curTarget;
+            return;
+        }
+
+        // Keep the louder source as the fading-out one, reuse the quieter one for the new bed.
+        if (_a.isPlaying && _b.isPlaying && _b.volume > _a.volume)
+        {
+            // _b louder than _a: it stays as _b; _a (quieter) is reused. Nothing to swap.
+            _bStartVolume = _duck > 0f ? _b.volume / _duck : _b.volume;
+        }
+        else
+        {
+            (_a, _b) = (_b, _a);                 // old current becomes the fading one
+            _bDef = _current;
+            _bStartVolume = _duck > 0f ? _b.volume / _duck : _b.volume;
+        }
+        if (_a.isPlaying) _a.Stop();
         _current = want;
-
-        // Swap: the playing bed becomes the fading one.
-        (_a, _b) = (_b, _a);
-        _bStartVolume = _duck > 0f ? _b.volume / _duck : _b.volume;
-        _a.Stop();
         if (want != null && want.IsValid)
         {
             _a.clip = want.GetClip();
@@ -148,6 +214,17 @@ public class SoundscapeController : MonoBehaviour
             _a.Play();
         }
         _fade = 0f;
+    }
+
+    private void TryStinger(AcousticZone z)
+    {
+        _profile.ZoneBed(z, _type, out var named);
+        if (named == null || named.Sting == null || SoundManager.Instance == null) return;
+        if (Time.timeSinceLevelLoad < 3f) return;   // spawn / teleport at load is not an 'entry'
+        if (Time.time - _lastSting < _profile.StingCooldown || !_stung.Add(named.NameContains)) return;
+        _lastSting = Time.time;
+        SoundManager.Instance.Play2D(named.Sting);   // cue: not ducked
+        if (_debugLog) Debug.Log($"[Soundscape] sting {named.Sting.name} ({z.ZoneName})", this);
     }
 
     private void PlayDrip()
@@ -168,6 +245,6 @@ public class SoundscapeController : MonoBehaviour
             seen++;
             if (Random.Range(0, seen) == 0) pick = pts[i];
         }
-        if (seen > 0) SoundManager.Instance.Play(_profile.Drip, pick);
+        if (seen > 0) { SoundManager.Instance.Play(_profile.Drip, pick); AtmosphereFX.Splash(pick); }
     }
 }

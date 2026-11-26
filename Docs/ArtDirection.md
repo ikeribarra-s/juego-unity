@@ -170,6 +170,8 @@ one-shots go through `relaxed` with darker low-passes; beds get a loop-safe 24 d
 | Distant sounds · fake bell | -26 (LP 2.5 / 3 kHz) | 0.8 | Actions -6 | 5 / 50 | 1 voice, 4 s |
 | Torch gutter / out / relight | -30 (LP 3.5 kHz, gutter ≤ 1.2 s) | 0.7 | Actions -6 | 1.5 / 20 | 2 voices, 0.3 s (spike stutter can't stack) |
 | Spike sting | -26 (LP 4 kHz) | 0.7 | SFX -6 | 2D | 1, 3 s |
+| Place beds (Corridor / Den / Sewer / Tower / Hall / Ritual; Crypt reuses Catacomb) | -32 (18.5 s loop, 1.5 s equal-power seam crossfade, LP 3 kHz 24 dB/oct) | 1.0 × `BedVolume` | SFX -6 | 2D; override the section bed inside an `AcousticZone` (hysteresis 0.5 m / 1 s) | same 2-source crossfade (4 s) |
+| Room stingers (StingRitual gong / StingDen growl) | -26 (LP 3.5 kHz, <= 2 s) | 0.8 | SFX -6 | 2D, **not ducked** | 1 voice, first entry per run, 90 s global cooldown |
 | Music bed `SuspenseAmbient` (AmbientAudio) | -11 | 0.05 | Music **-6** | 2D | — |
 | Generator run loop / engine start | -27 / -24 (mp3, user's) | 0.35 / 0.45 | Actions -6 (was none) | 2 / 25 | start: 1 |
 

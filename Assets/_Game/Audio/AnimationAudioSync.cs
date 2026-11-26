@@ -13,7 +13,7 @@ using UnityEngine;
 /// Because the stepper only advances the Animator on step boundaries, a crossing can only be seen on the
 /// frame the stepped pose actually reaches the contact — never before it.
 ///
-/// Blend trees: all children of a 1D blend share normalized time, so the contacts of the *dominant* clip
+/// Blend trees (Locomotion / Crouch, 2D): all children of a blend share normalized time, so the contacts of the *dominant* clip
 /// (highest weight) are used — walk/run blending can't double-fire. CharacterAudio keeps its 0.18 s floor.
 ///
 /// Phases come from the real rig (lowest foot/toe point &lt; 2 cm and moving with the ground). Re-measure
@@ -34,7 +34,8 @@ public class AnimationAudioSync : MonoBehaviour
     }
 
     [Header("States (Base Layer)")]
-    [SerializeField] private string _locomotionState = "Idle Walk Run Blend";
+    [SerializeField] private string _locoStateName   = "Locomotion";   // 2D blend tree: idle / walk / jog / sprint
+    [SerializeField] private string _crouchStateName = "Crouch";       // 2D blend tree: crouch idle / crouch walk
     [SerializeField] private string _jumpStartState  = "JumpStart";
     [SerializeField] private string _inAirState      = "InAir";
     [SerializeField] private string _landState       = "JumpLand";
@@ -64,7 +65,7 @@ public class AnimationAudioSync : MonoBehaviour
 
     private Animator       _animator;
     private CharacterAudio _audio;
-    private int _locoHash, _jumpHash, _airHash, _landHash;
+    private int _locoHash, _crouchHash, _jumpHash, _airHash, _landHash;
 
     // last observed normalized time per state (current / next slot), to detect crossings
     private int   _lastHashA, _lastHashB;
@@ -90,7 +91,8 @@ public class AnimationAudioSync : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _audio    = GetComponentInParent<CharacterAudio>();
-        _locoHash = Animator.StringToHash(_locomotionState);
+        _locoHash = Animator.StringToHash(_locoStateName);
+        _crouchHash = Animator.StringToHash(_crouchStateName);
         _jumpHash = Animator.StringToHash(_jumpStartState);
         _airHash  = Animator.StringToHash(_inAirState);
         _landHash = Animator.StringToHash(_landState);
@@ -130,7 +132,7 @@ public class AnimationAudioSync : MonoBehaviour
         if (!fresh && norm <= prev) return;               // the stepped pose didn't advance this frame
 
         int h = info.shortNameHash;
-        if (h == _locoHash)       Fire(_footContacts,    clips, prev, norm, info, _minFootWeight, Kind.Foot);
+        if (h == _locoHash || h == _crouchHash) Fire(_footContacts,    clips, prev, norm, info, _minFootWeight, Kind.Foot);
         else if (h == _jumpHash)  Fire(_takeoffContacts, clips, prev, norm, info, 0f, Kind.Takeoff);
         else if (h == _landHash)  Fire(_landContacts,    clips, prev, norm, info, 0f, Kind.Land);
     }

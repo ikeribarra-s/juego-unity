@@ -33,7 +33,8 @@ public static class FootContactAnalyzer
         if (ctrl == null || !anim.isHuman) { Debug.LogWarning("[FootContacts] Needs a humanoid Animator with an AnimatorController."); return; }
 
         var so = new SerializedObject(sync);
-        string loco = so.FindProperty("_locomotionState").stringValue;
+        string loco = so.FindProperty("_locoStateName").stringValue;
+        string crouchSt = so.FindProperty("_crouchStateName").stringValue;
         string jump = so.FindProperty("_jumpStartState").stringValue;
         string land = so.FindProperty("_landState").stringValue;
 
@@ -42,13 +43,18 @@ public static class FootContactAnalyzer
         var take = new List<AnimationAudioSync.ClipContacts>();
         var lnd  = new List<AnimationAudioSync.ClipContacts>();
 
-        AnimationMode.StartAnimationMode();
-        try
         {
-            foreach (var clip in ClipsOf(ctrl, loco))
+            foreach (var clip in ClipsOf(ctrl, loco).Concat(ClipsOf(ctrl, crouchSt)).Distinct())
             {
                 var (l, r) = SampleFeet(anim, clip);
-                var phases = Contacts(l).Concat(Contacts(r)).OrderBy(t => t).ToArray();
+                // Two-step gait: take one reliable contact (left foot, else right) and mirror it half a cycle later. The UAL gaits
+                // plant one foot much longer than the other, so per-foot crossings can land only 4-5 frames apart and CharacterAudio's
+                // 0.18 s step floor would swallow one of them.
+                var lc = Contacts(l).ToArray(); var rc = Contacts(r).ToArray();
+                float[] phases = lc.Length > 0 ? new[] { lc[0], (lc[0] + 0.5f) % 1f } : rc.Length > 0 ? new[] { rc[0], (rc[0] + 0.5f) % 1f } : new float[0];
+                // Tables are in STATE time: a blend-tree child with a cycleOffset plays clip time = state time + offset.
+                float offset = CycleOffset(ctrl, loco, clip);
+                phases = phases.Select(t => Mathf.Repeat(t - offset, 1f)).OrderBy(t => t).ToArray();
                 if (phases.Length == 0) { Line(report, clip, "no contacts (idle)", null); continue; }
                 foot.Add(new AnimationAudioSync.ClipContacts(clip.name, phases));
                 Line(report, clip, "foot", phases);
@@ -76,10 +82,17 @@ public static class FootContactAnalyzer
                 Line(report, clip, "land", phases);
             }
         }
-        finally { AnimationMode.StopAnimationMode(); }
 
         foreach (var s in syncs) s.SetTables(foot.ToArray(), take.ToArray(), lnd.ToArray());
         Debug.Log(report.ToString());
+    }
+
+    private static float CycleOffset(AnimatorController ctrl, string stateName, AnimationClip clip)
+    {
+        foreach (var cs in ctrl.layers[0].stateMachine.states)
+            if (cs.state.name == stateName && cs.state.motion is BlendTree bt)
+                foreach (var c in bt.children) if (c.motion == clip) return c.cycleOffset;
+        return 0f;
     }
 
     private static IEnumerable<AnimationClip> ClipsOf(AnimatorController ctrl, string stateName)
@@ -88,7 +101,7 @@ public static class FootContactAnalyzer
         {
             if (cs.state.name != stateName) continue;
             if (cs.state.motion is BlendTree bt)
-                foreach (var c in bt.children) { if (c.motion is AnimationClip ac) yield return ac; }
+                foreach (var c in bt.children) { if (c.motion is AnimationClip ac && ac.name != "Idle" && ac.name != "CrouchIdle") yield return ac; }
             else if (cs.state.motion is AnimationClip clip) yield return clip;
         }
     }
@@ -101,11 +114,10 @@ public static class FootContactAnalyzer
         Transform rf = anim.GetBoneTransform(HumanBodyBones.RightFoot), rt = anim.GetBoneTransform(HumanBodyBones.RightToes);
         int n = Mathf.Max(2, Mathf.RoundToInt(clip.length * SampleRate) + 1);
         var l = new float[n]; var r = new float[n];
+        using var probe = new AnimProbe(anim, clip);
         for (int i = 0; i < n; i++)
         {
-            AnimationMode.BeginSampling();
-            AnimationMode.SampleAnimationClip(anim.gameObject, clip, clip.length * i / (n - 1));
-            AnimationMode.EndSampling();
+            probe.Pose(clip.length * i / (n - 1));
             l[i] = Low(root, lf, lt);
             r[i] = Low(root, rf, rt);
         }
@@ -125,7 +137,7 @@ public static class FootContactAnalyzer
         float stance = sorted[Mathf.FloorToInt(sorted.Length * 0.1f)];
         float swing  = sorted[sorted.Length - 1];
         if (swing - stance < 0.05f) yield break;   // foot never lifts: idle
-        float thr = stance + 0.015f;
+        float thr = stance + 0.05f;   // 5 cm: the UAL gaits plant the heel/toe slowly, 1.5 cm made both feet cross together
         int n = h.Length - 1;                       // last sample == first (loop)
         for (int i = 1; i <= n; i++)
             if (h[i - 1] > thr && h[i] <= thr)

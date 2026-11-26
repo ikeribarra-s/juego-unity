@@ -74,6 +74,7 @@ public class CharacterAudio : MonoBehaviour
     private float               _nextIdleCreak;
     private AnimationAudioSync  _animDriver;       // set → footsteps/jump/land follow the animation frames
     private float               _jumpPending = -1f; // > 0: waiting for the take-off frame (seconds left)
+    private float               _lastLandContact = -10f;
     private float               _landPending = -1f; // > 0: waiting for the land contact frame
     private float               _airTime;
 
@@ -171,7 +172,8 @@ public class CharacterAudio : MonoBehaviour
 
             // The animation shows a landing (InAir/JumpLand) → play on its foot-contact frame.
             // Otherwise (short drop that never left the locomotion state) the touchdown *is* the contact.
-            if (_animDriver != null && _animDriver.InAirOrLanding)
+            // JumpLand starts slightly before touchdown (AnimationHandler._landLead): if its contact frame was already shown, play now.
+            if (_animDriver != null && _animDriver.InAirOrLanding && Time.time - _lastLandContact > _animSyncTimeout)
                 _landPending = _animSyncTimeout;
             else
                 PlayOneShot(_jumpLand, "land");
@@ -406,7 +408,7 @@ public class CharacterAudio : MonoBehaviour
     /// <summary>Foot-contact frame of JumpLand.</summary>
     public void AnimationLandContact()
     {
-        if (_landPending <= 0f) return;
+        if (_landPending <= 0f) { _lastLandContact = Time.time; return; }   // shown before touchdown: HandleLanding plays it there
         _landPending = -1f;
         PlayOneShot(_jumpLand, "land (contact frame)");
     }
