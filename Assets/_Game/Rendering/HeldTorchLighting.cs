@@ -37,6 +37,10 @@ public class HeldTorchLighting : MonoBehaviour
     [SerializeField] private float _fillRange = 1.2f;
     [Tooltip("How often to give lights spawned while carrying the viewmodel layer.")]
     [SerializeField, Min(0.1f)] private float _relayerInterval = 1f;
+    [Tooltip("Seconds the layers stay swapped after the torch leaves the hand. A just-thrown lantern is still small (it grows back " +
+             "to its world size in flight) and right in front of the eye; with its own light on it at once it flashed white.")]
+    [SerializeField] private float _releaseLinger = 0.2f;
+    private float _restoreAt = -1f;
 
     private static readonly HashSet<Light> s_heldLights = new();
 
@@ -72,6 +76,7 @@ public class HeldTorchLighting : MonoBehaviour
 
     private void Update()
     {
+        if (_restoreAt >= 0f && Time.time >= _restoreAt) Restore();
         // The fill is the torch's own glow: dark when the carried torch is Out.
         if (Active && _fill != null && _carrier.Carried != null)
         {
@@ -139,7 +144,11 @@ public class HeldTorchLighting : MonoBehaviour
         _fill.GetUniversalAdditionalLightData().renderingLayers = ViewmodelLayer;
     }
 
-    private void OnDropped(Torch torch) => Restore();
+    private void OnDropped(Torch torch)
+    {
+        if (_releaseLinger > 0f && Active) _restoreAt = Time.time + _releaseLinger;
+        else Restore();
+    }
 
     private static void RelayerWorldLights()
     {
@@ -149,6 +158,7 @@ public class HeldTorchLighting : MonoBehaviour
 
     private void Restore()
     {
+        _restoreAt = -1f;
         foreach (var (r, mask) in _saved)
             if (r != null) r.renderingLayerMask = mask;
         _saved.Clear();

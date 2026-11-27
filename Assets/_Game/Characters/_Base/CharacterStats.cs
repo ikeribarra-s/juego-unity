@@ -14,7 +14,7 @@ public class CharacterStats : ScriptableObject
     public float LookSensitivity = 0.15f;
 
     [Header("Inventory")]
-    public int InventorySlots = 2;
+    public int InventorySlots = 3;
 
     [Header("Detection")]
     public float DetectionRadius = 5f;

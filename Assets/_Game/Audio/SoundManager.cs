@@ -36,11 +36,15 @@ public class SoundManager : MonoBehaviour
     }
 
     // 3D sound at a world position
-    public void Play(SoundDefinition def, Vector3 worldPosition)
+    public void Play(SoundDefinition def, Vector3 worldPosition) => Play(def, worldPosition, 1f);
+
+    /// <summary>3D sound with an extra volume multiplier (e.g. bone clacks that scale with impact speed).</summary>
+    public void Play(SoundDefinition def, Vector3 worldPosition, float volumeScale)
     {
         if (!Allowed(def)) return;
         var src = NextSource(def);
         Configure(src, def);
+        src.volume *= volumeScale;
         src.transform.position = worldPosition;
         src.Play();
     }

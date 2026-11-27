@@ -130,7 +130,11 @@ public class FirstPersonBodyCull : MonoBehaviour
             }
 
             float[] mask = new float[src.vertexCount];
-            if (r is SkinnedMeshRenderer smr)
+            if (r is SkinnedMeshRenderer s0 && s0.bones.Length == 0 && r.transform.IsChildOf(_maskRoot))
+            {
+                for (int v = 0; v < mask.Length; v++) mask[v] = 1f; // boneless blend-shape mesh under the head (eyelids)
+            }
+            else if (r is SkinnedMeshRenderer smr)
             {
                 Transform[] bones = smr.bones;
                 bool[] isHead = new bool[bones.Length];

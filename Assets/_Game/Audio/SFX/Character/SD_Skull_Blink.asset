@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_Skull_Blink
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: bea2b86d99c1e8f449d1d5d6bf66f61d, type: 3}
+  - {fileID: 8300000, guid: f03c407eaf982e0419f0b0d79862dc52, type: 3}
+  - {fileID: 8300000, guid: 3796211dfcc5dc948876e6c9fc4e0dfc, type: 3}
+  _volume: 0.8
+  _pitchRange: {x: 0.92, y: 1.08}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}
+  _minDistance: 1.5
+  _maxDistance: 10
+  _maxVoices: 2
+  _minInterval: 0.08

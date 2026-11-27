@@ -18,5 +18,5 @@ MonoBehaviour:
   JumpForce: 8
   CrouchSpeedMultiplier: 0.5
   LookSensitivity: 0.15
-  InventorySlots: 2
+  InventorySlots: 3
   DetectionRadius: 5

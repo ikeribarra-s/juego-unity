@@ -38,7 +38,7 @@ public class DebugHUD : MonoBehaviour
             var inv = _character.Inventory;
             GUILayout.Label($"  Slots: {inv.Items.Count} / {inv.MaxSlots}");
             foreach (var item in inv.Items)
-                GUILayout.Label($"    • {item.Definition.DisplayName} (val: {item.Definition.FinalValue})");
+                GUILayout.Label($"    • {item.DisplayName} ({item.Subtitle})");
         }
 
         // Mission

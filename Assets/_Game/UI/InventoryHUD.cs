@@ -51,11 +51,11 @@ public class InventoryHUD : MonoBehaviour
 
                 // Item name — wrap if long
                 var nameRect = new Rect(rect.x + 4, rect.y + 4, rect.width - 8, rect.height - 24);
-                GUI.Label(nameRect, item.Definition.DisplayName, _labelStyle);
+                GUI.Label(nameRect, item.DisplayName, _labelStyle);
 
-                // Value at bottom of slot
+                // Subtitle at bottom of slot (bone owner "Base's", evidence value "10 pts")
                 var valueRect = new Rect(rect.x + 4, rect.yMax - 22, rect.width - 8, 18);
-                GUI.Label(valueRect, $"{item.Definition.FinalValue:F0} pts", _labelStyle);
+                GUI.Label(valueRect, item.Subtitle, _labelStyle);
             }
             else
             {

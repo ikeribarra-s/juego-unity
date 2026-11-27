@@ -47,6 +47,14 @@ MANIFEST = [
     ("UI",        "Click",       "synth", "dark_ui_click",     (4, 22000), -24, 5000, None, 0.02),
     ("UI",        "Hover",       "synth", "dark_ui_hover",     (3, 23000), -28, 5000, None, 0.02),
     ("UI",        "Error",       "synth", "dark_ui_error",     (2, 24000), -24, 4500, None, 0.05),
+    # death FX (Docs/Design/DeathFX.md §4)
+    ("Character", "DeathCollapse","synth", "dark_death_collapse",(3, 27000), -20, 4500, 1.2, 0.08),
+    ("UI",        "DeathSting",   "synth", "dark_ui_error",      (2, 24100), -24, 4500, 0.5, 0.05),
+    ("Character", "SkullRoll",    "synth", "dark_bone_clack",    (4, 26200), -22, 4500, 0.6, 0.05),
+    ("Character", "SkullYip",     "synth", "dark_skull_yip",     (3, 28000), -22, 4500, 0.35, 0.03),
+    ("Character", "SkullBlink",   "synth", "dark_skull_blink",   (3, 29000), -27, 3600, 0.09, 0.015),
+    ("UI",        "SkullReady",   "synth", "dark_ui_hover",      (1, 22100), -24, 5000, 0.2, 0.02),
+    ("Items",     "BonePickup",   "synth", "dark_bone_clack",    (2, 26300), -22, 4500, 0.25, 0.03),
     # ambient one-shots (quiet + dark; the 3D distance does the rest)
     ("Ambient", "Drip",          "file", "Ambient/SFX_Ambient_Drip_*.wav",          None, -30, 3500, 0.6, 0.15),
     ("Ambient", "Distant",       "file", "Ambient/SFX_Ambient_Distant_*.wav",       None, -26, 2500, 2.5, 0.4),

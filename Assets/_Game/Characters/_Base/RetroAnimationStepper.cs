@@ -24,6 +24,11 @@ public class RetroAnimationStepper : MonoBehaviour
     private Animator _animator;
     private float    _accum;
 
+    /// <summary>Frame on which the Animator was last advanced (a new stepped pose). Others can step in sync with the body.</summary>
+    public int   LastStepFrame { get; private set; } = -1;
+    /// <summary>Target step rate (0 or less = every frame).</summary>
+    public float Fps => _fps;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -36,6 +41,7 @@ public class RetroAnimationStepper : MonoBehaviour
         if (_fps <= 0f)
         {
             _animator.Update(Time.deltaTime);
+            LastStepFrame = Time.frameCount;
             return;
         }
 
@@ -48,6 +54,7 @@ public class RetroAnimationStepper : MonoBehaviour
             // but correct overall playback speed (we consumed exactly what we waited).
             _animator.Update(_accum);
             _accum = 0f;
+            LastStepFrame = Time.frameCount;
         }
     }
 }

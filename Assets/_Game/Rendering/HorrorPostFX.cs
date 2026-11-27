@@ -42,8 +42,21 @@ public class HorrorPostFX : MonoBehaviour
     private Bloom _bloom;
     private ChromaticAberration _chromaticAberration;
 
+    // Authored pixel size (scene value at Awake). Mood looks may raise it but never go below it:
+    // LightingMoodController's Normal/Extraction moods use 1, which turned the pixel look off.
+    private int _basePixelSize = 1;
+
+    public static HorrorPostFX Instance { get; private set; }
+
+    // Death layer (DeathFXLocal): the alive look above, blended toward these by _deathT. Mild variant (DeathFX.md 12.2).
+    private float _deathT;
+    private float _deadSat = -35f, _deadExp = -0.3f, _deadVig = 0.5f, _deadBloom = 0.2f, _deadChroma = 0.22f, _deadGrain = 0.5f;
+    private int _pulsesActive;
+
     private void Awake()
     {
+        Instance = this;
+        _basePixelSize = Mathf.Max(1, _pixelSize);
         var go = new GameObject("[HorrorPostFX]");
         go.transform.SetParent(transform);
         _volume          = go.AddComponent<Volume>();
@@ -53,6 +66,8 @@ public class HorrorPostFX : MonoBehaviour
 
         ApplyPixelation();
     }
+
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 
     // Expose for runtime changes (e.g. entering a dream sequence)
     public int PixelSize
@@ -78,26 +93,41 @@ public class HorrorPostFX : MonoBehaviour
         _colorFilter = colorFilter;
         _bloomIntensity = Mathf.Clamp01(bloomIntensity);
         _chromaticIntensity = Mathf.Clamp01(chromaticIntensity);
-        PixelSize = pixelSize;
+        PixelSize = Mathf.Max(_basePixelSize, pixelSize);
 
-        if (_grain != null)
-            _grain.intensity.Override(_grainIntensity);
+        ApplyOverrides();
+    }
 
-        if (_vignette != null)
-            _vignette.intensity.Override(_vignetteIntensity);
+    // Effective look = alive look (moods) blended toward the dead look. Dead never makes the image brighter / less
+    // grainy than the alive one (Max / Min), so a mood that is already heavy stays as it is.
+    private float EffGrain  => Mathf.Lerp(_grainIntensity, Mathf.Max(_grainIntensity, _deadGrain), _deathT);
+    private float EffChroma => Mathf.Lerp(_chromaticIntensity, Mathf.Max(_chromaticIntensity, _deadChroma), _deathT);
 
+    private void ApplyOverrides()
+    {
+        if (_grain != null) _grain.intensity.Override(EffGrain);
+        if (_vignette != null) _vignette.intensity.Override(Mathf.Lerp(_vignetteIntensity, Mathf.Max(_vignetteIntensity, _deadVig), _deathT));
         if (_colorAdjustments != null)
         {
-            _colorAdjustments.saturation.Override(_saturation);
-            _colorAdjustments.postExposure.Override(_postExposure);
+            _colorAdjustments.saturation.Override(Mathf.Lerp(_saturation, Mathf.Min(_saturation, _deadSat), _deathT));
+            _colorAdjustments.postExposure.Override(Mathf.Lerp(_postExposure, Mathf.Min(_postExposure, _deadExp), _deathT));
             _colorAdjustments.colorFilter.Override(_colorFilter);
         }
+        if (_bloom != null) _bloom.intensity.Override(Mathf.Lerp(_bloomIntensity, Mathf.Min(_bloomIntensity, _deadBloom), _deathT));
+        if (_chromaticAberration != null) _chromaticAberration.intensity.Override(EffChroma);
+    }
 
-        if (_bloom != null)
-            _bloom.intensity.Override(_bloomIntensity);
+    /// <summary>Dead-look targets (DeathFXLocal passes the DeathFXProfile values).</summary>
+    public void SetDeadLook(float saturation, float postExposure, float vignette, float bloom, float chromatic, float grain)
+    {
+        _deadSat = saturation; _deadExp = postExposure; _deadVig = vignette; _deadBloom = bloom; _deadChroma = chromatic; _deadGrain = grain;
+    }
 
-        if (_chromaticAberration != null)
-            _chromaticAberration.intensity.Override(_chromaticIntensity);
+    /// <summary>0 = alive look, 1 = dead look. Safe to call every frame; a running pulse owns the value until it ends.</summary>
+    public void SetDeathBlend(float t)
+    {
+        _deathT = Mathf.Clamp01(t);
+        if (_pulsesActive == 0) ApplyOverrides();
     }
 
     private void ApplyPixelation()
@@ -145,31 +175,32 @@ public class HorrorPostFX : MonoBehaviour
     // Call this from any system (e.g. creature jump-scare) to spike the effect
     public void PulseGrain(float intensity, float duration)
     {
-        StartCoroutine(GrainPulse(intensity, duration));
+        StartCoroutine(Pulse(true, intensity, duration));
     }
 
-    private System.Collections.IEnumerator GrainPulse(float targetIntensity, float duration)
+    /// <summary>Chromatic aberration rises from the current value to <paramref name="peak"/> and back (mirror of PulseGrain).</summary>
+    public void PulseChromatic(float peak, float duration)
     {
-        if (!_volume.profile.TryGet<FilmGrain>(out var grain)) yield break;
+        StartCoroutine(Pulse(false, peak, duration));
+    }
 
-        float original = _grainIntensity;
-        float half     = duration * 0.5f;
-        float t        = 0f;
-
-        while (t < half)
+    private System.Collections.IEnumerator Pulse(bool grain, float target, float duration)
+    {
+        _pulsesActive++;
+        float original = grain ? EffGrain : EffChroma;
+        float half = Mathf.Max(0.001f, duration * 0.5f);
+        for (int phase = 0; phase < 2; phase++)
         {
-            grain.intensity.Override(Mathf.Lerp(original, targetIntensity, t / half));
-            t += Time.deltaTime;
-            yield return null;
+            for (float t = 0f; t < half; t += Time.deltaTime)
+            {
+                float k = t / half;
+                float v = phase == 0 ? Mathf.Lerp(original, target, k) : Mathf.Lerp(target, original, k);
+                if (grain) { if (_grain != null) _grain.intensity.Override(v); }
+                else if (_chromaticAberration != null) _chromaticAberration.intensity.Override(v);
+                yield return null;
+            }
         }
-        t = 0f;
-        while (t < half)
-        {
-            grain.intensity.Override(Mathf.Lerp(targetIntensity, original, t / half));
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        grain.intensity.Override(original);
+        _pulsesActive--;
+        if (_pulsesActive == 0) ApplyOverrides();   // exact final values, including the dead layer
     }
 }

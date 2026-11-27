@@ -134,7 +134,7 @@ public class Torch : MonoBehaviour, IInteractable
     private static CharacterBase s_localHint;
     private static CharacterBase FindLocalInteractorHint()
     {
-        if (s_localHint == null) s_localHint = FindAnyObjectByType<CharacterBase>();
+        if (s_localHint == null) s_localHint = CharacterBase.FindLocal();
         return s_localHint;
     }
 

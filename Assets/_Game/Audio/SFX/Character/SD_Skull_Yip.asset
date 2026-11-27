@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f3ed9831ff98d4389b597fa8b182ca, type: 3}
+  m_Name: SD_Skull_Yip
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDefinition
+  _clips:
+  - {fileID: 8300000, guid: 5f97e87856d30354dae736bf622f5e9c, type: 3}
+  - {fileID: 8300000, guid: 45aa435d2b63d7e4a83e297fb2912c1f, type: 3}
+  - {fileID: 8300000, guid: 48d3a34ddd9ac544893b8d2ea45f15cd, type: 3}
+  _volume: 0.5
+  _pitchRange: {x: 0.94, y: 1.06}
+  _spatialBlend: 1
+  _mixerGroup: {fileID: 24300002, guid: 2dc7c80cb3f1bd44790b9c1bc7af923c, type: 2}
+  _minDistance: 2
+  _maxDistance: 20
+  _maxVoices: 1
+  _minInterval: 1

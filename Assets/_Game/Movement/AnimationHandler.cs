@@ -179,7 +179,7 @@ public class AnimationHandler : MonoBehaviour
     // has "IK Pass" enabled in the controller.
     private void OnAnimatorIK(int layerIndex)
     {
-        if (!_headLook || _lookSource == null) return;
+        if (layerIndex != 0 || !_headLook || _lookSource == null) return;   // the torch arm layer has its own IK pass (pick-up reach)
 
         // Aim a ray along the look direction so the head converges on whatever the
         // player is actually looking at; fall back to a far point when it hits nothing.

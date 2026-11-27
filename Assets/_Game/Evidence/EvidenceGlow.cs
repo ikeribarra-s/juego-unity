@@ -38,7 +38,7 @@ public class EvidenceGlow : MonoBehaviour
 
     private void Start()
     {
-        _player = FindAnyObjectByType<CharacterBase>();
+        _player = CharacterBase.FindLocal();
 
         if (_player == null)
             Debug.LogWarning($"[EvidenceGlow] No CharacterBase found in scene — glow won't work.", this);

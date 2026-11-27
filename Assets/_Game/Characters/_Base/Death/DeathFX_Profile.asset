@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3618719e4ec58a04ea0a35a373cc7b92, type: 3}
+  m_Name: DeathFX_Profile
+  m_EditorClassIdentifier: Assembly-CSharp::DeathFXProfile
+  Collapse: {fileID: 11400000, guid: e80a788a58f45bd4e94e2cc1056e8d87, type: 2}
+  Sting: {fileID: 11400000, guid: 1bfdc4c49c5203a43937ac957b4d5f22, type: 2}
+  SkullRoll: {fileID: 11400000, guid: 85b89e727c3fcad469fba57a1d5bfd4a, type: 2}
+  SkullYip: {fileID: 11400000, guid: 4be80c83e4ff9ba41b859c78cb5cf2b9, type: 2}
+  SkullReady: {fileID: 11400000, guid: 75689f3772d226146912c6695ffc28ae, type: 2}
+  SkullHum: {fileID: 0}
+  SkullHumEnabled: 0
+  BonePickup: {fileID: 11400000, guid: 134e2c00dcbdaf5448ded0e922354047, type: 2}
+  StingDelay: 0.15
+  YipDelay: 0.06
+  MaxBurstsPerSecond: 4
+  VfxCullDistance: 30
+  WispCullDistance: 25
+  RemoteCountScale: 0.7
+  DeadBlendTime: 0.8
+  ReviveTime: 0.6
+  Saturation: -35
+  PostExposure: -0.3
+  Vignette: 0.5
+  Bloom: 0.2
+  Chromatic: 0.22
+  Grain: 0.5
+  KickGrain: 0.6
+  KickGrainTime: 0.3
+  KickChromatic: 0.55
+  KickChromaticTime: 0.25
+  WispRate: 5
+  WispRollBurst: 4
+  WispFadeIn: 0.5
+  EyeColor: {r: 0.498, g: 0.839, b: 0.761, a: 1}
+  EyeIntensity: 0.8
+  EyeRange: 1.6
+  EyeLocalPosition: {x: 0, y: 0.02, z: 0.08}
+  EyePulseMultiplier: 2
+  EyePulseHold: 0.15
+  EyePulseEase: 0.3

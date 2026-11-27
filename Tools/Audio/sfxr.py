@@ -521,6 +521,47 @@ def d_powerup(r):
            [Voice(wave="tri4", freq=f / 4, attack=0.02, sustain=step * 4, decay=0.2, gain=0.5)]
 
 
+def _bwomp(u, delay=0.0):
+    """The comic deflate: 12.5 % square sliding 220 -> 55 Hz in 0.35 s with a 6 Hz wobble + a 40 ms LFSR crackle."""
+    f = u(200, 240)
+    return [Voice(wave="square", freq=f, freq_min=50, slide=-u(5.3, 6.0), vib_depth=0.05, vib_hz=6, duty=0.125,
+                  attack=0.004, sustain=0.12, decay=u(0.3, 0.36), decay_curve=1.4, lpf=1800 * _lift(), gain=0.8,
+                  chip=True, delay=delay),
+            Voice(wave="lfsr", freq=u(3500, 6000), sustain=0.0, decay=0.04, decay_curve=1.6, lpf=2800 * _lift(),
+                  gain=0.55, delay=delay)]
+
+
+def d_death_bwomp(r):
+    """Standalone comic 'bwomp'."""
+    return _bwomp(_u(r))
+
+
+def d_death_collapse(r):
+    """Skeleton collapse: 3 bone-clack ticks (crunch) + the bwomp, bwomp 3 ms later than the first tick."""
+    u = _u(r)
+    ticks = [_bone_tick(u, gain=(0.6, 0.9), delay=k * u(0.025, 0.05)) for k in range(3)]
+    return ticks + _bwomp(u, delay=0.003) + [Voice(wave="tri4", freq=u(120, 170), slide=-4, sustain=0.0, decay=0.08,
+                                                   gain=0.5, delay=0.0)]
+
+
+def d_skull_yip(r):
+    """Tiny skull yelp: two rising 4-bit triangle notes 60 ms apart + 2 LFSR chatter ticks."""
+    u = _u(r)
+    f = u(500, 540)
+    notes = [Voice(wave="tri4", freq=f * u(0.98, 1.02), slide=u(9.5, 11), attack=0.002, sustain=0.035, decay=0.03,
+                   gain=0.9, delay=k * 0.06) for k in range(2)]
+    return notes + [_bone_tick(u, gain=(0.15, 0.25), delay=0.125 + k * 0.03) for k in range(2)]
+
+
+def d_skull_blink(r):
+    """Eyelid 'tic': a ~50 ms muted 4-bit triangle plip (falling) + a faint band-passed dry click. Low-mid, no highs."""
+    u = _u(r)
+    return [Voice(wave="tri4", freq=u(340, 460), slide=-u(4, 7), attack=0.002, sustain=0.0, decay=u(0.035, 0.05),
+                  decay_curve=2.0, lpf=2200, gain=0.9),
+            Voice(wave="pink", freq=1, attack=0.001, sustain=0.0, decay=u(0.012, 0.02), decay_curve=2.5,
+                  bpf=u(900, 1400), bpf_q=2.5, lpf=2500, gain=u(0.3, 0.5))]
+
+
 # ── Soft presets (B candidates for the "relaxed" direction) ──────────────────────────────────
 # Smooth triangle + band-passed pink noise instead of squares/LFSR, 3–8 ms attacks, longer exponential
 # tails, no chip stepping. Use with --darkness 0.3 and process_sfx.py --style relaxed --role <role>.
@@ -612,6 +653,10 @@ PRESETS = {
     "dark_ui_error": (d_ui_error, "UI", "Error"),
     "dark_powerup": (d_powerup, "Items", "Powerup"),
     "dark_bone_clack": (d_bone_clack, "Character", "BoneClack"),
+    "dark_death_bwomp": (d_death_bwomp, "Character", "DeathBwomp"),
+    "dark_death_collapse": (d_death_collapse, "Character", "DeathCollapse"),
+    "dark_skull_yip": (d_skull_yip, "Character", "SkullYip"),
+    "dark_skull_blink": (d_skull_blink, "Character", "SkullBlink"),
     # original (brighter/cartoony) set — kept for reference
 
     "jump": (p_jump, "Character", "Jump"),

@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Rigidbody))]
-public class EvidencePickup : MonoBehaviour, IInteractable
+public class EvidencePickup : MonoBehaviour, IInteractable, IInventoryItem
 {
     public enum EvidenceState { InWorld, Carried, AtExtractionZone, Destroyed }
 
@@ -14,6 +14,10 @@ public class EvidencePickup : MonoBehaviour, IInteractable
     public EvidenceState State      { get; private set; } = EvidenceState.InWorld;
     public CharacterBase Carrier    { get; private set; }
     public Rigidbody     Body       => _rb;
+
+    // IInventoryItem (evidence is beam-carried today; kept slot-compatible for Mochín, Phase 2).
+    string IInventoryItem.DisplayName => _definition != null ? _definition.DisplayName : name;
+    string IInventoryItem.Subtitle    => _definition != null ? $"{_definition.FinalValue:F0} pts" : string.Empty;
 
     private Rigidbody _rb;
 

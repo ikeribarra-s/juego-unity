@@ -6,6 +6,9 @@ using UnityEditor;
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(InventorySystem))]
 [RequireComponent(typeof(InteractionSystem))]
+// Awake first: it auto-adds PhysicsGrabber / Vitals / TorchCarrier … that siblings (CharacterAudio.OnEnable) subscribe to.
+// Component order alone is not guaranteed (an Instantiate'd copy — TestScene's TestDummy — ran CharacterAudio first).
+[DefaultExecutionOrder(-100)]
 public class CharacterBase : MonoBehaviour
 {
     [SerializeField] private CharacterDefinition _definition;
@@ -24,6 +27,18 @@ public class CharacterBase : MonoBehaviour
     public PhysicsGrabber      Grabber     { get; private set; }
     public CharacterVitals     Vitals      { get; private set; }
     public TorchCarrier        TorchCarrier { get; private set; }
+
+    /// <summary>
+    /// The character the local player controls: the one whose child camera is <c>Camera.main</c> (falls back to any
+    /// CharacterBase). Use instead of <c>FindAnyObjectByType&lt;CharacterBase&gt;()</c> now that a scene can hold
+    /// several characters (TestScene's TestDummy; Phase 4 replaces this with the NGO owner).
+    /// </summary>
+    public static CharacterBase FindLocal()
+    {
+        Camera main = Camera.main;
+        CharacterBase cb = main != null ? main.GetComponentInParent<CharacterBase>() : null;
+        return cb != null ? cb : FindAnyObjectByType<CharacterBase>();
+    }
 
     protected virtual void Awake()
     {
@@ -45,6 +60,8 @@ public class CharacterBase : MonoBehaviour
             TorchCarrier = gameObject.AddComponent<TorchCarrier>();
         if (GetComponent<WaterSplashEmitter>() == null)
             gameObject.AddComponent<WaterSplashEmitter>();
+        if (GetComponent<SkeletonDisassembler>() == null)
+            gameObject.AddComponent<SkeletonDisassembler>();   // death: bones scatter, skull lives on
 
         if (Movement == null)
             Debug.LogError($"[CharacterBase] No CharacterMovement on '{name}'. Set a Definition and let the editor sync the component.", this);
