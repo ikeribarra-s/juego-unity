@@ -22,7 +22,18 @@ public class CameraEffects : MonoBehaviour
 
     private float   _bobTimer;
     private Vector3 _targetBobOffset;
+    private Vector3 _bobCurrent;
     private float   _currentTilt;
+
+    /// <summary>Smoothed head-bob offset in the camera parent's local space (CameraRoot).</summary>
+    public Vector3 BobOffset => _bobCurrent;
+
+    /// <summary>
+    /// Set by <see cref="NeckFollowCamera"/>, which owns the camera position (it adds <see cref="BobOffset"/> itself).
+    /// Writing <c>localPosition</c> here as well dragged the camera toward CameraRoot every Update, and the neck
+    /// smoothing started from that dragged spot each frame -> frame-time-dependent vertical jitter at idle.
+    /// </summary>
+    public bool PositionDrivenExternally { get; set; }
 
     private void Update()
     {
@@ -53,11 +64,9 @@ public class CameraEffects : MonoBehaviour
             _targetBobOffset = Vector3.zero;
         }
 
-        transform.localPosition = Vector3.Lerp(
-            transform.localPosition,
-            _targetBobOffset,
-            Time.deltaTime * _bobSmoothing
-        );
+        _bobCurrent = Vector3.Lerp(_bobCurrent, _targetBobOffset, Mathf.Clamp01(Time.deltaTime * _bobSmoothing));
+        if (!PositionDrivenExternally)
+            transform.localPosition = _bobCurrent;
     }
 
     private void HandleTilt()

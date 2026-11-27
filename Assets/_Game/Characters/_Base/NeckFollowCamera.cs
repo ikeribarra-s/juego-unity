@@ -44,6 +44,11 @@ public class NeckFollowCamera : MonoBehaviour
     private Vector3   _restLocalPos;
     private bool      _hasRest;
     private Vector3   _smoothVel;
+    private Vector3   _smoothedPos;   // our own smoothed position: never re-read from the camera, so other scripts' writes can't feed back
+    private bool      _hasSmoothed;
+    private CameraEffects _effects;
+
+    private void OnEnable() => _hasSmoothed = false;
 
     private void Awake()
     {
@@ -65,6 +70,15 @@ public class NeckFollowCamera : MonoBehaviour
             _restLocalPos = _camera.localPosition;
             _hasRest = true;
         }
+
+        // We own the camera position; CameraEffects only supplies the head-bob offset.
+        if (_camera != null && _camera.TryGetComponent(out _effects))
+            _effects.PositionDrivenExternally = true;
+    }
+
+    private void OnDestroy()
+    {
+        if (_effects != null) _effects.PositionDrivenExternally = false;
     }
 
     private void LateUpdate()
@@ -90,8 +104,13 @@ public class NeckFollowCamera : MonoBehaviour
         // Never let the camera drop below the neck joint.
         if (target.y < _neck.position.y) target.y = _neck.position.y;
 
-        _camera.position = _smoothTime > 0f
-            ? Vector3.SmoothDamp(_camera.position, target, ref _smoothVel, _smoothTime)
+        if (!_hasSmoothed) { _smoothedPos = _camera.position; _smoothVel = Vector3.zero; _hasSmoothed = true; }
+        _smoothedPos = _smoothTime > 0f
+            ? Vector3.SmoothDamp(_smoothedPos, target, ref _smoothVel, _smoothTime)
             : target;
+
+        // Head bob rides on top of the smoothed eye position (it is already smoothed in CameraEffects).
+        Vector3 bob = (_effects != null && _camera.parent != null) ? _camera.parent.TransformVector(_effects.BobOffset) : Vector3.zero;
+        _camera.position = _smoothedPos + bob;
     }
 }
