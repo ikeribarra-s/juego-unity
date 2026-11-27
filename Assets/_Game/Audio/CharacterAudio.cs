@@ -334,7 +334,7 @@ public class CharacterAudio : MonoBehaviour
         var  m         = _character.Movement;
         bool sprinting = m != null && m.IsSprinting;
 
-        Vector3 hVel    = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
+        Vector3 hVel    = m != null ? m.PlanarVelocity : new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
         bool    stopped = hVel.magnitude < MinMoveSpeed;
 
         // Shift released (or we stopped) while a sprint clip is still ringing — fade it out

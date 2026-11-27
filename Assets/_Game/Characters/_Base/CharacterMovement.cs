@@ -21,22 +21,45 @@ public class CharacterMovement : MonoBehaviour
     protected float   _cameraPitch;
     protected float   _verticalVelocity;
 
-    public bool IsSprinting => _isSprinting;
-    public bool IsCrouching => _isCrouching;
+    public bool IsSprinting => _remote ? _rSprint : _isSprinting;
+    public bool IsCrouching => _remote ? _rCrouch : _isCrouching;
 
     // ── State exposed for AnimationHandler (the animator only reflects movement) ──
-    public bool  IsGrounded       => _controller != null && _controller.isGrounded;
-    public float VerticalVelocity => _verticalVelocity;
+    public bool  IsGrounded       => _remote ? _rGrounded : _controller != null && _controller.isGrounded;
+    public float VerticalVelocity => _remote ? _rVertical : _verticalVelocity;
     public Vector3 PlanarVelocity
     {
         get
         {
+            if (_remote) return _rPlanar;
             if (_controller == null) return Vector3.zero;
             Vector3 v = _controller.velocity;
             v.y = 0f;
             return v;
         }
     }
+
+    /// <summary>Camera pitch in degrees (positive = looking down). Replicated so other players' heads follow it.</summary>
+    public float CameraPitch => _cameraPitch;
+
+    // ── Networking: another player's copy has no input or physics of its own (this component is disabled); the readers above
+    //    (AnimationHandler, CharacterAudio, FootIK, CartoonAnimator ...) get the owner's state through NetworkMotion instead. ──
+    private bool    _remote;
+    private Vector3 _rPlanar;
+    private float   _rVertical;
+    private bool    _rGrounded = true, _rCrouch, _rSprint;
+
+    public bool IsRemoteDriven => _remote;
+
+    public void SetRemoteState(Vector3 planarVelocity, float verticalVelocity, bool grounded, bool crouching, bool sprinting)
+    {
+        _remote = true;
+        _rPlanar = planarVelocity; _rVertical = verticalVelocity;
+        _rGrounded = grounded; _rCrouch = crouching; _rSprint = sprinting;
+    }
+
+    /// <summary>Raise <see cref="Jumped"/> for a remote copy (the owner's jump arrived over the network).</summary>
+    public void RaiseJumped() => Jumped?.Invoke();
 
     /// <summary>Fired the frame a jump impulse is applied. Consumed by AnimationHandler.</summary>
     public event System.Action Jumped;

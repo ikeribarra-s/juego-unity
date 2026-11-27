@@ -53,6 +53,7 @@ public static class NetworkSetupBuilder
             if (character == null) { Debug.LogError("[NetworkSetup] No scene-placed player in SampleScene and no Player.prefab — nothing to build from."); return; }
             BuildPlayerPrefab(character);
         }
+        EnsurePlayerPrefabComponents();
 
         // 3. config asset
         var config = AssetDatabase.LoadAssetAtPath<NetConfig>(ConfigPath);
@@ -140,6 +141,17 @@ public static class NetworkSetupBuilder
         PrefabUtility.SaveAsPrefabAsset(contents, PrefabPath);
         PrefabUtility.UnloadPrefabContents(contents);
         Debug.Log("[NetworkSetup] Created " + PrefabPath);
+    }
+
+    /// <summary>Adds network components introduced after the prefab was first built (re-runnable).</summary>
+    public static void EnsurePlayerPrefabComponents()
+    {
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) == null) return;
+        var contents = PrefabUtility.LoadPrefabContents(PrefabPath);
+        bool changed = false;
+        if (contents.GetComponent<NetworkMotion>() == null) { contents.AddComponent<NetworkMotion>(); changed = true; }   // M1: remote animation state
+        if (changed) { PrefabUtility.SaveAsPrefabAsset(contents, PrefabPath); Debug.Log("[NetworkSetup] Updated " + PrefabPath); }
+        PrefabUtility.UnloadPrefabContents(contents);
     }
 
     // ── scene pieces ────────────────────────────────────────────────────────

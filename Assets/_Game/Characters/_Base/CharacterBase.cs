@@ -56,7 +56,11 @@ public class CharacterBase : MonoBehaviour
         IsNetworkRemote = true;
         if (inertInput != null) _input = inertInput;
 
-        foreach (var m in GetComponents<CharacterMovement>()) m.enabled = false;   // position comes from the owner's NetworkTransform
+        foreach (var m in GetComponents<CharacterMovement>())
+        {
+            m.enabled = false;                                             // position comes from the owner's NetworkTransform
+            m.SetRemoteState(Vector3.zero, 0f, true, false, false);        // state readers (animation, audio) get replicated values from NetworkMotion
+        }
         var interaction = GetComponent<InteractionSystem>();
         if (interaction != null) interaction.enabled = false;
 
