@@ -349,6 +349,9 @@ public class TorchArmAnimator : MonoBehaviour
 
     private bool LocalView => _smoothLocalView && _camera != null;
 
+    /// <summary>Networking: remote copies use the plain animated arm instead of the first-person viewmodel.</summary>
+    public void SetLocalView(bool on) => _smoothLocalView = on;
+
     private float Weight => Mathf.SmoothStep(0f, 1f, _blend);
 
     // Runs on the stepped Animator evaluations (Base Layer has IK Pass). Bones hold the freshly animated pose here.

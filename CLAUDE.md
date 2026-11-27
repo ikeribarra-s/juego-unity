@@ -6,7 +6,7 @@ Co-op comedic horror game for 1–8 players. Players enter a location, collect e
 Each character has a **special ability** and a **comic flaw** that interacts with other characters.
 
 **Engine:** Unity 6000.4.0f1 | **Pipeline:** URP 17.4 | **Platform:** PC  
-**Networking:** Unity Netcode for GameObjects (NGO) — Phase 4, not yet implemented  
+**Networking:** Unity Netcode for GameObjects 2.14, host-client — **M0 foundation done** (2026-11-27, branch `feature/networking`): `Assets/_Game/Network/` (`NetworkBootstrap`, `PlayerFactory`, `NetworkPlayer`, `Net`, `NetConfig`, `LobbyMenu`), `Player.prefab`, Lobby scene; spec + status in `Docs/Design/Networking.md`. Players must be created through `PlayerFactory` (remote copies are configured before Awake); `CharacterBase.FindLocal()` returns the owned player. TestScene stays offline.  
 **Input:** New Input System (InputActionAsset)
 
 ---

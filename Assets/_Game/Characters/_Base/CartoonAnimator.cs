@@ -62,6 +62,9 @@ public class CartoonAnimator : MonoBehaviour
 
     private enum LocalMode { Auto, Local, Remote }
 
+    /// <summary>Networking: this copy belongs to another player (full squash / bounce / lean strength). Call before Awake.</summary>
+    public void SetRemote() => _localMode = LocalMode.Remote;
+
     private static readonly int GroundedHash = Animator.StringToHash("Grounded");
 
     private Animator _animator;

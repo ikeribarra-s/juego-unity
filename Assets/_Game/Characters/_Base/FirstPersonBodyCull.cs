@@ -76,6 +76,9 @@ public class FirstPersonBodyCull : MonoBehaviour
 
     private void Start() => Apply(_isLocalPlayer);
 
+    /// <summary>Choose local / remote before Start (networking: remote copies show the full body).</summary>
+    public void SetLocalPlayer(bool isLocal) => _isLocalPlayer = isLocal;
+
     private void OnDestroy()
     {
         foreach (var (r, original, copy) in _maskedMeshes)

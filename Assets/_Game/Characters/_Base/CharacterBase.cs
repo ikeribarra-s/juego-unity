@@ -35,9 +35,42 @@ public class CharacterBase : MonoBehaviour
     /// </summary>
     public static CharacterBase FindLocal()
     {
+        CharacterBase net = Net.LocalPlayer;   // online: the player object this client owns
+        if (net != null) return net;
+
         Camera main = Camera.main;
         CharacterBase cb = main != null ? main.GetComponentInParent<CharacterBase>() : null;
         return cb != null ? cb : FindAnyObjectByType<CharacterBase>();
+    }
+
+    /// <summary>True for another player's copy on this machine (networking). It has no input, camera rig or own movement.</summary>
+    public bool IsNetworkRemote { get; private set; }
+
+    /// <summary>
+    /// Turn this instance into a remote player's copy. <b>Call before it is activated</b> (PlayerFactory builds it under an inactive
+    /// holder): disabled components never get OnEnable, so nothing subscribes to input or grabs the cursor. The remote look
+    /// is the TestDummy recipe: inert input, no movement / interaction, camera + listener + reverb + head-bob off, third-person body.
+    /// </summary>
+    public void ConfigureAsRemote(InputReader inertInput)
+    {
+        IsNetworkRemote = true;
+        if (inertInput != null) _input = inertInput;
+
+        foreach (var m in GetComponents<CharacterMovement>()) m.enabled = false;   // position comes from the owner's NetworkTransform
+        var interaction = GetComponent<InteractionSystem>();
+        if (interaction != null) interaction.enabled = false;
+
+        // Camera rig: kept (Grabber / Interaction look one up in Start) but never renders, listens or follows the neck.
+        foreach (var cam in GetComponentsInChildren<Camera>(true)) { cam.enabled = false; cam.tag = "Untagged"; }
+        foreach (var c in GetComponentsInChildren<AudioListener>(true)) c.enabled = false;
+        foreach (var c in GetComponentsInChildren<EnvironmentReverb>(true)) c.enabled = false;
+        foreach (var c in GetComponentsInChildren<AudioReverbFilter>(true)) c.enabled = false;
+        foreach (var c in GetComponentsInChildren<CameraEffects>(true)) c.enabled = false;
+        foreach (var c in GetComponentsInChildren<NeckFollowCamera>(true)) c.enabled = false;
+
+        foreach (var c in GetComponentsInChildren<FirstPersonBodyCull>(true)) c.SetLocalPlayer(false);   // full body
+        foreach (var c in GetComponentsInChildren<TorchArmAnimator>(true)) c.SetLocalView(false);        // plain animated arm
+        foreach (var c in GetComponentsInChildren<CartoonAnimator>(true)) c.SetRemote();
     }
 
     protected virtual void Awake()

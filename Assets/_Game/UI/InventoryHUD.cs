@@ -14,6 +14,7 @@ public class InventoryHUD : MonoBehaviour
 
     private void OnGUI()
     {
+        if (_character == null) _character = CharacterBase.FindLocal();   // networked: the player spawns after the scene loads
         if (_character == null) return;
 
         InitStyles();
