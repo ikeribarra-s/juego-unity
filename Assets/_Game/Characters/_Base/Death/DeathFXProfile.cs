@@ -18,6 +18,12 @@ public class DeathFXProfile : ScriptableObject
     public bool SkullHumEnabled = false;
     public SoundDefinition BonePickup;   // 3D at the bone
 
+    [Header("Inventory icons")]
+    [Tooltip("One sprite per BoneGroup, indexed by (int)BoneGroup (15 entries; Skull stays empty). Filled by Fluffterror > Items > Setup Inventory Items.")]
+    public Sprite[] BoneIcons = new Sprite[BoneGroups.Count];
+
+    public Sprite BoneIcon(BoneGroup g) => BoneIcons != null && (int)g < BoneIcons.Length ? BoneIcons[(int)g] : null;
+
     [Header("Timing")]
     public float StingDelay = 0.15f;
     public float YipDelay = 0.06f;

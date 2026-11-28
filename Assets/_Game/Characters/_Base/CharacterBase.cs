@@ -95,6 +95,8 @@ public class CharacterBase : MonoBehaviour
             Vitals = gameObject.AddComponent<CharacterVitals>();
         if (TorchCarrier == null)
             TorchCarrier = gameObject.AddComponent<TorchCarrier>();
+        if (GetComponent<HandItemController>() == null)
+            gameObject.AddComponent<HandItemController>();   // right hand: salt bag (hold F to pour)
         if (GetComponent<WaterSplashEmitter>() == null)
             gameObject.AddComponent<WaterSplashEmitter>();
         if (GetComponent<SkeletonDisassembler>() == null)

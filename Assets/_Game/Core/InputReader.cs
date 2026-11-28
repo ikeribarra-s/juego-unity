@@ -14,6 +14,9 @@ public class InputReader : ScriptableObject
     public event Action InteractCanceledEvent;
     public event Action UseAbilityEvent;
     public event Action DropItemEvent;
+    public event Action UseInventoryStartedEvent;    // F pressed: start using the item in the right hand (salt bag ...)
+    public event Action UseInventoryCanceledEvent;   // F released
+    public event Action DropInventoryEvent;   // X: drop the last item held in the pockets
     public event Action<bool> CrouchEvent;    // true = pressed, false = released
     public event Action<bool> SprintEvent;    // true = pressed, false = released
     public event Action       JumpEvent;
@@ -23,6 +26,8 @@ public class InputReader : ScriptableObject
     private InputAction _interact;
     private InputAction _useAbility;
     private InputAction _dropItem;
+    private InputAction _dropInventory;
+    private InputAction _useInventory;
     private InputAction _crouch;
     private InputAction _sprint;
     private InputAction _jump;
@@ -38,6 +43,8 @@ public class InputReader : ScriptableObject
         _interact   = playerMap.FindAction("Interact",   throwIfNotFound: true);
         _useAbility = playerMap.FindAction("UseAbility", throwIfNotFound: true);
         _dropItem   = playerMap.FindAction("DropItem",   throwIfNotFound: true);
+        _dropInventory = playerMap.FindAction("DropInventory", throwIfNotFound: true);
+        _useInventory = playerMap.FindAction("UseInventory", throwIfNotFound: true);
         _crouch     = playerMap.FindAction("Crouch",     throwIfNotFound: true);
         _sprint     = playerMap.FindAction("Sprint",     throwIfNotFound: true);
         _jump       = playerMap.FindAction("Jump",       throwIfNotFound: true);
@@ -50,6 +57,9 @@ public class InputReader : ScriptableObject
         _interact.canceled    += OnInteractCanceled;
         _useAbility.performed += OnUseAbility;
         _dropItem.performed   += OnDropItem;
+        _dropInventory.performed += OnDropInventory;
+        _useInventory.started += OnUseInventoryStarted;
+        _useInventory.canceled += OnUseInventoryCanceled;
         _crouch.performed     += OnCrouchPressed;
         _crouch.canceled      += OnCrouchReleased;
         _sprint.performed     += OnSprintPressed;
@@ -71,6 +81,9 @@ public class InputReader : ScriptableObject
         _interact.canceled    -= OnInteractCanceled;
         _useAbility.performed -= OnUseAbility;
         _dropItem.performed   -= OnDropItem;
+        _dropInventory.performed -= OnDropInventory;
+        _useInventory.started -= OnUseInventoryStarted;
+        _useInventory.canceled -= OnUseInventoryCanceled;
         _crouch.performed     -= OnCrouchPressed;
         _crouch.canceled      -= OnCrouchReleased;
         _sprint.performed     -= OnSprintPressed;
@@ -88,6 +101,9 @@ public class InputReader : ScriptableObject
     private void OnInteractCanceled(InputAction.CallbackContext ctx) => InteractCanceledEvent?.Invoke();
     private void OnUseAbility(InputAction.CallbackContext ctx)   => UseAbilityEvent?.Invoke();
     private void OnDropItem(InputAction.CallbackContext ctx)     => DropItemEvent?.Invoke();
+    private void OnDropInventory(InputAction.CallbackContext ctx) => DropInventoryEvent?.Invoke();
+    private void OnUseInventoryStarted(InputAction.CallbackContext ctx)  => UseInventoryStartedEvent?.Invoke();
+    private void OnUseInventoryCanceled(InputAction.CallbackContext ctx) => UseInventoryCanceledEvent?.Invoke();
     private void OnCrouchPressed(InputAction.CallbackContext ctx)  => CrouchEvent?.Invoke(true);
     private void OnCrouchReleased(InputAction.CallbackContext ctx) => CrouchEvent?.Invoke(false);
     private void OnSprintPressed(InputAction.CallbackContext ctx)  => SprintEvent?.Invoke(true);

@@ -79,6 +79,7 @@ big shapes, and readable value contrast over texture detail.
 - Style: diegetic-feeling where possible — torn paper, chalk, scratched metal plates. No glossy modern UI.
 - Comedy lives in the UI copy and icons (wobbly hand-drawn icons, silly character portraits).
 - Must stay readable **after** pixelation if rendered in world space; screen-space UI is not pixelated.
+- **Inventory icons** (2026-11-27): `Assets/_Game/UI/Icons/Inventory/` - 256² transparent sprites (Point, no mips, uncompressed): `Icon_Bone_<Ribcage|Pelvis|Humerus|Forearm|Hand|Femur|Shin|Foot>[_L|_R]` (R = mirrored L), `Icon_Map`, `Icon_SaltBag`. SDXL via `gen.py icon` with extra negatives (skull, robot, frame); not wired to code yet.
 - Tech: Unity **UI Toolkit** (UXML/USS) for new menus. Existing HUD is IMGUI (debug-grade, to be replaced).
 
 ## 7. Audio-visual comedy rules

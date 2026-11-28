@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deaab7c1a9f9d0d48999fa1283e7aa0a, type: 3}
+  m_Name: SaltFX_Profile
+  m_EditorClassIdentifier: Assembly-CSharp::SaltFXProfile
+  Pile: {fileID: 2100000, guid: a1dde46345133534c863a28d6864bc96, type: 2}
+  Grain: {fileID: 2100000, guid: 31f2972e588c185478aee209e526d17c, type: 2}
+  Puff: {fileID: 2100000, guid: 79a6421767aa9024e9b5447e9540bb57, type: 2}
+  PourLoop: {fileID: 11400000, guid: a765d11538cd9024781a6791aadd4a6e, type: 2}
+  Shake: {fileID: 11400000, guid: 970a578b2bcbdf04aa68d1a85f46f9b0, type: 2}
+  Land: {fileID: 11400000, guid: 9d5caf534d17cf5458dd77328ebd461c, type: 2}
+  Capacity: 150
+  UnitsPerSecond: 9
+  GrainsPerSecond: 120
+  GrainSize: {x: 0.05, y: 0.085}
+  MouthSpread: 0.016
+  FloorSpread: 0.09
+  GrainBrightness: 0.85
+  ImpactsPerSecond: 14
+  PuffSize: {x: 0.3, y: 0.46}
+  PuffLife: 0.55
+  StartBurst: 16
+  PileSize: {x: 0.22, y: 0.36}
+  MergeRadius: 0.14
+  GrowStep: 0.03
+  MaxPileSize: 0.7
+  MaxPiles: 600

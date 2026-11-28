@@ -20,6 +20,22 @@ MonoBehaviour:
   SkullHum: {fileID: 0}
   SkullHumEnabled: 0
   BonePickup: {fileID: 11400000, guid: 134e2c00dcbdaf5448ded0e922354047, type: 2}
+  BoneIcons:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 6a3365efb3b81974c87120ece2691d41, type: 3}
+  - {fileID: 21300000, guid: 3a89e9760882f624fb7895c198300b05, type: 3}
+  - {fileID: 21300000, guid: 113c6ef693d411942a914a66d62cc51e, type: 3}
+  - {fileID: 21300000, guid: 367e0ddaa261ed34aacf1fc494e17392, type: 3}
+  - {fileID: 21300000, guid: 7cea4e853675f1941a0e96c9cf8c7950, type: 3}
+  - {fileID: 21300000, guid: 305fc47a783d70c40859360986db0f78, type: 3}
+  - {fileID: 21300000, guid: 5f267b1e6494f5649bd6916822eb7476, type: 3}
+  - {fileID: 21300000, guid: 09bf2d421cf1b0b46a3160a61e0826bb, type: 3}
+  - {fileID: 21300000, guid: 0df904679ae5f5f46a0ede35a27774b8, type: 3}
+  - {fileID: 21300000, guid: cc0e047c901fae94cb6c490e68fb59d4, type: 3}
+  - {fileID: 21300000, guid: 705bc1eaa137c394092ded00c87bc48a, type: 3}
+  - {fileID: 21300000, guid: 986d6fcfba091ed429a878be3f2efd27, type: 3}
+  - {fileID: 21300000, guid: 294a07f15cf334e4188fda4a79f5625b, type: 3}
+  - {fileID: 21300000, guid: 526287a6cba83ca47bf76af60eadd7e9, type: 3}
   StingDelay: 0.15
   YipDelay: 0.06
   MaxBurstsPerSecond: 4

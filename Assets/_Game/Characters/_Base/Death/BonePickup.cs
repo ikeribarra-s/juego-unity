@@ -8,7 +8,7 @@ using UnityEngine;
 /// Prompts are cached strings (<see cref="IContextualPrompt"/> is re-read every frame), so looking costs no allocations.
 /// </summary>
 [RequireComponent(typeof(BonePiece))]
-public class BonePickup : MonoBehaviour, IInteractable, IHighlightable, IContextualPrompt, IInventoryItem, IAimAssistTarget
+public class BonePickup : MonoBehaviour, IInteractable, IHighlightable, IContextualPrompt, IInventoryItem, IDroppable, IAimAssistTarget
 {
     [Header("Targeting")]
     [Tooltip("Circular zone (m) around the crosshair in which this bone can be targeted, so thin bones on the floor " +
@@ -34,6 +34,7 @@ public class BonePickup : MonoBehaviour, IInteractable, IHighlightable, IContext
     private bool  _highlighted;
     private float _glow;            // 0..1 fade
     private string _prompt, _fullPrompt, _subtitle;
+    private Sprite _icon;
 
     public float AssistRadius => _assistRadius;
     public BonePiece Piece => _piece;
@@ -46,9 +47,11 @@ public class BonePickup : MonoBehaviour, IInteractable, IHighlightable, IContext
     // IInventoryItem
     public string DisplayName => _piece != null ? _piece.BoneName : name;
     public string Subtitle    => _subtitle;
+    public Sprite Icon        => _icon;
 
-    public void Init(SoundDefinition pickupSound)
+    public void Init(SoundDefinition pickupSound, Sprite icon = null)
     {
+        _icon = icon;
         _piece = GetComponent<BonePiece>();
         _pickupSound = pickupSound;
         _subtitle   = $"{_piece.OwnerName}'s";
@@ -75,6 +78,21 @@ public class BonePickup : MonoBehaviour, IInteractable, IHighlightable, IContext
         _glow = 0f; Apply(0f);
         gameObject.SetActive(false);   // kept (not destroyed) — Phase 2 drop / revive
         Debug.Log($"[BonePickup] {interactor.name} picked up {DisplayName} ({_subtitle}, owner id {_piece.OwnerId}).", this);
+    }
+
+    /// <summary>Back into the world (<see cref="InventorySystem.TryDrop"/>): re-activated at the drop pose with the toss velocity.</summary>
+    public void Drop(CharacterBase dropper, Vector3 position, Quaternion rotation, Vector3 velocity)
+    {
+        Holder = null;
+        transform.SetPositionAndRotation(position, rotation);
+        gameObject.SetActive(true);
+        if (_piece != null && _piece.Body != null)
+        {
+            _piece.Body.linearVelocity = velocity;
+            _piece.Body.angularVelocity = Random.insideUnitSphere * 3f;
+            _piece.Body.WakeUp();
+        }
+        Debug.Log($"[BonePickup] {dropper.name} dropped {DisplayName} ({_subtitle}).", this);
     }
 
     // ── IHighlightable ──────────────────────────────────────────────────────

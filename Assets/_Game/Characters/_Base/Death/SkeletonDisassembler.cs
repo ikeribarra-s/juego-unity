@@ -404,7 +404,7 @@ public class SkeletonDisassembler : MonoBehaviour
         }
         else
         {
-            go.AddComponent<BonePickup>().Init(Fx != null && Fx.BonePickup != null ? Fx.BonePickup : _boneSound);
+            go.AddComponent<BonePickup>().Init(Fx != null && Fx.BonePickup != null ? Fx.BonePickup : _boneSound, Fx != null ? Fx.BoneIcon(group) : null);
         }
         return piece;
     }
